@@ -77,8 +77,9 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     }
     
     // --- Global Glow Settings ---
-    if (settings.glow && mode !== VisualizerMode.PLASMA) {
-        ctx.shadowBlur = 15;
+    if (settings.glow) {
+        // Plasma looks better with a wider, softer glow
+        ctx.shadowBlur = mode === VisualizerMode.PLASMA ? 30 : 15;
         ctx.shadowColor = colors[0];
     } else {
         ctx.shadowBlur = 0;

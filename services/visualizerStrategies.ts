@@ -261,7 +261,9 @@ export class PlasmaRenderer implements IVisualizerRenderer {
         else rangeAvg = getAverage(data, 40, 150); // Highs
 
         const normalized = rangeAvg / 255;
-        const intensity = Math.pow(normalized, 1.8) * settings.sensitivity;
+        // Enhanced glow sensitivity
+        const glowFactor = settings.glow ? 1.5 : 1.0;
+        const intensity = Math.pow(normalized, 1.8) * settings.sensitivity * glowFactor;
         const speed = (0.2 + (i * 0.1)) * settings.speed;
         
         const t = rotation * speed + (i * Math.PI / 3);
@@ -277,7 +279,10 @@ export class PlasmaRenderer implements IVisualizerRenderer {
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
         const alpha = Math.min(1.0, 0.2 + intensity * 0.8);
-        const whiteCoreRadius = Math.min(0.8, 0.05 + intensity * 0.5);
+        
+        // Core becomes larger/brighter when glow is enabled
+        const coreBase = 0.05 + intensity * 0.5;
+        const whiteCoreRadius = Math.min(0.8, settings.glow ? coreBase * 1.3 : coreBase);
         
         gradient.addColorStop(0, '#ffffff'); 
         gradient.addColorStop(whiteCoreRadius, '#ffffff');
