@@ -1,0 +1,7 @@
+{
+  "name": "SonicVision AI",
+  "description": "An immersive music visualization experience powered by your microphone and Gemini AI for song recognition.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
