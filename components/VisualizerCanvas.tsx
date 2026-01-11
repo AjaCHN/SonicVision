@@ -28,7 +28,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ analyser, mode, col
     color: string, 
     life: number, 
     maxLife: number,
-    angle: number,
+    angle: number, 
     angleSpeed: number,
     initialX: number // Track origin for swirl
   }>>([]);
@@ -66,7 +66,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ analyser, mode, col
 
     // Handle Trails (Motion Blur) vs Clear
     let alpha = 0.2;
-    if (mode === VisualizerMode.PLASMA) alpha = 0.1; 
+    if (mode === VisualizerMode.PLASMA) alpha = 0.15; // Slightly clearer for flashing
     if (mode === VisualizerMode.PARTICLES) alpha = 0.3; 
     
     // Smoke needs very high transparency for accumulation effect
@@ -448,41 +448,39 @@ function drawPlasmaFlow(
 ) {
     const blobs = 6; 
     
-    const getRangeAverage = (start: number, end: number) => {
-        let sum = 0;
-        for(let i=start; i<end; i++) sum += data[i];
-        return sum / (end - start);
-    }
-
+    // "screen" blend mode for glowing/additive light effect
     ctx.globalCompositeOperation = 'screen';
 
     for (let i = 0; i < blobs; i++) {
-        // Blobs correspond to different frequency bands
         let rangeAvg = 0;
-        if (i < 2) rangeAvg = getRangeAverage(0, 10); // Bass
-        else if (i < 4) rangeAvg = getRangeAverage(10, 80); // Mids
-        else rangeAvg = getRangeAverage(80, 200); // Highs
+        // Map blobs to frequency bands (Bass heavily emphasized for first 2 blobs)
+        if (i < 2) rangeAvg = getAverage(data, 0, 8); // Deep Bass
+        else if (i < 4) rangeAvg = getAverage(data, 8, 40); // Mids
+        else rangeAvg = getAverage(data, 40, 150); // Highs
 
-        const intensity = (rangeAvg / 255) * settings.sensitivity;
+        // Normalize 0-1
+        const normalized = rangeAvg / 255;
+        
+        // Use power function to make beats "pop" (flash) more distinctively
+        // This suppresses low noise and exaggerates peaks
+        const intensity = Math.pow(normalized, 1.8) * settings.sensitivity;
 
         const speed = (0.2 + (i * 0.1)) * settings.speed;
         
-        // Lissajous curves
+        // Lissajous curve motion
         const t = rotation * speed + (i * Math.PI / 3);
-        const xOffset = Math.sin(t) * (w * 0.4) * Math.cos(t * 0.5);
-        const yOffset = Math.cos(t * 0.8) * (h * 0.4) * Math.sin(t * 0.3);
+        const xOffset = Math.sin(t) * (w * 0.35) * Math.cos(t * 0.5);
+        const yOffset = Math.cos(t * 0.8) * (h * 0.35) * Math.sin(t * 0.3);
         
         const x = w/2 + xOffset;
         const y = h/2 + yOffset;
         
         const minDim = Math.min(w, h);
         
-        // Size logic: Breathing + Audio Pulse
-        const breathing = Math.sin(rotation * 2 + i) * 0.1;
-        const audioPulse = intensity * 0.5; 
-        
-        // Vary base size
-        const baseSizeRatio = 0.15 + (i % 3) * 0.05; 
+        // Dynamic Size
+        const breathing = Math.sin(rotation * 2 + i) * 0.05;
+        const audioPulse = intensity * 0.4; 
+        const baseSizeRatio = 0.2 + (i % 3) * 0.05; 
         
         const rawRadius = minDim * (baseSizeRatio + breathing + audioPulse);
         const radius = Math.max(minDim * 0.05, rawRadius); 
@@ -491,11 +489,16 @@ function drawPlasmaFlow(
         
         const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius);
         
-        // Intensity drives alpha
-        const alpha = Math.min(1.0, 0.3 + intensity * 0.5);
+        // FLASH EFFECT LOGIC:
+        // 1. Dynamic Alpha: Darker when quiet, full opacity when loud
+        const alpha = Math.min(1.0, 0.2 + intensity * 0.8);
+        
+        // 2. Dynamic Core: The white center expands with volume (Flash)
+        const whiteCoreRadius = Math.min(0.8, 0.05 + intensity * 0.5);
         
         gradient.addColorStop(0, '#ffffff'); 
-        gradient.addColorStop(0.3, color); 
+        gradient.addColorStop(whiteCoreRadius, '#ffffff'); // Flash core
+        gradient.addColorStop(Math.min(0.95, whiteCoreRadius + 0.4), color); // Color falloff
         gradient.addColorStop(1, 'transparent');
         
         ctx.globalAlpha = alpha;

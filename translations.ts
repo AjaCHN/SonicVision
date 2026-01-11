@@ -37,10 +37,7 @@ export const TRANSLATIONS = {
     lyricsStyles: {
       [LyricsStyle.STANDARD]: 'Standard',
       [LyricsStyle.KARAOKE]: 'Karaoke',
-      [LyricsStyle.MINIMAL]: 'Minimal',
-      [LyricsStyle.NEON]: 'Neon',
-      [LyricsStyle.GLITCH]: 'Glitch',
-      [LyricsStyle.TYPEWRITER]: 'Typewriter'
+      [LyricsStyle.MINIMAL]: 'Minimal'
     },
     regions: {
       global: 'Global',
@@ -110,10 +107,7 @@ export const TRANSLATIONS = {
     lyricsStyles: {
       [LyricsStyle.STANDARD]: '标准',
       [LyricsStyle.KARAOKE]: '卡拉OK',
-      [LyricsStyle.MINIMAL]: '极简',
-      [LyricsStyle.NEON]: '霓虹',
-      [LyricsStyle.GLITCH]: '故障',
-      [LyricsStyle.TYPEWRITER]: '打字机'
+      [LyricsStyle.MINIMAL]: '极简'
     },
     regions: {
       global: '全球',

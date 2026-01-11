@@ -16,10 +16,7 @@ export enum VisualizerMode {
 export enum LyricsStyle {
   STANDARD = 'STANDARD',
   KARAOKE = 'KARAOKE',
-  MINIMAL = 'MINIMAL',
-  NEON = 'NEON',
-  GLITCH = 'GLITCH',
-  TYPEWRITER = 'TYPEWRITER'
+  MINIMAL = 'MINIMAL'
 }
 
 export interface SongInfo {
@@ -28,6 +25,7 @@ export interface SongInfo {
   lyricsSnippet?: string;
   mood?: string;
   identified: boolean;
+  searchUrl?: string;
 }
 
 export interface VisualizerSettings {

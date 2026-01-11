@@ -31,15 +31,20 @@ export const identifySongFromAudio = async (base64Audio: string, mimeType: strin
     // We force the model to "think" about what it hears before guessing.
     const systemInstruction = `You are a world-class Audio Analysis AI. 
     Your goal is to identify songs from short, potentially low-quality audio clips.
+
+    CRITICAL INSTRUCTION:
+    - You have access to a **Google Search** tool.
+    - You **MUST** transcribe any lyrics you hear and **SEARCH** them using the tool to verify the Song Title and Artist.
+    - This is especially important for foreign language songs (Chinese, Japanese, etc.) or obscure tracks.
     
     PROCESS:
     1. **Listen Deeply**: Analyze the melody, chord progression, instrumentation, and vocal timbre.
-    2. **Transcription**: If there are vocals, phonetically transcribe exactly what you hear, even if fragments.
-    3. **Fingerprinting**: Match these acoustic features against your vast knowledge of global music (Spotify/Apple Music/Billboard/Douyin/TikTok databases).
+    2. **Transcribe & Search**: If there are vocals, phonetically transcribe exactly what you hear and SEARCH for it.
+    3. **Fingerprinting**: Match these acoustic features against your vast knowledge of global music.
     4. **Decision**: Only return a match if you are confident.
 
     RULES:
-    - If you hear distinct lyrics, use them as the primary identification key.
+    - If you hear distinct lyrics, use them as the primary identification key via Search.
     - If instrumental, focus on the beat, production style, and unique melodies.
     - If the song is NOT identifiable (e.g., just noise, talking, or generic loop), set 'identified' to false.
     - 'lyricsSnippet': If you identify the song, provide the **official lyrics** corresponding to the audio clip. If unsure which part, provide the Chorus.
@@ -63,7 +68,7 @@ export const identifySongFromAudio = async (base64Audio: string, mimeType: strin
                    Think step-by-step:
                    1. What language are the vocals? (if any)
                    2. What is the genre?
-                   3. What are the specific lyrics heard?
+                   3. What are the specific lyrics heard? (SEARCH THEM)
                    4. What is the song Title and Artist?
 
                    Return JSON object:
@@ -78,6 +83,8 @@ export const identifySongFromAudio = async (base64Audio: string, mimeType: strin
         ]
       },
       config: {
+        // Enable Google Search for grounding (Song Identification)
+        tools: [{ googleSearch: {} }],
         systemInstruction: systemInstruction,
         responseMimeType: "application/json",
         responseSchema: {
@@ -98,7 +105,19 @@ export const identifySongFromAudio = async (base64Audio: string, mimeType: strin
     if (!text) return null;
     
     const cleanedText = text.replace(/```json\n?|```/g, '').trim();
-    return JSON.parse(cleanedText) as SongInfo;
+    const songInfo = JSON.parse(cleanedText) as SongInfo;
+
+    // Extract Google Search Grounding Metadata if available
+    const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
+    if (groundingChunks) {
+      // Find the first chunk with a URI
+      const webSource = groundingChunks.find(chunk => chunk.web?.uri);
+      if (webSource?.web?.uri) {
+        songInfo.searchUrl = webSource.web.uri;
+      }
+    }
+
+    return songInfo;
 
   } catch (error) {
     console.error("Gemini identification failed:", error);
