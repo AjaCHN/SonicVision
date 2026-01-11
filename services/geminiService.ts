@@ -116,6 +116,17 @@ export const identifySongFromAudio = async (base64Audio: string, mimeType: strin
         return songInfo;
 
     } catch (error: any) {
+        // Handle 429 Resource Exhausted / Quota Limits specifically
+        if (
+          error.status === 429 || 
+          error.code === 429 ||
+          (error.message && (error.message.includes('429') || error.message.includes('quota') || error.message.includes('RESOURCE_EXHAUSTED')))
+        ) {
+          console.warn("Gemini API Quota Exceeded. Backing off identification.");
+          // Do NOT retry for quota errors, let the app handle backoff
+          return null;
+        }
+
         // Handle common transport errors (like code 6 XHR) with retry
         const isTransportError = error.message && (
           error.message.includes('error code: 6') || 

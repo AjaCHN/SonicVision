@@ -439,79 +439,120 @@ export class SmokeRenderer implements IVisualizerRenderer {
 
 export class RippleRenderer implements IVisualizerRenderer {
   private ripples: Array<{
-      x: number, y: number, radius: number, maxRadius: number, 
-      alpha: number, speed: number, color: string, lineWidth: number
+      x: number, y: number, 
+      radius: number, maxRadius: number, 
+      alpha: number, speed: number, 
+      color: string, lineWidth: number,
+      isCenter: boolean // Flag to distinguish center vs random
   }> = [];
+  
+  private lastCenterSpawn: number = 0;
 
   init() {
     this.ripples = [];
+    this.lastCenterSpawn = 0;
   }
 
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings) {
-    let bass = 0; for(let i=0; i<10; i++) bass += data[i];
-    bass /= 10;
-    const bassNormalized = bass / 255;
+    const now = Date.now();
+    // Audio Analysis
+    let bass = 0; for(let i=0; i<6; i++) bass += data[i]; // Deep bass
+    bass /= 6;
     
-    if (bass > 160 / settings.sensitivity) {
-        if (this.ripples.length < 15 && Math.random() > 0.4) {
-             this.ripples.push({
-                 x: Math.random() * w, y: Math.random() * h,
-                 radius: 0,
-                 maxRadius: Math.max(w, h) * (0.3 + bassNormalized * 0.5),
-                 alpha: 1.0,
-                 speed: (2 + bassNormalized * 5) * settings.speed,
-                 color: colors[Math.floor(Math.random() * colors.length)],
-                 lineWidth: (2 + bassNormalized * 10)
-             });
-        }
-    }
-    
-    // Center Splash
-    if (bass > 100) {
-       if (this.ripples.length < 20 && Math.random() > 0.85) {
-          this.ripples.push({
-               x: w/2, y: h/2,
-               radius: 0, maxRadius: Math.max(w, h) * 0.6,
-               alpha: 0.8, speed: 5 * settings.speed,
-               color: colors[0], lineWidth: 5
-           });
-       }
+    let mids = 0; for(let i=10; i<30; i++) mids += data[i]; // Snares/Mids
+    mids /= 20;
+
+    const sensitivity = settings.sensitivity;
+
+    // --- Logic 1: Center Big Ripple (Kick Drum) ---
+    // High bass threshold, throttled to avoid spamming (e.g., every 250ms max)
+    if (bass > (180 / sensitivity) && now - this.lastCenterSpawn > 250) {
+        this.ripples.push({
+            x: w / 2,
+            y: h / 2,
+            radius: 10,
+            maxRadius: Math.max(w, h) * 0.75, // Cover most of screen
+            alpha: 1.0,
+            speed: (6 + (bass/255) * 4) * settings.speed,
+            color: colors[0], // Use primary theme color
+            lineWidth: 8 + (bass/255) * 10,
+            isCenter: true
+        });
+        this.lastCenterSpawn = now;
     }
 
+    // --- Logic 2: Random Small Ripples (Ambient/Mids) ---
+    // Lower threshold or random chance
+    if (mids > (100 / sensitivity) && Math.random() > 0.7) {
+         this.ripples.push({
+             x: Math.random() * w,
+             y: Math.random() * h,
+             radius: 0,
+             maxRadius: Math.max(w, h) * (0.15 + Math.random() * 0.2), // Smaller
+             alpha: 0.7 + Math.random() * 0.3,
+             speed: (2 + Math.random() * 3) * settings.speed,
+             color: colors[Math.floor(Math.random() * colors.length)],
+             lineWidth: 2 + Math.random() * 3,
+             isCenter: false
+         });
+    }
+
+    // Optimization: Limit ripple count
+    if (this.ripples.length > 30) this.ripples.shift();
+
+    // --- Rendering ---
     ctx.lineCap = 'round';
+    
     for (let i = this.ripples.length - 1; i >= 0; i--) {
         const r = this.ripples[i];
+        
+        // Update physics
         r.radius += r.speed;
         r.speed *= 0.98;
-        r.alpha -= 0.008;
+        // Center ripples fade slower for impact
+        r.alpha -= r.isCenter ? 0.005 : 0.01;
 
         if (r.alpha <= 0 || r.radius > r.maxRadius) {
             this.ripples.splice(i, 1);
             continue;
         }
 
-        const ringCount = 3;
+        ctx.save();
+        
+        // Draw Concentric Echoes
+        // Center ripples get more rings
+        const ringCount = r.isCenter ? 4 : 2; 
+        const spacing = r.isCenter ? 40 : 20;
+
         for (let j = 0; j < ringCount; j++) {
-             const currentRadius = r.radius - (j * 30);
+             const currentRadius = r.radius - (j * spacing);
+             
              if (currentRadius > 0) {
-                 const ringAlpha = r.alpha * (1 - (j * 0.3));
-                 if (ringAlpha <= 0) continue;
+                 // Inner rings fade out slightly
+                 const ringAlphaFactor = 1 - (j / ringCount); 
+                 const currentAlpha = r.alpha * ringAlphaFactor;
                  
-                 ctx.lineWidth = Math.max(0.5, r.lineWidth * (1 - (j * 0.2)));
-                 // Highlight
-                 ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
-                 ctx.globalAlpha = ringAlpha * 0.6;
-                 ctx.beginPath();
-                 ctx.arc(r.x - 2, r.y - 2, currentRadius, 0, Math.PI * 2);
-                 ctx.stroke();
-                 // Main
+                 if (currentAlpha <= 0) continue;
+
+                 ctx.globalAlpha = currentAlpha;
+                 ctx.lineWidth = Math.max(0.5, r.lineWidth * ringAlphaFactor);
                  ctx.strokeStyle = r.color;
-                 ctx.globalAlpha = ringAlpha;
+
                  ctx.beginPath();
                  ctx.arc(r.x, r.y, currentRadius, 0, Math.PI * 2);
                  ctx.stroke();
+                 
+                 // Add a subtle white highlight ring for center ripples
+                 if (r.isCenter && j === 0) {
+                     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                     ctx.lineWidth = 1;
+                     ctx.beginPath();
+                     ctx.arc(r.x, r.y, currentRadius + 2, 0, Math.PI * 2);
+                     ctx.stroke();
+                 }
              }
         }
+        ctx.restore();
     }
     ctx.globalAlpha = 1.0;
   }

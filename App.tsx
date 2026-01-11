@@ -9,7 +9,7 @@ import { identifySongFromAudio } from './services/geminiService';
 import { TRANSLATIONS } from './translations';
 
 // Default Constants
-const DEFAULT_MODE = VisualizerMode.SYNTHWAVE; // Updated default to new 3D mode
+const DEFAULT_MODE = VisualizerMode.BARS; // Changed default from SYNTHWAVE to BARS
 const DEFAULT_THEME_INDEX = 1; 
 const DEFAULT_SETTINGS: VisualizerSettings = {
   sensitivity: 1.5,
@@ -306,17 +306,23 @@ const App: React.FC = () => {
 
         if (result && result.identified) {
            setCurrentSong(result);
-           scheduleIdentificationLoop(rec, 35000, false);
-        } else {
+           scheduleIdentificationLoop(rec, 60000, false); // Quota Safety: 60s
+        } else if (result && !result.identified) {
+           // Valid response but song unknown
            if (!isRetry) {
-             scheduleIdentificationLoop(rec, 1000, true);
+             scheduleIdentificationLoop(rec, 5000, true); // Retry once quickly (5s)
            } else {
-             scheduleIdentificationLoop(rec, 15000, false);
+             scheduleIdentificationLoop(rec, 30000, false); // Then back off (30s)
            }
+        } else {
+           // Result is null -> Error (Network or Quota)
+           // Do NOT retry quickly. Back off significantly.
+           console.log("Identification failed (API Error), backing off...");
+           scheduleIdentificationLoop(rec, 60000, false); // Quota Safety: 60s
         }
       } catch (e) {
         console.error("Identification loop error:", e);
-        scheduleIdentificationLoop(rec, 15000, false);
+        scheduleIdentificationLoop(rec, 60000, false); // Quota Safety: 60s
       }
     }, delay);
   };

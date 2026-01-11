@@ -4,15 +4,15 @@ export type Language = 'en' | 'zh';
 export type Region = 'global' | 'US' | 'CN' | 'JP' | 'KR' | 'EU' | 'LATAM';
 
 export enum VisualizerMode {
-  SYNTHWAVE = 'SYNTHWAVE', // New WebGL Mode
-  PLASMA = 'PLASMA',
   BARS = 'BARS',
+  PLASMA = 'PLASMA',
   PARTICLES = 'PARTICLES',
   TUNNEL = 'TUNNEL',
   SHAPES = 'SHAPES',
   RINGS = 'RINGS',
   SMOKE = 'SMOKE',
-  RIPPLE = 'RIPPLE'
+  RIPPLE = 'RIPPLE',
+  SYNTHWAVE = 'SYNTHWAVE' // New WebGL Mode
 }
 
 export enum LyricsStyle {
