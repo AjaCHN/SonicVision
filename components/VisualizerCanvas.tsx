@@ -1000,73 +1000,83 @@ function drawBassOrb(
     const centerX = w / 2;
     const centerY = h / 2;
     
-    // Extract Bass Frequencies
-    // Kick: 0-10 (Sub-bass)
-    // Bass: 10-30 (Bass)
-    // Low-Mid: 30-60
+    // 1. Refined Frequency Extraction
+    // Kick: Deep sub-bass (0-6)
+    let kick = getAverage(data, 0, 6) * settings.sensitivity;
     
-    let kick = 0;
-    for(let i=0; i<10; i++) kick += data[i];
-    kick = (kick / 10) * settings.sensitivity; // 0-255+
+    // Bass: Melodic bass (6-20)
+    let bass = getAverage(data, 6, 20) * settings.sensitivity;
     
-    let bass = 0;
-    for(let i=10; i<30; i++) bass += data[i];
-    bass = (bass / 20) * settings.sensitivity;
-    
-    // Normalized values
-    const kickNorm = kick / 255;
-    const bassNorm = bass / 255;
+    // Texture: Low-mids (20-50)
+    let texture = getAverage(data, 20, 50) * settings.sensitivity;
+
+    // Normalization (soft clamp at 1.0 but allow temporary peaks)
+    const kickNorm = Math.min(kick / 255, 1.2);
+    const bassNorm = Math.min(bass / 255, 1.2);
+    const textureNorm = Math.min(texture / 255, 1.2);
     
     const minDim = Math.min(w, h);
-    const baseRadius = minDim * 0.2; 
+    // Base radius pulses with overall bass
+    const baseRadius = minDim * 0.18 + (bassNorm * minDim * 0.05); 
     
-    // Core expansion based on Kick
-    const radius = baseRadius + (kickNorm * minDim * 0.15);
-    
+    // Rotate entire coordinate system slowly
+    ctx.save();
     ctx.translate(centerX, centerY);
-    // Rotate the whole orb slowly
-    ctx.rotate(rotation * 0.5);
-    
+    ctx.rotate(rotation * 0.2); // Slower, deeper rotation
+
     ctx.beginPath();
     
-    const points = 120;
+    const points = 200; // Smoother
     
-    // Dynamic Wave Parameters
-    // Frequency of wave (number of peaks) modulated by Bass
-    // More bass = tighter waves
-    const waveFreq = 3 + Math.floor(bassNorm * 8); 
+    // Wave Layers Configuration
     
-    // Amplitude of wave (height of peaks) linked to Kick
-    // More kick = spikier wave
-    const waveAmp = (10 + kickNorm * 40) * settings.sensitivity;
+    // Layer 1: Kick (Major deformation)
+    // Low frequency (3, 4, or 5 lobes)
+    // Amplitude reacts explosively to kick
+    const layer1Freq = 3; 
+    const layer1Amp = Math.pow(kickNorm, 2) * (minDim * 0.15); // Exponential response for "punch"
     
-    // Secondary "jitter" wave for organic feel
-    // Linked to high-mids for texture
-    let mids = 0;
-    for(let i=30; i<60; i++) mids += data[i];
-    mids = (mids / 30) * settings.sensitivity;
-    const midNorm = mids / 255;
-    const jitterFreq = 12;
-    const jitterAmp = midNorm * 10;
+    // Layer 2: Bassline (Rhythm)
+    // Higher frequency (varies with bass intensity)
+    const layer2Freq = 6 + Math.round(bassNorm * 4); // 6 to 10 lobes
+    const layer2Amp = bassNorm * (minDim * 0.08);
+
+    // Layer 3: Organic Jitter (Texture)
+    // Very high frequency, creates the "fuzzy" or "liquid" edge
+    // Modulate phase with time strongly
+    const jitterFreq = 20;
+    const jitterAmp = textureNorm * (minDim * 0.03);
     
-    // Time factor for wave movement
-    const time = rotation * 5;
+    // Time factor for wave movement (flowing)
+    const time = rotation * 4;
 
     for (let i = 0; i <= points; i++) {
+        // Angle covers 0 to 2PI
         const angle = (i / points) * Math.PI * 2;
         
-        // Primary Wave: Sine based on angle * freq
-        // Add phase shift with time
-        const wave = Math.sin(angle * waveFreq + time) * waveAmp;
+        // 1. Primary Kick Wave (Sine)
+        const w1 = Math.sin(angle * layer1Freq + time) * layer1Amp;
         
-        // Secondary Wave (Jitter): Faster freq, creates organic "noise"
-        const jitter = Math.sin(angle * jitterFreq - time * 2) * jitterAmp;
+        // 2. Secondary Bass Wave (Cosine, different phase/speed)
+        // Adding a slight offset to frequency based on angle makes it less perfect
+        const w2 = Math.cos(angle * layer2Freq - time * 1.5) * layer2Amp;
         
-        // Total Radius for this point
-        const r = radius + wave + jitter;
+        // 3. Jitter/Noise
+        // Mixing two high frequencies creates an organic "interference" pattern
+        const noise = Math.sin(angle * jitterFreq + time * 3) * 
+                      Math.cos(angle * (jitterFreq + 5) - time) * jitterAmp;
         
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
+        // Combine
+        // We add a subtle "breathing" effect to the radius using a per-point index for localized swelling
+        const breathing = Math.sin(i * 0.1 + time) * (bassNorm * 5);
+
+        const r = baseRadius + w1 + w2 + noise + breathing;
+        
+        // Clamp radius to avoid negative (inverted) shapes in extreme cases
+        const finalR = Math.max(minDim * 0.05, r);
+        
+        const x = Math.cos(angle) * finalR;
+        const y = Math.sin(angle) * finalR;
         
         if (i === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
@@ -1074,35 +1084,34 @@ function drawBassOrb(
     
     ctx.closePath();
     
-    // Styling
-    // Gradient Fill
-    const gradient = ctx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius * 1.5);
+    // Styling: "Ethereal" look
+    const gradient = ctx.createRadialGradient(0, 0, baseRadius * 0.2, 0, 0, baseRadius * 1.5);
     gradient.addColorStop(0, '#ffffff'); // Hot core
-    gradient.addColorStop(0.3, colors[0]);
-    gradient.addColorStop(0.8, colors[1]);
-    gradient.addColorStop(1, 'transparent');
+    gradient.addColorStop(0.2, colors[0]); // Primary
+    gradient.addColorStop(0.6, colors[1]); // Secondary
+    gradient.addColorStop(1, 'transparent'); // Fade out
     
     ctx.fillStyle = gradient;
     ctx.fill();
     
-    // Glowing Stroke
-    ctx.lineWidth = 3;
-    ctx.strokeStyle = colors[2] || '#ffffff';
-    ctx.shadowBlur = 20 * kickNorm;
+    // Add a double stroke for depth
+    // Outer glow
+    ctx.shadowBlur = 30 * kickNorm; // Glow pulses with kick
     ctx.shadowColor = colors[0];
+    ctx.strokeStyle = colors[2] || '#ffffff';
+    ctx.lineWidth = 2 + (bassNorm * 3);
     ctx.stroke();
     
-    // Inner Rings (optional detail)
-    if (bassNorm > 0.3) {
-        ctx.beginPath();
-        ctx.arc(0, 0, radius * 0.6, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
-        ctx.lineWidth = 1;
-        ctx.stroke();
-    }
-    
-    ctx.rotate(-rotation * 0.5);
-    ctx.translate(-centerX, -centerY);
+    // Inner detail ring (High frequency reactive)
+    ctx.beginPath();
+    const innerR = baseRadius * 0.6;
+    ctx.arc(0, 0, innerR, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
+    ctx.lineWidth = 1;
+    ctx.shadowBlur = 0;
+    ctx.stroke();
+
+    ctx.restore();
 }
 
 function getAverage(data: Uint8Array, start: number, end: number) {
