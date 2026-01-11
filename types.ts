@@ -11,8 +11,15 @@ export enum VisualizerMode {
   SHAPES = 'SHAPES',
   RINGS = 'RINGS',
   SMOKE = 'SMOKE',
-  RIPPLE = 'RIPPLE',
-  SYNTHWAVE = 'SYNTHWAVE' // New WebGL Mode
+  // New 2D Modes
+  RAIN = 'RAIN',
+  KALEIDOSCOPE = 'KALEIDOSCOPE',
+  CITY = 'CITY',
+  // WebGL Modes
+  SINGULARITY = 'SINGULARITY',
+  SILK = 'SILK',
+  LIQUID = 'LIQUID',
+  TERRAIN = 'TERRAIN'
 }
 
 export enum LyricsStyle {

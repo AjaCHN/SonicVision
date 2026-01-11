@@ -9,7 +9,7 @@ import { identifySongFromAudio } from './services/geminiService';
 import { TRANSLATIONS } from './translations';
 
 // Default Constants
-const DEFAULT_MODE = VisualizerMode.BARS; // Changed default from SYNTHWAVE to BARS
+const DEFAULT_MODE = VisualizerMode.BARS; 
 const DEFAULT_THEME_INDEX = 1; 
 const DEFAULT_SETTINGS: VisualizerSettings = {
   sensitivity: 1.5,
@@ -464,7 +464,13 @@ const App: React.FC = () => {
   const t = TRANSLATIONS[language];
 
   // Determine which Renderer to use
-  const isWebGLMode = mode === VisualizerMode.SYNTHWAVE;
+  // Now includes all WebGL modes
+  const isWebGLMode = [
+    VisualizerMode.SINGULARITY,
+    VisualizerMode.SILK,
+    VisualizerMode.LIQUID,
+    VisualizerMode.TERRAIN
+  ].includes(mode);
 
   return (
     <div className="relative w-screen h-screen overflow-hidden text-white select-none">
@@ -475,6 +481,7 @@ const App: React.FC = () => {
            analyser={analyser} 
            colors={colorTheme}
            settings={settings}
+           mode={mode}
          />
       ) : (
          <VisualizerCanvas 

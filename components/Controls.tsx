@@ -213,19 +213,19 @@ const Controls: React.FC<ControlsProps> = ({
                   </div>
                </div>
 
-               {/* 2. Visualizer Modes (Horizontal Scroll) */}
-               <div className="flex-1 w-full overflow-hidden">
+               {/* 2. Visualizer Modes (Wrapped) */}
+               <div className="flex-1 w-full">
                   <div className="flex items-center justify-between mb-2 px-1">
                      <h3 className="text-white/50 text-xs uppercase tracking-widest font-bold">{t.visualizerMode}</h3>
                   </div>
-                  {/* Scroll container */}
-                  <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
+                  {/* Container - Wrap */}
+                  <div className="flex flex-wrap gap-2 pb-2">
                     {Object.entries(VISUALIZER_PRESETS).map(([modeKey, _]) => (
                       <button
                         key={modeKey}
                         onClick={() => setMode(modeKey as VisualizerMode)}
                         title={`${t.selectMode}: ${t.modes[modeKey as VisualizerMode]}`}
-                        className={`flex-shrink-0 px-4 py-2 rounded-xl border transition-all duration-300 text-xs font-medium whitespace-nowrap
+                        className={`px-3 py-2 rounded-xl border transition-all duration-300 text-xs font-medium whitespace-nowrap
                           ${currentMode === modeKey 
                             ? 'bg-white/20 border-white/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
                             : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10'}`}

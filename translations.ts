@@ -43,7 +43,6 @@ export const TRANSLATIONS = {
     toggleTrails: 'Toggle motion trails',
     toggleAutoRotate: 'Toggle automatic mode switching',
     modes: {
-      [VisualizerMode.SYNTHWAVE]: 'Synthwave Grid',
       [VisualizerMode.PLASMA]: 'Plasma Flow',
       [VisualizerMode.BARS]: 'Frequency Bars',
       [VisualizerMode.PARTICLES]: 'Starfield',
@@ -51,7 +50,13 @@ export const TRANSLATIONS = {
       [VisualizerMode.SHAPES]: 'Abstract Shapes',
       [VisualizerMode.RINGS]: 'Neon Rings',
       [VisualizerMode.SMOKE]: 'Ethereal Smoke',
-      [VisualizerMode.RIPPLE]: 'Water Ripples'
+      [VisualizerMode.RAIN]: 'Digital Rain',
+      [VisualizerMode.KALEIDOSCOPE]: 'Kaleidoscope',
+      [VisualizerMode.CITY]: 'EQ City',
+      [VisualizerMode.SINGULARITY]: 'The Singularity',
+      [VisualizerMode.SILK]: 'Silk Waves',
+      [VisualizerMode.LIQUID]: 'Liquid Sphere',
+      [VisualizerMode.TERRAIN]: 'Low Poly Terrain'
     },
     lyricsStyles: {
       [LyricsStyle.STANDARD]: 'Standard',
@@ -132,7 +137,6 @@ export const TRANSLATIONS = {
     toggleTrails: '开关动态拖尾效果',
     toggleAutoRotate: '开关自动切换模式功能',
     modes: {
-      [VisualizerMode.SYNTHWAVE]: '合成波网格',
       [VisualizerMode.PLASMA]: '流体等离子',
       [VisualizerMode.BARS]: '镜像频谱',
       [VisualizerMode.PARTICLES]: '星空粒子',
@@ -140,7 +144,13 @@ export const TRANSLATIONS = {
       [VisualizerMode.SHAPES]: '抽象几何',
       [VisualizerMode.RINGS]: '霓虹光环',
       [VisualizerMode.SMOKE]: '烟雾特效',
-      [VisualizerMode.RIPPLE]: '水波纹'
+      [VisualizerMode.RAIN]: '数字雨',
+      [VisualizerMode.KALEIDOSCOPE]: '万花筒',
+      [VisualizerMode.CITY]: '律动城市',
+      [VisualizerMode.SINGULARITY]: '黑洞奇点',
+      [VisualizerMode.SILK]: '流光丝绸',
+      [VisualizerMode.LIQUID]: '液态星球',
+      [VisualizerMode.TERRAIN]: '低多边形山脉'
     },
     lyricsStyles: {
       [LyricsStyle.STANDARD]: '标准',

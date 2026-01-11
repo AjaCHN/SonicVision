@@ -32,13 +32,33 @@ export const VISUALIZER_PRESETS = {
     name: 'Ethereal Smoke',
     description: 'Drifting colorful fog'
   },
-  [VisualizerMode.RIPPLE]: {
-    name: 'Water Ripples',
-    description: 'Raindrops reactive to beats'
+  [VisualizerMode.RAIN]: {
+    name: 'Digital Rain',
+    description: 'Matrix-style falling code'
   },
-  [VisualizerMode.SYNTHWAVE]: {
-    name: 'Synthwave Grid',
-    description: '3D retro-futuristic landscape (WebGL)'
+  [VisualizerMode.KALEIDOSCOPE]: {
+    name: 'Kaleidoscope',
+    description: 'Psychedelic mandala patterns'
+  },
+  [VisualizerMode.CITY]: {
+    name: 'EQ City',
+    description: 'Skyline reacting to frequencies'
+  },
+  [VisualizerMode.SINGULARITY]: {
+    name: 'The Singularity',
+    description: 'Event horizon with accretion disk (WebGL)'
+  },
+  [VisualizerMode.SILK]: {
+    name: 'Silk Waves',
+    description: 'Iridescent flowing fabric (WebGL)'
+  },
+  [VisualizerMode.LIQUID]: {
+    name: 'Liquid Sphere',
+    description: 'Ferrofluid-like reactive matter (WebGL)'
+  },
+  [VisualizerMode.TERRAIN]: {
+    name: 'Low Poly Terrain',
+    description: 'Flying over reactive mountains (WebGL)'
   }
 };
 

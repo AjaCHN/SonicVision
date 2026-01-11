@@ -7,6 +7,21 @@ function getAverage(data: Uint8Array, start: number, end: number) {
   return sum / (end - start);
 }
 
+// Convert hex to rgba helper
+function hexToRgba(hex: string, alpha: number) {
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 4) {
+    r = parseInt(hex[1] + hex[1], 16);
+    g = parseInt(hex[2] + hex[2], 16);
+    b = parseInt(hex[3] + hex[3], 16);
+  } else if (hex.length === 7) {
+    r = parseInt(hex.substring(1, 3), 16);
+    g = parseInt(hex.substring(3, 5), 16);
+    b = parseInt(hex.substring(5, 7), 16);
+  }
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
 // --- Renderers ---
 
 export class BarsRenderer implements IVisualizerRenderer {
@@ -340,10 +355,11 @@ export class ShapesRenderer implements IVisualizerRenderer {
 
 export class SmokeRenderer implements IVisualizerRenderer {
   private particles: Array<{
-      x: number, y: number, vx: number, vy: number, 
-      size: number, alpha: number, color: string, 
-      life: number, maxLife: number,
-      angle: number, angleSpeed: number
+    x: number; y: number; 
+    vx: number; vy: number; 
+    life: number; maxLife: number; 
+    size: number; color: string; 
+    type: 'smoke' | 'spark'
   }> = [];
 
   init() {
@@ -351,209 +367,328 @@ export class SmokeRenderer implements IVisualizerRenderer {
   }
 
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
-    let volume = 0;
-    for(let i=0; i<data.length; i++) volume += data[i];
-    volume = (volume / data.length) * settings.sensitivity;
+    const vol = getAverage(data, 0, 100) / 255;
+    const high = getAverage(data, 100, 200) / 255;
     
-    let turbulence = 0;
-    for(let i=50; i<150; i++) turbulence += data[i];
-    turbulence /= 100;
+    // Config
+    const smokeCount = 100; // Active particles target
+    const sparkCount = 50;
 
-    const spawnCount = Math.max(2, 2 + Math.floor(volume / 15)); 
-    const maxSmoke = 400;
-
-    if (this.particles.length < maxSmoke) {
-        for(let i=0; i<spawnCount; i++) {
-            const spawnFromTop = i % 2 === 0;
-            const x = Math.random() * w;
-            const y = spawnFromTop ? -50 : h + 50;
-            const baseSpeed = (0.2 + Math.random() * 0.3) * settings.speed; 
-            const vy = spawnFromTop ? baseSpeed : -baseSpeed;
-            const distToCenter = h / 2 + 50;
-            const maxLife = (distToCenter / Math.abs(baseSpeed)) + 200;
-
-            this.particles.push({
-                x, y, vx: (Math.random() - 0.5) * 0.5, vy,
-                size: 60 + Math.random() * 100,
-                alpha: 0,
-                color: colors[Math.floor(Math.random() * colors.length)],
-                life: 0, maxLife,
-                angle: Math.random() * Math.PI * 2,
-                angleSpeed: (Math.random() - 0.5) * 0.005
-            });
-        }
+    // Spawn Smoke
+    if (this.particles.filter(p => p.type === 'smoke').length < smokeCount) {
+       // Spawn from bottom and random locations to keep density high
+       this.particles.push({
+         x: Math.random() * w,
+         y: h + 50,
+         vx: 0, vy: 0,
+         life: 0, maxLife: 300 + Math.random() * 200,
+         size: 50 + Math.random() * 100,
+         color: colors[Math.floor(Math.random() * 2)], // Base colors
+         type: 'smoke'
+       });
     }
 
-    ctx.globalCompositeOperation = 'screen';
-    const time = rotation * 10; 
-    const centerY = h / 2;
-    const centerX = w / 2;
-    const convergenceZone = h * 0.2;
+    // Spawn Sparks on Highs
+    if (high > 0.3 && this.particles.filter(p => p.type === 'spark').length < sparkCount) {
+        this.particles.push({
+            x: Math.random() * w,
+            y: h + 20,
+            vx: 0, vy: 0,
+            life: 0, maxLife: 100,
+            size: 2 + Math.random() * 3,
+            color: '#ffffff',
+            type: 'spark'
+        });
+    }
+
+    // Physics & Draw
+    // Flow field based on rotation/time
+    const time = rotation;
+    
+    ctx.globalCompositeOperation = 'screen'; // Additive blending for smoke
 
     for (let i = this.particles.length - 1; i >= 0; i--) {
         const p = this.particles[i];
         p.life++;
-        p.angle += p.angleSpeed;
         
-        let targetAlpha = 0.2;
-        if (p.life < 100) p.alpha = (p.life / 100) * targetAlpha;
-        else if (p.life > p.maxLife - 200) p.alpha = ((p.maxLife - p.life) / 200) * targetAlpha;
-        else p.alpha = targetAlpha;
-
-        const distY = Math.abs(p.y - centerY);
-        let currentVy = p.vy;
-        if (distY < convergenceZone) currentVy *= 0.5;
-        p.y += currentVy;
-
-        const dx = centerX - p.x;
-        p.vx += (dx * 0.0001) * settings.speed; 
-        p.vx *= 0.99;
+        // Flow Field Math
+        // Scale coords for noise
+        const nx = p.x * 0.003;
+        const ny = p.y * 0.003;
         
-        const noiseX = Math.sin(p.y * 0.005 + time * 0.1) * (0.5 + turbulence * 0.5);
-        p.x += p.vx + noiseX;
-        p.size += 0.1 * settings.speed; 
+        // Simple trigonometric noise flow field
+        const angle = Math.sin(nx + time * 0.5) * Math.cos(ny + time * 0.5) * Math.PI * 2;
+        
+        // Audio influence on velocity
+        const speed = p.type === 'smoke' 
+            ? 0.5 * settings.speed * (1 + vol)
+            : 2.0 * settings.speed * (1 + high * 2);
 
-        if (p.life >= p.maxLife || p.alpha <= 0.001) {
-            this.particles.splice(i, 1);
-            continue;
+        p.vx += Math.cos(angle) * 0.05;
+        p.vy += Math.sin(angle) * 0.05 - 0.05; // Slight upward bias
+        
+        // Damping
+        p.vx *= 0.95;
+        p.vy *= 0.95;
+
+        p.x += p.vx * speed;
+        p.y += p.vy * speed;
+
+        // Wrap around logic for continuous flow
+        if (p.y < -150) p.y = h + 150;
+        if (p.x < -150) p.x = w + 150;
+        if (p.x > w + 150) p.x = -150;
+
+        // Alpha calculation
+        let alpha = 0;
+        if (p.life < 50) alpha = p.life / 50;
+        else if (p.life > p.maxLife - 50) alpha = (p.maxLife - p.life) / 50;
+        else alpha = 1;
+
+        if (p.life > p.maxLife) {
+             // Reset to bottom instead of killing to maintain flow density
+             p.life = 0;
+             p.x = Math.random() * w;
+             p.y = h + 100;
         }
 
-        ctx.globalAlpha = Math.max(0, p.alpha);
         ctx.save();
         ctx.translate(p.x, p.y);
-        ctx.rotate(p.angle);
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
-        gradient.addColorStop(0, p.color);
-        gradient.addColorStop(0.4, p.color);
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.ellipse(0, 0, p.size, p.size * 0.8, 0, 0, Math.PI * 2);
-        ctx.fill();
+        
+        if (p.type === 'smoke') {
+            const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
+            // Very low opacity for smoke accumulation
+            gradient.addColorStop(0, hexToRgba(p.color, 0.08 * alpha));
+            gradient.addColorStop(1, 'transparent');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        } else {
+            ctx.fillStyle = `rgba(255, 255, 255, ${alpha * 0.8})`;
+            ctx.beginPath();
+            ctx.arc(0, 0, p.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
         ctx.restore();
     }
-    ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = 'source-over';
   }
 }
 
-export class RippleRenderer implements IVisualizerRenderer {
-  private ripples: Array<{
-      x: number, y: number, 
-      radius: number, maxRadius: number, 
-      alpha: number, speed: number, 
-      color: string, lineWidth: number,
-      isCenter: boolean // Flag to distinguish center vs random
-  }> = [];
+export class RainRenderer implements IVisualizerRenderer {
+    private drops: number[] = [];
+    private fontSize = 16;
+    private chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソ';
   
-  private lastCenterSpawn: number = 0;
-
-  init() {
-    this.ripples = [];
-    this.lastCenterSpawn = 0;
-  }
-
-  draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings) {
-    const now = Date.now();
-    // Audio Analysis
-    let bass = 0; for(let i=0; i<6; i++) bass += data[i]; // Deep bass
-    bass /= 6;
-    
-    let mids = 0; for(let i=10; i<30; i++) mids += data[i]; // Snares/Mids
-    mids /= 20;
-
-    const sensitivity = settings.sensitivity;
-
-    // --- Logic 1: Center Big Ripple (Kick Drum) ---
-    // High bass threshold, throttled to avoid spamming (e.g., every 250ms max)
-    if (bass > (180 / sensitivity) && now - this.lastCenterSpawn > 250) {
-        this.ripples.push({
-            x: w / 2,
-            y: h / 2,
-            radius: 10,
-            maxRadius: Math.max(w, h) * 0.75, // Cover most of screen
-            alpha: 1.0,
-            speed: (6 + (bass/255) * 4) * settings.speed,
-            color: colors[0], // Use primary theme color
-            lineWidth: 8 + (bass/255) * 10,
-            isCenter: true
-        });
-        this.lastCenterSpawn = now;
+    init(canvas: HTMLCanvasElement) {
+        const columns = Math.ceil(canvas.width / this.fontSize);
+        this.drops = new Array(columns).fill(0).map(() => Math.random() * -100);
     }
-
-    // --- Logic 2: Random Small Ripples (Ambient/Mids) ---
-    // Lower threshold or random chance
-    if (mids > (100 / sensitivity) && Math.random() > 0.7) {
-         this.ripples.push({
-             x: Math.random() * w,
-             y: Math.random() * h,
-             radius: 0,
-             maxRadius: Math.max(w, h) * (0.15 + Math.random() * 0.2), // Smaller
-             alpha: 0.7 + Math.random() * 0.3,
-             speed: (2 + Math.random() * 3) * settings.speed,
-             color: colors[Math.floor(Math.random() * colors.length)],
-             lineWidth: 2 + Math.random() * 3,
-             isCenter: false
-         });
-    }
-
-    // Optimization: Limit ripple count
-    if (this.ripples.length > 30) this.ripples.shift();
-
-    // --- Rendering ---
-    ctx.lineCap = 'round';
-    
-    for (let i = this.ripples.length - 1; i >= 0; i--) {
-        const r = this.ripples[i];
+  
+    draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
+        // Fade effect is handled by the main draw loop's trail setting, 
+        // but Rain looks best with a specific fade. We can force it here slightly if trails are off,
+        // but relying on global settings is better for consistency.
         
-        // Update physics
-        r.radius += r.speed;
-        r.speed *= 0.98;
-        // Center ripples fade slower for impact
-        r.alpha -= r.isCenter ? 0.005 : 0.01;
+        // Analyze Audio
+        let vol = getAverage(data, 0, 50);
+        let highs = getAverage(data, 100, 150);
+        
+        const speedMultiplier = (0.5 + (vol / 255) * 1.5) * settings.speed;
+        const isFlash = highs > 150 * (1.5 / settings.sensitivity); // Bright flash threshold
 
-        if (r.alpha <= 0 || r.radius > r.maxRadius) {
-            this.ripples.splice(i, 1);
-            continue;
+        ctx.font = `${this.fontSize}px monospace`;
+        ctx.textAlign = 'center';
+
+        // Re-init drops if width changed
+        const columns = Math.ceil(w / this.fontSize);
+        if (this.drops.length !== columns) {
+             this.drops = new Array(columns).fill(0).map(() => Math.random() * -100);
         }
 
-        ctx.save();
+        for (let i = 0; i < this.drops.length; i++) {
+            // Random char
+            const char = this.chars[Math.floor(Math.random() * this.chars.length)];
+            const x = i * this.fontSize;
+            const y = this.drops[i] * this.fontSize;
+
+            // Audio reactive color
+            // Flash white on high hats
+            if (isFlash && Math.random() > 0.8) {
+                 ctx.fillStyle = '#fff';
+                 ctx.shadowBlur = 10;
+                 ctx.shadowColor = '#fff';
+            } else {
+                 // Use theme color
+                 ctx.fillStyle = colors[1];
+                 ctx.shadowBlur = 0;
+            }
+
+            // Draw
+            // Bass Kick Glitch: Shift x slightly
+            let xOffset = 0;
+            if (vol > 200 && Math.random() > 0.9) xOffset = (Math.random() - 0.5) * 10;
+
+            ctx.fillText(char, x + xOffset, y);
+
+            // Reset drop
+            if (y > h && Math.random() > 0.975) {
+                this.drops[i] = 0;
+            }
+
+            // Move drop
+            this.drops[i] += 0.5 * speedMultiplier;
+        }
+    }
+}
+
+export class KaleidoscopeRenderer implements IVisualizerRenderer {
+    init() {}
+  
+    draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
+        const centerX = w / 2;
+        const centerY = h / 2;
         
-        // Draw Concentric Echoes
-        // Center ripples get more rings
-        const ringCount = r.isCenter ? 4 : 2; 
-        const spacing = r.isCenter ? 40 : 20;
+        let vol = getAverage(data, 0, 100);
+        let mids = getAverage(data, 20, 60);
 
-        for (let j = 0; j < ringCount; j++) {
-             const currentRadius = r.radius - (j * spacing);
-             
-             if (currentRadius > 0) {
-                 // Inner rings fade out slightly
-                 const ringAlphaFactor = 1 - (j / ringCount); 
-                 const currentAlpha = r.alpha * ringAlphaFactor;
-                 
-                 if (currentAlpha <= 0) continue;
+        const segments = 8 + Math.floor((mids / 255) * 8); // 8 to 16 segments
+        const angleStep = (Math.PI * 2) / segments;
+        const radius = Math.max(w, h) * 0.6;
 
-                 ctx.globalAlpha = currentAlpha;
-                 ctx.lineWidth = Math.max(0.5, r.lineWidth * ringAlphaFactor);
-                 ctx.strokeStyle = r.color;
+        ctx.save();
+        ctx.translate(centerX, centerY);
+        ctx.rotate(rotation * 0.2 * settings.speed); // Slow base rotation
 
+        // We draw one "slice" and repeat it
+        for (let i = 0; i < segments; i++) {
+            ctx.save();
+            ctx.rotate(i * angleStep);
+
+            // Draw waveform/freq representation in this slice
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            
+            const step = Math.floor(data.length / 50);
+            for(let j=0; j<50; j++) {
+                const val = data[j * step];
+                const r = (j / 50) * radius;
+                const width = (val / 255) * (radius / 5) * settings.sensitivity;
+                
+                // Mirror effect within the slice for true kaleidoscope feel
+                const localY = width * Math.sin(j * 0.5 + rotation * 2);
+                
+                if (j===0) ctx.moveTo(r, localY);
+                else ctx.lineTo(r, localY);
+            }
+            ctx.strokeStyle = colors[i % colors.length];
+            ctx.lineWidth = 2 + (vol / 50);
+            ctx.stroke();
+
+            // Add some geometric shapes
+            if (mids > 100) {
+                 const dist = (mids/255) * radius * 0.8;
+                 ctx.fillStyle = colors[(i+1) % colors.length];
                  ctx.beginPath();
-                 ctx.arc(r.x, r.y, currentRadius, 0, Math.PI * 2);
-                 ctx.stroke();
-                 
-                 // Add a subtle white highlight ring for center ripples
-                 if (r.isCenter && j === 0) {
-                     ctx.strokeStyle = 'rgba(255,255,255,0.3)';
-                     ctx.lineWidth = 1;
-                     ctx.beginPath();
-                     ctx.arc(r.x, r.y, currentRadius + 2, 0, Math.PI * 2);
-                     ctx.stroke();
-                 }
-             }
+                 ctx.arc(dist, 0, 5 + (vol/20), 0, Math.PI*2);
+                 ctx.fill();
+            }
+
+            ctx.restore();
         }
         ctx.restore();
     }
-    ctx.globalAlpha = 1.0;
-  }
+}
+
+export class CityRenderer implements IVisualizerRenderer {
+    init() {}
+  
+    draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
+        // Sky gradient
+        const gradient = ctx.createLinearGradient(0, 0, 0, h);
+        gradient.addColorStop(0, '#000010'); // Deep space
+        gradient.addColorStop(1, '#1a1a2e'); // City smog
+        
+        // We only draw bg if trails are off, otherwise the main loop handles fade.
+        // But for city, we usually want a clean redraw to avoid messy buildings.
+        // Let's rely on standard clearing, but maybe enforce it for this mode if we wanted.
+        // For now, adhere to trails setting but draw sky behind buildings.
+
+        const barCount = 32;
+        const buildingWidth = w / barCount;
+        
+        // Draw Moon
+        ctx.save();
+        ctx.fillStyle = '#fffae3';
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = '#fffae3';
+        const moonY = h * 0.2;
+        const moonX = w * 0.8;
+        ctx.beginPath();
+        ctx.arc(moonX, moonY, 40, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+
+        // Draw Buildings
+        const step = Math.floor(data.length / barCount);
+
+        for (let i = 0; i < barCount; i++) {
+            const val = data[i * step] * settings.sensitivity;
+            // Base height + audio reactivity
+            const buildingHeight = (h * 0.2) + (val / 255) * (h * 0.6);
+            
+            const x = i * buildingWidth;
+            const y = h - buildingHeight;
+
+            // Building Body
+            ctx.fillStyle = '#0f0f1a';
+            ctx.fillRect(x, y, buildingWidth + 1, buildingHeight); // +1 to overlap gaps
+
+            // Building Edge Highlight (Neon)
+            ctx.strokeStyle = colors[i % colors.length];
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, buildingWidth, buildingHeight);
+
+            // Windows
+            const rows = 10;
+            const cols = 4;
+            const winW = (buildingWidth * 0.6) / cols;
+            const winH = (buildingHeight * 0.8) / rows;
+            const gapX = (buildingWidth * 0.4) / (cols + 1);
+            const gapY = (buildingHeight * 0.2) / (rows + 1);
+
+            ctx.fillStyle = colors[1]; // Window color
+            
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    // Randomly lit windows, but heavily influenced by volume of this bar
+                    const threshold = 0.9 - ((val/255) * 0.8); // Higher vol = lower threshold = more lights
+                    if (Math.random() > threshold) {
+                         const wx = x + gapX + c * (winW + gapX);
+                         const wy = y + gapY + r * (winH + gapY);
+                         
+                         // Occasional different color window
+                         ctx.fillStyle = Math.random() > 0.9 ? colors[0] : colors[2] || '#ffeba7';
+                         ctx.fillRect(wx, wy, winW, winH);
+                    }
+                }
+            }
+        }
+        
+        // Reflection (Water)
+        ctx.save();
+        ctx.globalAlpha = 0.3;
+        ctx.translate(0, h);
+        ctx.scale(1, -1);
+        // We could redraw everything, but that's expensive. 
+        // Simple gradient overlay to simulate reflection falloff
+        const reflectGrad = ctx.createLinearGradient(0, 0, 0, h * 0.3);
+        reflectGrad.addColorStop(0, colors[0]);
+        reflectGrad.addColorStop(1, 'transparent');
+        ctx.fillStyle = reflectGrad;
+        ctx.fillRect(0, 0, w, h * 0.3);
+        ctx.restore();
+    }
 }

@@ -2,7 +2,8 @@ import React, { useEffect, useRef } from 'react';
 import { VisualizerMode, VisualizerSettings, SongInfo, LyricsStyle, IVisualizerRenderer } from '../types';
 import { 
   BarsRenderer, RingsRenderer, ParticlesRenderer, TunnelRenderer, 
-  PlasmaRenderer, ShapesRenderer, SmokeRenderer, RippleRenderer 
+  PlasmaRenderer, ShapesRenderer, SmokeRenderer,
+  RainRenderer, KaleidoscopeRenderer, CityRenderer
 } from '../services/visualizerStrategies';
 
 interface VisualizerCanvasProps {
@@ -30,7 +31,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
   const lyricsScaleRef = useRef<number>(1.0);
   
   // Strategy Pattern: Store initialized renderers
-  // Using Partial because SYNTHWAVE mode is handled by a different component
+  // Using Partial because WebGL modes are handled by a different component
   const renderersRef = useRef<Partial<Record<VisualizerMode, IVisualizerRenderer>>>({
     [VisualizerMode.BARS]: new BarsRenderer(),
     [VisualizerMode.RINGS]: new RingsRenderer(),
@@ -39,7 +40,9 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     [VisualizerMode.PLASMA]: new PlasmaRenderer(),
     [VisualizerMode.SHAPES]: new ShapesRenderer(),
     [VisualizerMode.SMOKE]: new SmokeRenderer(),
-    [VisualizerMode.RIPPLE]: new RippleRenderer(),
+    [VisualizerMode.RAIN]: new RainRenderer(),
+    [VisualizerMode.KALEIDOSCOPE]: new KaleidoscopeRenderer(),
+    [VisualizerMode.CITY]: new CityRenderer(),
   });
 
   // Initialize all renderers once
@@ -67,21 +70,16 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     if (mode === VisualizerMode.PLASMA) alpha = 0.15;
     if (mode === VisualizerMode.PARTICLES) alpha = 0.3; 
     if (mode === VisualizerMode.SMOKE) alpha = 0.05; 
-    if (mode === VisualizerMode.RIPPLE) alpha = 0.2;
     
+    // City and Rain look better with specific trail settings, but we respect the global switch.
+    // However, Rain needs transparency to show "trails" of code, so if trails are ON, we use low alpha.
+    if (mode === VisualizerMode.RAIN && settings.trails) alpha = 0.1;
+
     if (settings.trails) {
-        if (mode === VisualizerMode.RIPPLE) {
-           ctx.fillStyle = `rgba(5, 10, 20, ${alpha})`;
-        } else {
-           ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`; 
-        }
+        ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`; 
         ctx.fillRect(0, 0, width, height);
     } else {
         ctx.clearRect(0, 0, width, height);
-        if (mode === VisualizerMode.RIPPLE) {
-           ctx.fillStyle = '#050a14';
-           ctx.fillRect(0, 0, width, height);
-        }
     }
     
     // --- Global Glow Settings ---
