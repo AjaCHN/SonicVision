@@ -61,6 +61,7 @@ const Controls: React.FC<ControlsProps> = ({
            {/* Mic Toggle */}
            <button
               onClick={toggleMicrophone}
+              title={isListening ? t.stopMic : t.startMic}
               className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg
                 ${isListening 
                   ? 'bg-red-500 hover:bg-red-600 text-white' 
@@ -84,6 +85,7 @@ const Controls: React.FC<ControlsProps> = ({
             {/* Expand Button */}
             <button 
               onClick={() => setIsExpanded(true)}
+              title={t.showOptions}
               className="flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -108,6 +110,7 @@ const Controls: React.FC<ControlsProps> = ({
           <div className="flex justify-center items-center gap-2 md:gap-3 -mt-6 mb-2 flex-wrap">
              <button 
                onClick={randomizeSettings}
+               title={t.randomizeTooltip}
                className="bg-indigo-500/80 hover:bg-indigo-600/90 backdrop-blur-md text-white shadow-[0_0_10px_rgba(99,102,241,0.5)] rounded-full px-4 py-1 flex items-center gap-2 text-xs transition-all mb-2 font-medium"
              >
                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,6 +121,7 @@ const Controls: React.FC<ControlsProps> = ({
 
              <button 
                onClick={resetSettings}
+               title={t.resetTooltip}
                className="bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white/60 hover:text-white rounded-full px-4 py-1 flex items-center gap-2 text-xs transition-all mb-2"
              >
                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -129,8 +133,8 @@ const Controls: React.FC<ControlsProps> = ({
              {/* Help Button */}
              <button 
                onClick={() => setShowHelp(true)}
+               title={t.helpTooltip}
                className="bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white/60 hover:text-white rounded-full px-3 py-1 flex items-center gap-2 text-xs transition-all mb-2"
-               title={t.help}
              >
                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -139,6 +143,7 @@ const Controls: React.FC<ControlsProps> = ({
 
              <button 
                onClick={() => setIsExpanded(false)}
+               title={t.hideOptions}
                className="bg-black/50 hover:bg-black/70 backdrop-blur-md border border-white/10 text-white/60 hover:text-white rounded-full px-4 py-1 flex items-center gap-2 text-xs transition-all mb-2"
              >
                <span>{t.hideOptions}</span>
@@ -154,9 +159,10 @@ const Controls: React.FC<ControlsProps> = ({
             <div className="flex flex-col md:flex-row gap-6 items-center md:items-start">
                
                {/* 1. Mic Button (Mobile: Center, Desktop: Left) */}
-               <div className="flex-shrink-0">
+               <div className="flex-shrink-0 flex flex-col items-center">
                   <button
                     onClick={toggleMicrophone}
+                    title={isListening ? t.stopMic : t.startMic}
                     className={`h-16 w-16 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-xl border border-white/10
                       ${isListening 
                         ? 'bg-gradient-to-br from-red-500 to-pink-600 text-white shadow-red-500/30' 
@@ -173,7 +179,11 @@ const Controls: React.FC<ControlsProps> = ({
                     )}
                   </button>
                   <div className="text-center mt-2 text-[10px] uppercase tracking-wider font-bold text-white/40">
-                     {isIdentifying ? <span className="text-blue-400 animate-pulse">{t.identifying}</span> : t.listening}
+                     {isIdentifying ? (
+                       <span className="text-blue-400 animate-pulse">{t.identifying}</span>
+                     ) : (
+                       <span>{t.listening}</span>
+                     )}
                   </div>
                </div>
 
@@ -184,16 +194,17 @@ const Controls: React.FC<ControlsProps> = ({
                   </div>
                   {/* Scroll container */}
                   <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide mask-fade-right">
-                    {Object.entries(VISUALIZER_PRESETS).map(([mode, _]) => (
+                    {Object.entries(VISUALIZER_PRESETS).map(([modeKey, _]) => (
                       <button
-                        key={mode}
-                        onClick={() => setMode(mode as VisualizerMode)}
+                        key={modeKey}
+                        onClick={() => setMode(modeKey as VisualizerMode)}
+                        title={`${t.selectMode}: ${t.modes[modeKey as VisualizerMode]}`}
                         className={`flex-shrink-0 px-4 py-2 rounded-xl border transition-all duration-300 text-xs font-medium whitespace-nowrap
-                          ${currentMode === mode 
+                          ${currentMode === modeKey 
                             ? 'bg-white/20 border-white/40 text-white shadow-[0_0_15px_rgba(255,255,255,0.2)]' 
                             : 'bg-white/5 border-white/5 text-white/60 hover:bg-white/10'}`}
                       >
-                        {t.modes[mode as VisualizerMode]}
+                        {t.modes[modeKey as VisualizerMode]}
                       </button>
                     ))}
                   </div>
@@ -216,6 +227,7 @@ const Controls: React.FC<ControlsProps> = ({
                                 type="range" min="0.5" max="3.0" step="0.1"
                                 value={settings.sensitivity}
                                 onChange={(e) => updateSetting('sensitivity', parseFloat(e.target.value))}
+                                title={`${t.sensitivity}: ${settings.sensitivity}`}
                                 className="w-full accent-blue-500 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
                              />
                          </div>
@@ -227,6 +239,7 @@ const Controls: React.FC<ControlsProps> = ({
                                 type="range" min="0.1" max="2.0" step="0.1"
                                 value={settings.speed}
                                 onChange={(e) => updateSetting('speed', parseFloat(e.target.value))}
+                                title={`${t.speed}: ${settings.speed}`}
                                 className="w-full accent-purple-500 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer"
                              />
                          </div>
@@ -236,6 +249,7 @@ const Controls: React.FC<ControlsProps> = ({
                       <div className="flex flex-col justify-center gap-3">
                           <button 
                             onClick={() => updateSetting('glow', !settings.glow)}
+                            title={t.toggleGlow}
                             className={`flex items-center justify-between px-3 py-2 rounded-lg border transition-all ${settings.glow ? 'bg-blue-500/20 border-blue-500/50' : 'bg-black/20 border-white/10'}`}
                           >
                             <span className="text-xs text-white/80">{t.glow}</span>
@@ -244,6 +258,7 @@ const Controls: React.FC<ControlsProps> = ({
 
                           <button 
                             onClick={() => updateSetting('trails', !settings.trails)}
+                            title={t.toggleTrails}
                             className={`flex items-center justify-between px-3 py-2 rounded-lg border transition-all ${settings.trails ? 'bg-purple-500/20 border-purple-500/50' : 'bg-black/20 border-white/10'}`}
                           >
                             <span className="text-xs text-white/80">{t.trails}</span>
@@ -262,6 +277,7 @@ const Controls: React.FC<ControlsProps> = ({
                               <button
                                   key={idx}
                                   onClick={() => setColorTheme(theme)}
+                                  title={t.changeTheme}
                                   className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-lg"
                                   style={{ background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }}
                               />
@@ -276,6 +292,7 @@ const Controls: React.FC<ControlsProps> = ({
                        <select 
                           value={lyricsStyle}
                           onChange={(e) => setLyricsStyle(e.target.value as LyricsStyle)}
+                          title={t.selectLyricsStyle}
                           className="flex-grow bg-black/40 text-white text-xs border border-white/10 rounded-lg px-2 py-2 outline-none focus:border-white/30 appearance-none cursor-pointer hover:bg-white/5 transition-colors min-w-[80px]"
                        >
                            {Object.values(LyricsStyle).map((style) => (
@@ -289,8 +306,8 @@ const Controls: React.FC<ControlsProps> = ({
                        <select
                           value={region}
                           onChange={(e) => setRegion(e.target.value as Region)}
+                          title={t.selectRegion}
                           className="bg-black/40 text-white text-xs border border-white/10 rounded-lg px-2 py-2 outline-none focus:border-white/30 appearance-none cursor-pointer hover:bg-white/5 transition-colors max-w-[90px]"
-                          title={t.region}
                        >
                           {Object.entries(REGION_NAMES).map(([key, name]) => (
                              <option key={key} value={key} className="bg-gray-900 text-white py-1">
@@ -301,17 +318,20 @@ const Controls: React.FC<ControlsProps> = ({
 
                        <button 
                          onClick={() => setShowLyrics(!showLyrics)}
-                         className={`h-[34px] w-[34px] rounded-lg border flex items-center justify-center transition-all flex-shrink-0
+                         title={`${t.showLyrics} (${t.betaDisclaimer})`}
+                         className={`h-[34px] w-[34px] rounded-lg border flex items-center justify-center transition-all flex-shrink-0 relative
                            ${showLyrics ? 'bg-green-500/20 border-green-500/50 text-green-300' : 'bg-black/40 border-white/20 text-white/40'}`}
-                         title={t.showLyrics}
                        >
                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                          </svg>
+                         {/* Tiny dot to indicate Beta Status if on */}
+                         {showLyrics && <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-yellow-400 rounded-full animate-pulse shadow-sm"></span>}
                        </button>
                        
                        <button 
                           onClick={() => setLanguage(language === 'en' ? 'zh' : 'en')}
+                          title={t.toggleLanguage}
                           className="h-[34px] w-[34px] text-[10px] font-bold text-white/60 hover:text-white border border-white/20 rounded-lg bg-black/40 hover:bg-white/5 transition-colors flex-shrink-0"
                         >
                           {language === 'en' ? 'ZH' : 'EN'}
