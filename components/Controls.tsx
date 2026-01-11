@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region } from '../types';
 import { VISUALIZER_PRESETS, COLOR_THEMES, REGION_NAMES } from '../constants';
 import { TRANSLATIONS } from '../translations';
@@ -47,17 +47,48 @@ const Controls: React.FC<ControlsProps> = ({
 }) => {
   const [isExpanded, setIsExpanded] = useState(true);
   const [showHelp, setShowHelp] = useState(false);
+  
+  // Idle detection state
+  const [isUserInactive, setIsUserInactive] = useState(false);
+  const inactiveTimerRef = useRef<number>(0);
+
   const t = TRANSLATIONS[language];
 
   const updateSetting = <K extends keyof VisualizerSettings>(key: K, value: VisualizerSettings[K]) => {
     setSettings({ ...settings, [key]: value });
   };
 
+  // Setup idle timer
+  useEffect(() => {
+    const resetTimer = () => {
+      setIsUserInactive(false);
+      if (inactiveTimerRef.current) clearTimeout(inactiveTimerRef.current);
+      // Fade out after 3 seconds of inactivity
+      inactiveTimerRef.current = window.setTimeout(() => {
+        setIsUserInactive(true);
+      }, 3000);
+    };
+
+    window.addEventListener('mousemove', resetTimer);
+    window.addEventListener('click', resetTimer);
+    window.addEventListener('keydown', resetTimer);
+    
+    // Initialize
+    resetTimer();
+
+    return () => {
+      window.removeEventListener('mousemove', resetTimer);
+      window.removeEventListener('click', resetTimer);
+      window.removeEventListener('keydown', resetTimer);
+      if (inactiveTimerRef.current) clearTimeout(inactiveTimerRef.current);
+    };
+  }, []);
+
   // --- MINIMIZED VIEW ---
   if (!isExpanded) {
     return (
       <div className="fixed bottom-6 left-0 w-full z-30 flex justify-center items-center pointer-events-none">
-        <div className="pointer-events-auto flex items-center gap-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full p-2 pl-3 pr-4 shadow-2xl animate-fade-in-up">
+        <div className={`pointer-events-auto flex items-center gap-4 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full p-2 pl-3 pr-4 shadow-2xl animate-fade-in-up transition-opacity duration-1000 ${isUserInactive ? 'opacity-30 hover:opacity-100' : 'opacity-100'}`}>
            {/* Mic Toggle */}
            <button
               onClick={toggleMicrophone}

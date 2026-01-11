@@ -45,7 +45,8 @@ export const TRANSLATIONS = {
       [VisualizerMode.PLASMA]: 'Plasma Flow',
       [VisualizerMode.SHAPES]: 'Abstract Shapes',
       [VisualizerMode.SMOKE]: 'Ethereal Smoke',
-      [VisualizerMode.RIPPLE]: 'Water Ripples'
+      [VisualizerMode.RIPPLE]: 'Water Ripples',
+      [VisualizerMode.ORB]: 'Bass Orb'
     },
     lyricsStyles: {
       [LyricsStyle.STANDARD]: 'Standard',
@@ -128,7 +129,8 @@ export const TRANSLATIONS = {
       [VisualizerMode.PLASMA]: '流体等离子',
       [VisualizerMode.SHAPES]: '抽象几何',
       [VisualizerMode.SMOKE]: '烟雾特效',
-      [VisualizerMode.RIPPLE]: '水波纹'
+      [VisualizerMode.RIPPLE]: '水波纹',
+      [VisualizerMode.ORB]: '低音光球'
     },
     lyricsStyles: {
       [LyricsStyle.STANDARD]: '标准',

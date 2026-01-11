@@ -86,6 +86,9 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     
     // Ripple looks better with a dark watery fade
     if (mode === VisualizerMode.RIPPLE) alpha = 0.2;
+    
+    // Orb looks nice with standard fade
+    if (mode === VisualizerMode.ORB) alpha = 0.25;
 
     if (settings.trails) {
         if (mode === VisualizerMode.RIPPLE) {
@@ -144,6 +147,9 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
         break;
       case VisualizerMode.RIPPLE:
         drawRipples(ctx, dataArray, width, height, colors, bufferLength, ripplesRef.current, settings);
+        break;
+      case VisualizerMode.ORB:
+        drawBassOrb(ctx, dataArray, width, height, colors, bufferLength, settings, rotationRef.current);
         break;
     }
 
@@ -979,6 +985,124 @@ function drawRipples(
         }
     }
     ctx.globalAlpha = 1.0;
+}
+
+function drawBassOrb(
+    ctx: CanvasRenderingContext2D,
+    data: Uint8Array,
+    w: number,
+    h: number,
+    colors: string[],
+    bufferLength: number,
+    settings: VisualizerSettings,
+    rotation: number
+) {
+    const centerX = w / 2;
+    const centerY = h / 2;
+    
+    // Extract Bass Frequencies
+    // Kick: 0-10 (Sub-bass)
+    // Bass: 10-30 (Bass)
+    // Low-Mid: 30-60
+    
+    let kick = 0;
+    for(let i=0; i<10; i++) kick += data[i];
+    kick = (kick / 10) * settings.sensitivity; // 0-255+
+    
+    let bass = 0;
+    for(let i=10; i<30; i++) bass += data[i];
+    bass = (bass / 20) * settings.sensitivity;
+    
+    // Normalized values
+    const kickNorm = kick / 255;
+    const bassNorm = bass / 255;
+    
+    const minDim = Math.min(w, h);
+    const baseRadius = minDim * 0.2; 
+    
+    // Core expansion based on Kick
+    const radius = baseRadius + (kickNorm * minDim * 0.15);
+    
+    ctx.translate(centerX, centerY);
+    // Rotate the whole orb slowly
+    ctx.rotate(rotation * 0.5);
+    
+    ctx.beginPath();
+    
+    const points = 120;
+    
+    // Dynamic Wave Parameters
+    // Frequency of wave (number of peaks) modulated by Bass
+    // More bass = tighter waves
+    const waveFreq = 3 + Math.floor(bassNorm * 8); 
+    
+    // Amplitude of wave (height of peaks) linked to Kick
+    // More kick = spikier wave
+    const waveAmp = (10 + kickNorm * 40) * settings.sensitivity;
+    
+    // Secondary "jitter" wave for organic feel
+    // Linked to high-mids for texture
+    let mids = 0;
+    for(let i=30; i<60; i++) mids += data[i];
+    mids = (mids / 30) * settings.sensitivity;
+    const midNorm = mids / 255;
+    const jitterFreq = 12;
+    const jitterAmp = midNorm * 10;
+    
+    // Time factor for wave movement
+    const time = rotation * 5;
+
+    for (let i = 0; i <= points; i++) {
+        const angle = (i / points) * Math.PI * 2;
+        
+        // Primary Wave: Sine based on angle * freq
+        // Add phase shift with time
+        const wave = Math.sin(angle * waveFreq + time) * waveAmp;
+        
+        // Secondary Wave (Jitter): Faster freq, creates organic "noise"
+        const jitter = Math.sin(angle * jitterFreq - time * 2) * jitterAmp;
+        
+        // Total Radius for this point
+        const r = radius + wave + jitter;
+        
+        const x = Math.cos(angle) * r;
+        const y = Math.sin(angle) * r;
+        
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    
+    ctx.closePath();
+    
+    // Styling
+    // Gradient Fill
+    const gradient = ctx.createRadialGradient(0, 0, radius * 0.2, 0, 0, radius * 1.5);
+    gradient.addColorStop(0, '#ffffff'); // Hot core
+    gradient.addColorStop(0.3, colors[0]);
+    gradient.addColorStop(0.8, colors[1]);
+    gradient.addColorStop(1, 'transparent');
+    
+    ctx.fillStyle = gradient;
+    ctx.fill();
+    
+    // Glowing Stroke
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = colors[2] || '#ffffff';
+    ctx.shadowBlur = 20 * kickNorm;
+    ctx.shadowColor = colors[0];
+    ctx.stroke();
+    
+    // Inner Rings (optional detail)
+    if (bassNorm > 0.3) {
+        ctx.beginPath();
+        ctx.arc(0, 0, radius * 0.6, 0, Math.PI * 2);
+        ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+    
+    ctx.rotate(-rotation * 0.5);
+    ctx.translate(-centerX, -centerY);
 }
 
 function getAverage(data: Uint8Array, start: number, end: number) {

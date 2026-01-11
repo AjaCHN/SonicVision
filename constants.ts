@@ -35,6 +35,10 @@ export const VISUALIZER_PRESETS = {
   [VisualizerMode.RIPPLE]: {
     name: 'Water Ripples',
     description: 'Raindrops reactive to beats'
+  },
+  [VisualizerMode.ORB]: {
+    name: 'Bass Orb',
+    description: 'Dynamic sphere reactive to bass'
   }
 };
 

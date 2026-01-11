@@ -11,7 +11,8 @@ export enum VisualizerMode {
   PLASMA = 'PLASMA',
   SHAPES = 'SHAPES',
   SMOKE = 'SMOKE',
-  RIPPLE = 'RIPPLE'
+  RIPPLE = 'RIPPLE',
+  ORB = 'ORB'
 }
 
 export enum LyricsStyle {
