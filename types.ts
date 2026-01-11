@@ -1,3 +1,4 @@
+
 export type Language = 'en' | 'zh';
 
 export type Region = 'global' | 'US' | 'CN' | 'JP' | 'KR' | 'EU' | 'LATAM';
@@ -26,6 +27,7 @@ export interface SongInfo {
   mood?: string;
   identified: boolean;
   searchUrl?: string;
+  matchSource?: 'AI' | 'LOCAL';
 }
 
 export interface VisualizerSettings {

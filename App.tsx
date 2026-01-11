@@ -344,6 +344,9 @@ const App: React.FC = () => {
         mode={mode} 
         colors={colorTheme}
         settings={settings}
+        song={currentSong}
+        showLyrics={showLyrics}
+        lyricsStyle={lyricsStyle}
       />
 
       {/* Main Overlay Content */}

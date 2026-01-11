@@ -11,26 +11,6 @@ const SongOverlay: React.FC<SongOverlayProps> = ({ song, lyricsStyle, showLyrics
   // If lyrics are hidden or no song is identified, hide the entire overlay
   if (!showLyrics || !song || !song.identified) return null;
 
-  const getLyricsClass = () => {
-    switch (lyricsStyle) {
-      case LyricsStyle.KARAOKE:
-        return "text-3xl md:text-5xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-purple-300 to-pink-300 animate-pulse drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]";
-      case LyricsStyle.MINIMAL:
-        return "text-lg font-light tracking-widest uppercase opacity-90 text-white drop-shadow-md";
-      default: // STANDARD
-        return "text-2xl md:text-3xl font-serif italic text-white/95 drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]";
-    }
-  };
-
-  const getContainerPosition = () => {
-      switch (lyricsStyle) {
-          case LyricsStyle.MINIMAL:
-             return "bottom-36 right-8 text-right max-w-sm";
-          default: 
-             return "top-1/3 left-0 right-0 text-center max-w-3xl mx-auto px-4";
-      }
-  };
-
   return (
     <div className="pointer-events-none fixed inset-0 z-20 overflow-hidden">
       {/* Song Info Badge */}
@@ -61,17 +41,6 @@ const SongOverlay: React.FC<SongOverlayProps> = ({ song, lyricsStyle, showLyrics
              </a>
           </div>
         )}
-      </div>
-
-      {/* Lyrics Display */}
-      <div className={`absolute ${getContainerPosition()} transition-all duration-500 flex justify-center`}>
-         <div className={`
-            whitespace-pre-wrap py-6 px-8 rounded-3xl transition-all duration-500
-            ${lyricsStyle === LyricsStyle.STANDARD ? 'bg-black/20 backdrop-blur-[2px]' : ''}
-            ${getLyricsClass()}
-         `}>
-           {song.lyricsSnippet || (song.identified ? "..." : "")}
-         </div>
       </div>
     </div>
   );

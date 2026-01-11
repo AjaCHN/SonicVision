@@ -1,14 +1,25 @@
 import React, { useEffect, useRef } from 'react';
-import { VisualizerMode, VisualizerSettings } from '../types';
+import { VisualizerMode, VisualizerSettings, SongInfo, LyricsStyle } from '../types';
 
 interface VisualizerCanvasProps {
   analyser: AnalyserNode | null;
   mode: VisualizerMode;
   colors: string[];
   settings: VisualizerSettings;
+  song: SongInfo | null;
+  showLyrics: boolean;
+  lyricsStyle: LyricsStyle;
 }
 
-const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ analyser, mode, colors, settings }) => {
+const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ 
+  analyser, 
+  mode, 
+  colors, 
+  settings, 
+  song,
+  showLyrics,
+  lyricsStyle
+}) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
   const startTimeRef = useRef<number>(Date.now());
@@ -135,6 +146,11 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ analyser, mode, col
         break;
     }
 
+    // Draw Lyrics (Centered and reactive)
+    if (showLyrics && song && (song.lyricsSnippet || song.identified)) {
+       drawLyrics(ctx, dataArray, width, height, colors, song, lyricsStyle, settings);
+    }
+
     // Draw Session Timer (Subtle)
     const now = Date.now();
     const elapsed = now - startTimeRef.current;
@@ -171,10 +187,122 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({ analyser, mode, col
       window.removeEventListener('resize', handleResize);
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
     };
-  }, [analyser, mode, colors, settings]); 
+  }, [analyser, mode, colors, settings, song, showLyrics, lyricsStyle]); 
 
   return <canvas ref={canvasRef} className="absolute top-0 left-0 w-full h-full" />;
 };
+
+// --- Lyrics Drawer ---
+
+function drawLyrics(
+  ctx: CanvasRenderingContext2D,
+  data: Uint8Array,
+  w: number,
+  h: number,
+  colors: string[],
+  song: SongInfo,
+  style: LyricsStyle,
+  settings: VisualizerSettings
+) {
+  const text = song.lyricsSnippet || (song.identified ? "..." : "");
+  if (!text) return;
+
+  // Calculate Bass Energy for Jump Effect
+  let bass = 0;
+  for (let i = 0; i < 10; i++) bass += data[i];
+  bass /= 10;
+  const bassNormalized = bass / 255;
+  
+  ctx.save();
+  ctx.translate(w / 2, h / 2);
+
+  // Apply Beat Jump (Scale)
+  // sensitivity affects how much it jumps
+  let scale = 1.0;
+  let rotation = 0;
+
+  if (style === LyricsStyle.KARAOKE) {
+    // Big jump
+    scale = 1.0 + (bassNormalized * 0.4 * settings.sensitivity);
+    // Slight tilt on beat
+    rotation = (bassNormalized * 0.05) * (Math.random() > 0.5 ? 1 : -1);
+  } else if (style === LyricsStyle.MINIMAL) {
+    // Subtle breathing
+    scale = 1.0 + (bassNormalized * 0.1 * settings.sensitivity);
+  } else {
+    // Standard pulse
+    scale = 1.0 + (bassNormalized * 0.2 * settings.sensitivity);
+  }
+
+  ctx.scale(scale, scale);
+  ctx.rotate(rotation);
+
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+
+  // Configure Fonts & Colors based on style
+  if (style === LyricsStyle.KARAOKE) {
+    ctx.font = `900 ${Math.min(w * 0.08, 60)}px "Inter", sans-serif`;
+    
+    // Gradient Text
+    const gradient = ctx.createLinearGradient(-200, 0, 200, 0);
+    gradient.addColorStop(0, colors[1]);
+    gradient.addColorStop(0.5, '#ffffff');
+    gradient.addColorStop(1, colors[0]);
+    ctx.fillStyle = gradient;
+    
+    // Glow/Shadow
+    ctx.shadowBlur = 20 * bassNormalized;
+    ctx.shadowColor = colors[0];
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(0,0,0,0.8)';
+    ctx.strokeText(" " + text + " ", 0, 0); // Hack for stroke width
+  } else if (style === LyricsStyle.MINIMAL) {
+    ctx.font = `300 ${Math.min(w * 0.04, 24)}px monospace`;
+    ctx.fillStyle = `rgba(255, 255, 255, ${0.7 + bassNormalized * 0.3})`;
+    ctx.shadowBlur = 0;
+    ctx.letterSpacing = "4px";
+  } else {
+    // Standard
+    ctx.font = `italic ${Math.min(w * 0.06, 40)}px serif`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.95)';
+    ctx.shadowColor = 'black';
+    ctx.shadowBlur = 4;
+  }
+
+  // Word Wrapping
+  const maxWidth = w * 0.8;
+  const lineHeight = style === LyricsStyle.KARAOKE ? 70 : 50;
+  const words = text.split(' ');
+  let line = '';
+  const lines = [];
+
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > maxWidth && n > 0) {
+      lines.push(line);
+      line = words[n] + ' ';
+    } else {
+      line = testLine;
+    }
+  }
+  lines.push(line);
+
+  // Draw Lines
+  const totalHeight = lines.length * lineHeight;
+  let startY = -(totalHeight / 2) + (lineHeight / 2);
+
+  lines.forEach((l) => {
+    if (style === LyricsStyle.KARAOKE) {
+        ctx.strokeText(l, 0, startY);
+    }
+    ctx.fillText(l, 0, startY);
+    startY += lineHeight;
+  });
+
+  ctx.restore();
+}
 
 // --- Drawing Helpers ---
 
@@ -614,23 +742,34 @@ function drawSmoke(
 
     // Continuous spawn logic based on volume
     const spawnCount = 1 + Math.floor(volume / 20);
-    const maxSmoke = 150; // Increased limit
+    const maxSmoke = 150; 
 
     if (smokeParticles.length < maxSmoke) {
         for(let i=0; i<spawnCount; i++) {
-            // Spawn spread across bottom
+            // Spawn decision: Top or Bottom (50/50 chance)
+            const spawnFromTop = Math.random() > 0.5;
+
+            // Spawn spread horizontally
             const x = Math.random() * w;
-            const y = h + 50; 
+            
+            // Set start Y and Direction based on top/bottom choice
+            const y = spawnFromTop ? -50 : h + 50;
+            
+            // Slower flow speed (significantly reduced magnitude)
+            // Range approx 0.2 to 0.7 depending on user settings
+            const baseSpeed = (0.2 + Math.random() * 0.5) * settings.speed; 
+            const vy = spawnFromTop ? baseSpeed : -baseSpeed;
             
             const color = colors[Math.floor(Math.random() * colors.length)];
-            const size = 50 + Math.random() * 60; // Larger puffs
-            const maxLife = 300 + Math.random() * 100; // Longer life
+            const size = 50 + Math.random() * 60; 
+            // Increase max life because they move slower now
+            const maxLife = 400 + Math.random() * 200; 
             
             smokeParticles.push({
                 x,
                 y,
-                vx: (Math.random() - 0.5) * 1.0, 
-                vy: -0.3 - (Math.random() * 1.0) * settings.speed,
+                vx: (Math.random() - 0.5) * 0.5, // Subtle horizontal drift
+                vy: vy,
                 size,
                 alpha: 0,
                 color,
@@ -658,8 +797,8 @@ function drawSmoke(
         p.angle += p.angleSpeed;
         
         // Fade In / Out Logic
-        const fadeInDur = 60;
-        const fadeOutDur = 80;
+        const fadeInDur = 80;
+        const fadeOutDur = 120;
         
         let targetAlpha = 0.3; // Max opacity per puff
 
@@ -670,27 +809,27 @@ function drawSmoke(
         }
 
         // Physics: 
-        // 1. Upward motion (p.vy)
-        // 2. Sine wave drift (wind)
-        // 3. Spiral/Swirl effect: Pull slightly towards center + rotate
+        // 1. Vertical motion (p.vy) - now directional
+        // 2. Swirl/Swirl effect: Pull slightly towards center + rotate
         
-        // Swirl force depends on height (more swirl higher up)
-        const heightFactor = (h - p.y) / h;
-        const swirlStrength = 0.5 * settings.speed * heightFactor;
+        // Swirl force - simplified to just pull gently towards center
+        const swirlStrength = 0.3 * settings.speed;
         
         // Calculate vector to center
         const dx = centerX - p.x;
         // Tangential force (rotate)
-        p.vx += (dx * 0.001) * swirlStrength; 
+        p.vx += (dx * 0.0005) * swirlStrength; 
         
         // Turbulence noise
-        const noise = Math.sin(p.y * 0.005 + time * 0.2) * (1 + turbulence);
+        // Ensure noise doesn't completely overpower slow flow
+        const noise = Math.sin(p.y * 0.005 + time * 0.2) * (0.5 + turbulence * 0.5);
         
         p.x += p.vx + noise;
         p.y += p.vy;
-        p.size += 0.2 * settings.speed; // Expand
+        p.size += 0.1 * settings.speed; // Expand slowly
 
-        if (p.life >= p.maxLife || p.y < -p.size || p.alpha <= 0.001) {
+        // Cleanup conditions (off screen top OR bottom, or dead)
+        if (p.life >= p.maxLife || p.y < -p.size * 2 || p.y > h + p.size * 2 || p.alpha <= 0.001) {
             smokeParticles.splice(i, 1);
             continue;
         }
