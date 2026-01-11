@@ -42,7 +42,8 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     maxLife: number, 
     angle: number, 
     angleSpeed: number,
-    initialX: number // Track origin for swirl
+    initialX: number,
+    origin: 'top' | 'bottom'
   }>>([]);
 
   const ripplesRef = useRef<Array<{
@@ -108,7 +109,8 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     }
     
     // Handle Glow
-    if (settings.glow) {
+    // Plasma mode handles its own "glow" via screen blending; standard shadowBlur makes it muddy/slow
+    if (settings.glow && mode !== VisualizerMode.PLASMA) {
         ctx.shadowBlur = 15;
         ctx.shadowColor = colors[0];
     } else {
@@ -741,7 +743,8 @@ function drawSmoke(
       x: number, y: number, vx: number, vy: number, 
       size: number, alpha: number, color: string, 
       life: number, maxLife: number,
-      angle: number, angleSpeed: number, initialX: number
+      angle: number, angleSpeed: number, initialX: number,
+      origin: 'top' | 'bottom'
     }>,
     settings: VisualizerSettings,
     rotation: number
@@ -757,34 +760,35 @@ function drawSmoke(
     turbulence /= 100;
 
     // Continuous spawn logic based on volume
-    const spawnCount = 1 + Math.floor(volume / 20);
-    const maxSmoke = 250; // Increased max particles to fill screen better
+    // Ensure we spawn at least one pair (top & bottom) if volume is decent
+    const spawnCount = Math.max(2, 2 + Math.floor(volume / 15)); 
+    const maxSmoke = 400; // Increased density
 
     if (smokeParticles.length < maxSmoke) {
         for(let i=0; i<spawnCount; i++) {
-            // Spawn decision: Top or Bottom (50/50 chance)
-            const spawnFromTop = Math.random() > 0.5;
+            // Strictly alternate top and bottom for simultaneous feel
+            const spawnFromTop = i % 2 === 0;
 
-            // Spawn spread horizontally
             const x = Math.random() * w;
-            
-            // Set start Y and Direction based on top/bottom choice
             const y = spawnFromTop ? -50 : h + 50;
             
-            // Slower flow speed (significantly reduced magnitude)
-            // Range approx 0.2 to 0.7 depending on user settings
-            const baseSpeed = (0.2 + Math.random() * 0.5) * settings.speed; 
+            // Very slow drift speed
+            const baseSpeed = (0.2 + Math.random() * 0.3) * settings.speed; 
             const vy = spawnFromTop ? baseSpeed : -baseSpeed;
             
             const color = colors[Math.floor(Math.random() * colors.length)];
-            const size = 60 + Math.random() * 80; // Larger initial puffs
-            // INCREASED max life to ensure they can reach the center at slow speeds
-            const maxLife = 800 + Math.random() * 400; 
+            const size = 60 + Math.random() * 100; 
+            
+            // Calculate life to definitely reach center + fade out time
+            // Distance is h/2. Time = dist / speed.
+            const distToCenter = h / 2 + 50;
+            const timeToCenter = distToCenter / Math.abs(baseSpeed); // e.g., 500 / 0.3 = 1600 frames
+            const maxLife = timeToCenter + 200; // + linger time
             
             smokeParticles.push({
                 x,
                 y,
-                vx: (Math.random() - 0.5) * 1.5, // Increased lateral momentum
+                vx: (Math.random() - 0.5) * 0.5, // Low lateral momentum
                 vy: vy,
                 size,
                 alpha: 0,
@@ -792,18 +796,16 @@ function drawSmoke(
                 life: 0,
                 maxLife,
                 angle: Math.random() * Math.PI * 2,
-                angleSpeed: (Math.random() - 0.5) * 0.01,
-                initialX: x
+                angleSpeed: (Math.random() - 0.5) * 0.005,
+                initialX: x,
+                origin: spawnFromTop ? 'top' : 'bottom'
             });
         }
     }
 
-    // Use Screen blending for ethereal light effect
     ctx.globalCompositeOperation = 'screen';
-
-    const time = rotation * 10; // Use rotation as simple time counter
-    
-    // Global swirling effect center
+    const time = rotation * 10; 
+    const centerY = h / 2;
     const centerX = w / 2;
 
     for (let i = smokeParticles.length - 1; i >= 0; i--) {
@@ -812,66 +814,73 @@ function drawSmoke(
         p.life++;
         p.angle += p.angleSpeed;
         
-        // Fade In / Out Logic
-        const fadeInDur = 80;
-        const fadeOutDur = 120;
+        // Smooth Fade In / Out
+        // Fade in quickly, fade out very slowly as they merge in center
+        const fadeInDur = 100;
+        const fadeOutDur = 200; // last 200 frames
         
-        let targetAlpha = 0.25; // Slightly lower max opacity to handle overlap
+        let targetAlpha = 0.2; // Low opacity for layering
 
         if (p.life < fadeInDur) {
              p.alpha = (p.life / fadeInDur) * targetAlpha;
         } else if (p.life > p.maxLife - fadeOutDur) {
              p.alpha = ((p.maxLife - p.life) / fadeOutDur) * targetAlpha;
+        } else {
+             p.alpha = targetAlpha;
         }
 
-        // Physics: 
+        // Physics
         
-        // Horizontal Attraction - REDUCED SIGNIFICANTLY to allow spreading
-        const dx = centerX - p.x;
+        // 1. Vertical Movement: Slow down as they approach center?
+        // Let's create a "convergence zone" in the middle.
+        const distY = Math.abs(p.y - centerY);
+        const convergenceZone = h * 0.2; // Middle 20%
         
-        // Much weaker pull, just to gently bias towards screen center over very long time
-        p.vx += (dx * 0.0002) * settings.speed; 
+        let currentVy = p.vy;
         
-        // Reduced friction to allow them to drift further
-        p.vx *= 0.99;
+        if (distY < convergenceZone) {
+            // Slow down significantly in the middle to "accumulate"
+            currentVy *= 0.5;
+        }
         
-        // Turbulence noise
-        // Ensure noise doesn't completely overpower slow flow
-        const noise = Math.sin(p.y * 0.005 + time * 0.2) * (0.8 + turbulence * 0.8); // Increased noise amplitude
-        
-        p.x += p.vx + noise;
-        p.y += p.vy;
-        p.size += 0.25 * settings.speed; // Expand faster to fill gaps
+        p.y += currentVy;
 
-        // Cleanup conditions (off screen top OR bottom, or dead)
-        if (p.life >= p.maxLife || p.y < -p.size * 2 || p.y > h + p.size * 2 || p.alpha <= 0.001) {
+        // 2. Horizontal: Gently steer towards center X to form a column/cloud
+        const dx = centerX - p.x;
+        p.vx += (dx * 0.0001) * settings.speed; 
+        p.vx *= 0.99; // Friction
+        
+        // 3. Noise/Turbulence
+        const noiseX = Math.sin(p.y * 0.005 + time * 0.1) * (0.5 + turbulence * 0.5);
+        p.x += p.vx + noiseX;
+        
+        // Expansion
+        p.size += 0.1 * settings.speed; 
+
+        // Cleanup
+        if (p.life >= p.maxLife || p.alpha <= 0.001) {
             smokeParticles.splice(i, 1);
             continue;
         }
 
+        // Drawing
         ctx.globalAlpha = Math.max(0, p.alpha);
-        
         ctx.save();
         ctx.translate(p.x, p.y);
         ctx.rotate(p.angle);
         
-        // Draw soft gradient "puff" - squashed slightly for volume
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, p.size);
         gradient.addColorStop(0, p.color);
-        gradient.addColorStop(0.4, p.color); // Core
-        gradient.addColorStop(1, 'transparent'); // Soft edge
+        gradient.addColorStop(0.4, p.color);
+        gradient.addColorStop(1, 'transparent');
         
         ctx.fillStyle = gradient;
-        
-        // Draw slightly distorted circle
         ctx.beginPath();
         ctx.ellipse(0, 0, p.size, p.size * 0.8, 0, 0, Math.PI * 2);
         ctx.fill();
-        
         ctx.restore();
     }
     
-    // Reset context
     ctx.globalAlpha = 1.0;
     ctx.globalCompositeOperation = 'source-over';
 }
