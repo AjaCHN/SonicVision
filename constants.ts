@@ -95,4 +95,19 @@ export const COLOR_THEMES = [
   // --- 22-28: 高级极简 & 幽邃 (Elegant & Ethereal) ---
   ['#4c1d95', '#8b5cf6', '#ddd6fe'], // 薰衣草之梦 (Lavender)
   ['#ee9ca7', '#ffdde1', '#ffffff'], // 樱花 (Sakura)
-  ['#94a3b8
+  ['#94a3b8', '#e2e8f0', '#f8fafc'], // 银霜 (Silver Frost)
+  ['#000000', '#ffffff', '#cccccc'], // 黑色电影 (Noir)
+  ['#312e81', '#1e1b4b', '#4c1d95'], // 皇家虚空 (Royal Void)
+  ['#111827', '#374151', '#9ca3af'], // 黑曜石 (Obsidian)
+  ['#00ffff', '#3b82f6', '#1d4ed8'], // 电子深蓝 (Electric Deep Blue)
+];
+
+export const REGION_NAMES: Record<Region, string> = {
+  global: 'Global',
+  US: 'USA / West',
+  CN: 'China',
+  JP: 'Japan',
+  KR: 'Korea',
+  EU: 'Europe',
+  LATAM: 'Latin America'
+};

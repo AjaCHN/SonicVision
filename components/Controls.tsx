@@ -149,27 +149,29 @@ const Controls: React.FC<ControlsProps> = ({
         </div>
       )}
 
-      {/* Mini Bar */}
+      {/* Mini Bar - Wrapped in full-width container to ensure proper horizontal centering regardless of animation transform conflicts */}
       {!isExpanded && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-30 flex items-center gap-2 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full p-1.5 pr-6 shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:scale-105 transition-all duration-500 animate-fade-in-up">
-           <button 
-             onClick={isListening ? randomizeSettings : toggleMicrophone} 
-             onMouseEnter={() => setHoveredHint(isListening ? t.hints.randomize : t.hints.mic)}
-             onMouseLeave={() => setHoveredHint('')}
-             className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500 ${isListening ? 'bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white/40'}`}
-           >
-              {isListening ? (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                </svg>
-              ) : (
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
-              )}
-           </button>
-           <button onClick={() => setIsExpanded(true)} className="text-xs font-black uppercase tracking-[0.1em] text-white/60 hover:text-white transition-colors flex items-center gap-3 pl-2">
-             <span>{t.showOptions}</span>
-             <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
-           </button>
+        <div className="fixed bottom-8 left-0 w-full z-30 flex justify-center pointer-events-none">
+          <div className="flex items-center gap-2 bg-black/60 backdrop-blur-2xl border border-white/10 rounded-full p-1.5 pr-6 shadow-[0_20px_40px_rgba(0,0,0,0.4)] hover:scale-105 transition-all duration-500 animate-fade-in-up pointer-events-auto">
+             <button 
+               onClick={isListening ? randomizeSettings : toggleMicrophone} 
+               onMouseEnter={() => setHoveredHint(isListening ? t.hints.randomize : t.hints.mic)}
+               onMouseLeave={() => setHoveredHint('')}
+               className={`w-11 h-11 rounded-full flex items-center justify-center transition-all duration-500 ${isListening ? 'bg-indigo-600 hover:bg-indigo-500 shadow-lg shadow-indigo-600/30 text-white' : 'bg-white/10 hover:bg-white/20 text-white/40'}`}
+             >
+                {isListening ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>
+                )}
+             </button>
+             <button onClick={() => setIsExpanded(true)} className="text-xs font-black uppercase tracking-[0.1em] text-white/60 hover:text-white transition-colors flex items-center gap-3 pl-2">
+               <span>{t.showOptions}</span>
+               <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 15l7-7 7 7" /></svg>
+             </button>
+          </div>
         </div>
       )}
 
