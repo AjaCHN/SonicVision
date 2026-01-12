@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import VisualizerCanvas from './components/VisualizerCanvas';
 import ThreeVisualizer from './components/ThreeVisualizer'; // New WebGL Component
@@ -17,7 +18,8 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   glow: true,
   trails: true,
   autoRotate: false,
-  rotateInterval: 30
+  rotateInterval: 30,
+  hideCursor: false
 };
 const DEFAULT_LYRICS_STYLE = LyricsStyle.KARAOKE; 
 const DEFAULT_SHOW_LYRICS = true;
@@ -485,7 +487,8 @@ const App: React.FC = () => {
        glow: Math.random() > 0.4, 
        trails: Math.random() > 0.3,
        autoRotate: false,
-       rotateInterval: 30
+       rotateInterval: 30,
+       hideCursor: settings.hideCursor // Keep current hideCursor preference
     };
 
     setMode(randomMode);
@@ -513,7 +516,7 @@ const App: React.FC = () => {
   ].includes(mode);
 
   return (
-    <div className="relative w-screen h-screen overflow-hidden text-white select-none">
+    <div className={`relative w-screen h-screen overflow-hidden text-white select-none ${settings.hideCursor ? 'cursor-none' : ''}`}>
       
       {/* Background Visualizer - Switches between 2D and 3D */}
       {isWebGLMode ? (
@@ -543,6 +546,8 @@ const App: React.FC = () => {
         language={language}
         onRetry={handleSongRetry}
         onClose={() => setCurrentSong(null)}
+        analyser={analyser}
+        sensitivity={settings.sensitivity}
       />
 
       {/* Start Prompt if not listening */}
