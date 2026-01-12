@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice } from '../types';
 import { VISUALIZER_PRESETS, COLOR_THEMES, REGION_NAMES, APP_VERSION } from '../constants';
@@ -60,7 +59,12 @@ const CustomSelect = ({ label, value, options, onChange, hint }: { label: string
   const currentLabel = options.find(o => o.value === value)?.label || value;
 
   return (
-    <div className="space-y-1.5 relative" ref={dropdownRef} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+    <div 
+      className={`space-y-1.5 relative transition-all duration-200 ${isOpen ? 'z-[60]' : 'z-10'}`} 
+      ref={dropdownRef} 
+      onMouseEnter={() => setIsHovered(true)} 
+      onMouseLeave={() => setIsHovered(false)}
+    >
       {hint && <FloatingTooltip text={hint} visible={isHovered && !isOpen} />}
       <span className="text-[10px] font-bold uppercase text-white/20 tracking-[0.15em] block ml-1">{label}</span>
       <button 
@@ -74,7 +78,7 @@ const CustomSelect = ({ label, value, options, onChange, hint }: { label: string
       </button>
 
       {isOpen && (
-        <div className="absolute bottom-full left-0 w-full mb-3 z-50 bg-[#0a0a0c]/98 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up py-2.5">
+        <div className="absolute top-full left-0 w-full mt-2 z-50 bg-[#0a0a0c]/98 backdrop-blur-3xl border border-white/10 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up py-2.5">
           {options.map((opt) => (
             <button
               key={opt.value}
@@ -208,7 +212,6 @@ const Controls: React.FC<ControlsProps> = ({
         </div>
       )}
 
-      {/* Mini Bar - 闲置时实现“半透明”效果 (15% 不透明度) */}
       {!isExpanded && (
         <div className="fixed bottom-8 left-0 w-full z-30 flex justify-center pointer-events-none px-4">
           <div 
@@ -234,12 +237,12 @@ const Controls: React.FC<ControlsProps> = ({
         </div>
       )}
 
-      {/* Expanded Control Panel - 始终维持 90% 不透明度，不再受闲置状态淡出影响 */}
       {isExpanded && (
         <div 
           className={`fixed bottom-0 left-0 w-full z-40 bg-[#060608]/90 backdrop-blur-[80px] border-t border-white/[0.04] transition-all duration-700 shadow-[0_-20px_80px_rgba(0,0,0,0.8)] opacity-100`}
         >
-          <div className="max-h-[85vh] overflow-y-auto custom-scrollbar pt-8 pb-10 px-8">
+          {/* Increased bottom padding to pb-32 to accommodate downward-opening menus */}
+          <div className="max-h-[85vh] overflow-y-auto custom-scrollbar pt-8 pb-32 px-8">
             <div className="max-w-6xl mx-auto space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/[0.04] pb-8">
                 <div className="flex bg-white/[0.02] p-1.5 rounded-2xl border border-white/[0.04] overflow-x-auto max-w-full scrollbar-hide">

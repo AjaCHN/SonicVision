@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import VisualizerCanvas from './components/VisualizerCanvas';
 import ThreeVisualizer from './components/ThreeVisualizer';
@@ -34,10 +33,9 @@ const App: React.FC = () => {
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
   const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
   const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-  
   const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
 
-  const getStorage = <T,>(key: string, fallback: T): T => {
+  const getStorage = useCallback(<T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') return fallback;
     const saved = localStorage.getItem(STORAGE_PREFIX + key);
     if (saved !== null) {
@@ -48,7 +46,7 @@ const App: React.FC = () => {
       }
     }
     return fallback;
-  };
+  }, []);
 
   const detectDefaultRegion = (): Region => {
     const lang = navigator.language.toLowerCase();
@@ -61,25 +59,30 @@ const App: React.FC = () => {
   const [mode, setMode] = useState<VisualizerMode>(() => getStorage('mode', DEFAULT_MODE));
   const [colorTheme, setColorTheme] = useState<string[]>(() => getStorage('theme', COLOR_THEMES[DEFAULT_THEME_INDEX]));
   const [settings, setSettings] = useState<VisualizerSettings>(() => getStorage('settings', DEFAULT_SETTINGS));
-  const [lyricsStyle, setLyricsStyle] = useState<LyricsStyle>(() => getStorage('lyrics_style', DEFAULT_LYRICS_STYLE));
-  const [showLyrics, setShowLyrics] = useState<boolean>(() => getStorage('show_lyrics', DEFAULT_SHOW_LYRICS));
+  const [lyricsStyle, setLyricsStyle] = useState<LyricsStyle>(() => getStorage('lyricsStyle', DEFAULT_LYRICS_STYLE));
+  const [showLyrics, setShowLyrics] = useState<boolean>(() => getStorage('showLyrics', DEFAULT_SHOW_LYRICS));
   const [language, setLanguage] = useState<Language>(() => getStorage('language', DEFAULT_LANGUAGE));
   const [region, setRegion] = useState<Region>(() => getStorage('region', detectDefaultRegion()));
-  const [selectedDeviceId, setSelectedDeviceId] = useState<string>(() => getStorage('device_id', ''));
+  const [selectedDeviceId, setSelectedDeviceId] = useState<string>(() => getStorage('deviceId', ''));
 
   const [isIdentifying, setIsIdentifying] = useState(false);
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
 
-  // 统一持久化存储监听
+  // 统一持久化存储监听：确保所有核心状态同步到 LocalStorage
   useEffect(() => {
-    localStorage.setItem(STORAGE_PREFIX + 'mode', JSON.stringify(mode));
-    localStorage.setItem(STORAGE_PREFIX + 'theme', JSON.stringify(colorTheme));
-    localStorage.setItem(STORAGE_PREFIX + 'settings', JSON.stringify(settings));
-    localStorage.setItem(STORAGE_PREFIX + 'lyrics_style', JSON.stringify(lyricsStyle));
-    localStorage.setItem(STORAGE_PREFIX + 'show_lyrics', JSON.stringify(showLyrics));
-    localStorage.setItem(STORAGE_PREFIX + 'language', JSON.stringify(language));
-    localStorage.setItem(STORAGE_PREFIX + 'region', JSON.stringify(region));
-    localStorage.setItem(STORAGE_PREFIX + 'device_id', JSON.stringify(selectedDeviceId));
+    const data = { 
+      mode, 
+      theme: colorTheme, 
+      settings, 
+      lyricsStyle, 
+      showLyrics, 
+      language, 
+      region, 
+      deviceId: selectedDeviceId 
+    };
+    Object.entries(data).forEach(([key, value]) => {
+      localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
+    });
   }, [mode, colorTheme, settings, lyricsStyle, showLyrics, language, region, selectedDeviceId]);
 
   useEffect(() => {
