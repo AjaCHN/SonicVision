@@ -1,9 +1,11 @@
+
 import { VisualizerMode, Region } from './types';
 
 export const APP_VERSION = '0.1.3';
 
 // Using Flash model for better quota limits (higher RPM) and speed, while still supporting multimodal input
-export const GEMINI_MODEL = 'gemini-2.5-flash';
+// Fix: Updated to gemini-3-flash-preview per guidelines
+export const GEMINI_MODEL = 'gemini-3-flash-preview';
 
 export const VISUALIZER_PRESETS = {
   [VisualizerMode.PLASMA]: {
