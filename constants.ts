@@ -1,10 +1,7 @@
-
 import { VisualizerMode, Region } from './types';
 
-export const APP_VERSION = '0.1.3';
+export const APP_VERSION = '0.1.7';
 
-// Using Flash model for better quota limits (higher RPM) and speed, while still supporting multimodal input
-// Fix: Updated to gemini-3-flash-preview per guidelines
 export const GEMINI_MODEL = 'gemini-3-flash-preview';
 
 export const VISUALIZER_PRESETS = {
@@ -40,6 +37,14 @@ export const VISUALIZER_PRESETS = {
     name: 'Kaleidoscope',
     description: 'Psychedelic mandala patterns'
   },
+  [VisualizerMode.LASERS]: {
+    name: 'Concert Lasers',
+    description: 'Converging sweeping light beams'
+  },
+  [VisualizerMode.STROBE]: {
+    name: 'Stage Wall',
+    description: 'Massive LED grid pulsing to the beat'
+  },
   [VisualizerMode.SILK]: {
     name: 'Silk Waves',
     description: 'Iridescent flowing fabric (WebGL)'
@@ -55,14 +60,18 @@ export const VISUALIZER_PRESETS = {
 };
 
 export const COLOR_THEMES = [
-  ['#ef4444', '#f59e0b', '#fbbf24'], // Sunset
-  ['#3b82f6', '#8b5cf6', '#ec4899'], // Cyberpunk
-  ['#10b981', '#34d399', '#6ee7b7'], // Matrix
-  ['#64748b', '#475569', '#1e293b'], // Dark Slate / Gunmetal
-  ['#0ea5e9', '#22d3ee', '#67e8f9'], // Ocean
-  ['#f472b6', '#d946ef', '#8b5cf6'], // Vaporwave
-  ['#eab308', '#facc15', '#fef08a'], // Golden Hour
-  ['#6366f1', '#a855f7', '#ec4899'], // Aurora
+  ['#ef4444', '#f59e0b', '#fbbf24'], // 0: Sunset
+  ['#3b82f6', '#8b5cf6', '#ec4899'], // 1: Cyberpunk
+  ['#10b981', '#34d399', '#6ee7b7'], // 2: Matrix
+  ['#64748b', '#475569', '#1e293b'], // 3: Dark Slate
+  ['#0ea5e9', '#22d3ee', '#67e8f9'], // 4: Ocean
+  ['#f472b6', '#d946ef', '#8b5cf6'], // 5: Vaporwave
+  ['#eab308', '#facc15', '#fef08a'], // 6: Golden Hour
+  ['#6366f1', '#a855f7', '#ec4899'], // 7: Aurora
+  ['#4338ca', '#1e1b4b', '#312e81'], // 8: Midnight Deep
+  ['#f87171', '#dc2626', '#991b1b'], // 9: Blood Moon
+  ['#fcd34d', '#f97316', '#ea580c'], // 10: Magma
+  ['#94a3b8', '#e2e8f0', '#f8fafc'], // 11: Silver Frost
 ];
 
 export const REGION_NAMES: Record<Region, string> = {

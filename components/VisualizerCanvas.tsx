@@ -1,10 +1,17 @@
 
-import React, { useEffect, useRef } from 'react';
-import { VisualizerMode, VisualizerSettings, SongInfo, LyricsStyle, IVisualizerRenderer } from '../types';
+// Fix: Add missing React hooks and type imports
+import React, { useRef, useEffect } from 'react';
+import { 
+  VisualizerMode, 
+  VisualizerSettings, 
+  SongInfo, 
+  LyricsStyle, 
+  IVisualizerRenderer 
+} from '../types';
 import { 
   BarsRenderer, RingsRenderer, ParticlesRenderer, TunnelRenderer, 
   PlasmaRenderer, ShapesRenderer, NebulaRenderer, 
-  KaleidoscopeRenderer
+  KaleidoscopeRenderer, LasersRenderer, StrobeRenderer
 } from '../services/visualizerStrategies';
 
 interface VisualizerCanvasProps {
@@ -40,6 +47,8 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     [VisualizerMode.SHAPES]: new ShapesRenderer(),
     [VisualizerMode.NEBULA]: new NebulaRenderer(),
     [VisualizerMode.KALEIDOSCOPE]: new KaleidoscopeRenderer(),
+    [VisualizerMode.LASERS]: new LasersRenderer(),
+    [VisualizerMode.STROBE]: new StrobeRenderer(),
   });
 
   useEffect(() => {
@@ -61,8 +70,10 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
 
     let alpha = 0.2;
     if (mode === VisualizerMode.PLASMA) alpha = 0.15;
-    if (mode === VisualizerMode.PARTICLES) alpha = 0.3; 
+    // Reduced alpha from 0.3 to 0.06 to make trails 5x longer
+    if (mode === VisualizerMode.PARTICLES) alpha = 0.06; 
     if (mode === VisualizerMode.NEBULA) alpha = 0.08;
+    if (mode === VisualizerMode.LASERS) alpha = 0.4;
     
     if (settings.trails) {
         ctx.fillStyle = `rgba(0, 0, 0, ${alpha})`; 
@@ -135,7 +146,6 @@ function drawLyrics(
   scaleRef: React.MutableRefObject<number>
 ) {
   const rawText = song.lyricsSnippet || (song.identified ? "..." : "");
-  // 正则表达式过滤：移除形如 [01:23] 或 [01:23.45] 的时间戳，并清理多余空格
   const text = rawText.replace(/\[\d{2}:\d{2}(\.\d{1,3})?\]/g, '').trim();
   
   if (!text) return;
