@@ -241,7 +241,6 @@ const Controls: React.FC<ControlsProps> = ({
         <div 
           className={`fixed bottom-0 left-0 w-full z-40 bg-[#060608]/90 backdrop-blur-[80px] border-t border-white/[0.04] transition-all duration-700 shadow-[0_-20px_80px_rgba(0,0,0,0.8)] opacity-100`}
         >
-          {/* Increased bottom padding to pb-32 to accommodate downward-opening menus */}
           <div className="max-h-[85vh] overflow-y-auto custom-scrollbar pt-8 pb-32 px-8">
             <div className="max-w-6xl mx-auto space-y-10">
               <div className="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-white/[0.04] pb-8">
@@ -267,12 +266,12 @@ const Controls: React.FC<ControlsProps> = ({
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 items-stretch">
                 {activeTab === 'visual' && (
                   <>
-                    <div className="space-y-4">
+                    <div className="flex flex-col bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 h-full space-y-5 shadow-inner">
                       <span className="text-[10px] font-black uppercase text-white/10 tracking-[0.2em] block ml-1">{t.visualizerMode}</span>
-                      <div className="grid grid-cols-2 gap-2 max-h-[160px] overflow-y-auto custom-scrollbar pr-3">
+                      <div className="grid grid-cols-2 gap-2 max-h-[240px] overflow-y-auto custom-scrollbar p-1">
                          {Object.keys(VISUALIZER_PRESETS).map(m => (
                            <button key={m} onClick={() => setMode(m as VisualizerMode)} className={`px-3 py-3 rounded-xl text-[9px] font-black uppercase tracking-wider border transition-all duration-300 ${currentMode === m ? 'bg-white/10 border-white/20 text-white shadow-inner' : 'bg-white/[0.01] border-white/[0.04] text-white/20 hover:text-white/50 hover:bg-white/[0.03]'}`}>
                              {t.modes[m as VisualizerMode]}
@@ -280,21 +279,21 @@ const Controls: React.FC<ControlsProps> = ({
                          ))}
                       </div>
                     </div>
-                    <div className="space-y-4">
+                    <div className="flex flex-col bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 h-full space-y-5 shadow-inner">
                       <span className="text-[10px] font-black uppercase text-white/10 tracking-[0.2em] block ml-1">{t.styleTheme}</span>
-                      <div className="flex flex-wrap gap-2.5 max-h-[160px] overflow-y-auto custom-scrollbar pr-2 pb-2">
+                      <div className="flex flex-wrap gap-3 p-2 max-h-[240px] overflow-y-auto custom-scrollbar">
                         {COLOR_THEMES.map((theme, i) => (
                           <button key={i} onClick={() => setColorTheme(theme)} className={`w-9 h-9 rounded-full border-2 flex-shrink-0 transition-all duration-300 hover:scale-110 ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'border-white/60 scale-110 shadow-[0_0_15px_rgba(255,255,255,0.2)]' : 'border-black/50 opacity-40 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
                         ))}
                       </div>
                     </div>
-                    <div className="space-y-6">
+                    <div className="flex flex-col bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 h-full space-y-6 shadow-inner">
                       <Slider label={t.speed} hintKey="speed" value={settings.speed} min={0.1} max={3.0} step={0.1} onChange={(v:any) => setSettings({...settings, speed: v})} />
                       <div className="flex gap-2.5">
                          <ControlPanelButton onClick={() => setSettings({...settings, glow: !settings.glow})} label={t.glow} active={settings.glow} hintKey="glow" />
                          <ControlPanelButton onClick={() => setSettings({...settings, trails: !settings.trails})} label={t.trails} active={settings.trails} hintKey="trails" />
                       </div>
-                      <div className="space-y-2 pt-4 border-t border-white/[0.04]">
+                      <div className="space-y-2 pt-4 border-t border-white/[0.04] flex-1 flex flex-col justify-end">
                           <div className="flex items-center justify-between p-3.5 bg-white/[0.01] rounded-xl border border-white/[0.04] relative group">
                              <span className="text-[10px] font-black uppercase text-white/20 tracking-widest">{t.autoRotate}</span>
                              <button onClick={() => setSettings({...settings, autoRotate: !settings.autoRotate})} className={`w-11 h-6 rounded-full relative transition-all duration-500 ${settings.autoRotate ? 'bg-blue-600/60' : 'bg-white/5'}`}>
@@ -311,17 +310,17 @@ const Controls: React.FC<ControlsProps> = ({
                 )}
                 {activeTab === 'audio' && (
                   <>
-                    <div className="space-y-6">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-6">
                       <CustomSelect label={t.audioInput} value={selectedDeviceId} hint={t.hints.device} options={[{ value: '', label: 'Default System Output' }, ...audioDevices.map(d => ({ value: d.deviceId, label: d.label }))]} onChange={onDeviceChange} />
                       <button onClick={toggleMicrophone} className={`w-full py-4 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all duration-300 ${isListening ? 'bg-red-500/10 text-red-400 border border-red-500/20' : 'bg-blue-600/80 text-white shadow-xl shadow-blue-600/10 hover:bg-blue-600'}`}>
                         {isListening ? t.stopMic : t.startMic}
                       </button>
                     </div>
-                    <div className="space-y-8">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-8">
                       <Slider label={t.sensitivity} hintKey="sensitivity" value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v:any) => setSettings({...settings, sensitivity: v})} />
                       <Slider label={t.smoothing} hintKey="smoothing" value={settings.smoothing} min={0} max={0.95} step={0.01} onChange={(v:any) => setSettings({...settings, smoothing: v})} />
                     </div>
-                    <div className="space-y-4">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-4">
                       <span className="text-[10px] font-black uppercase text-white/10 tracking-[0.2em] block ml-1">{t.fftSize}</span>
                       <div className="grid grid-cols-2 gap-2.5">
                          {[512, 1024, 2048, 4096].map(size => (
@@ -335,29 +334,29 @@ const Controls: React.FC<ControlsProps> = ({
                 )}
                 {activeTab === 'ai' && (
                   <>
-                    <div className="space-y-4">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-4">
                       <span className="text-[10px] font-black uppercase text-white/10 tracking-[0.2em] block ml-1">{t.lyrics}</span>
                       <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-5 rounded-2xl border font-black text-xs uppercase tracking-[0.15em] transition-all duration-500 ${showLyrics ? 'bg-green-500/10 border-green-500/20 text-green-400 shadow-[0_0_30px_rgba(34,197,94,0.05)]' : 'bg-white/[0.01] border-white/[0.04] text-white/20 hover:bg-white/[0.03]'}`}>
                         {showLyrics ? 'Recognition Active' : 'Enable AI Recognition'}
                       </button>
                     </div>
-                    <div className="space-y-6">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-6">
                       <CustomSelect label={`${t.lyrics} ${t.styleTheme}`} value={lyricsStyle} hint={t.hints.lyricsStyle} options={Object.values(LyricsStyle).map(s => ({ value: s, label: t.lyricsStyles[s] }))} onChange={(val) => setLyricsStyle(val as LyricsStyle)} />
                     </div>
-                    <div className="space-y-6">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-6">
                       <CustomSelect label={t.region} value={region} hint={t.hints.region} options={Object.entries(REGION_NAMES).map(([val, name]) => ({ value: val, label: name }))} onChange={(val) => setRegion(val as Region)} />
                     </div>
                   </>
                 )}
                 {activeTab === 'system' && (
                   <>
-                    <div className="space-y-6">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-6">
                       <CustomSelect label={t.language} value={language} options={languages.map(l => ({ value: l.code, label: l.label }))} onChange={(val) => setLanguage(val as Language)} />
                       <button onClick={resetSettings} className="w-full py-3.5 bg-red-500/[0.02] border border-red-500/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-red-400/30 hover:bg-red-500/10 hover:text-red-300 transition-all duration-300" title={t.reset}>
                         {t.reset}
                       </button>
                     </div>
-                    <div className="space-y-4 md:col-span-2">
+                    <div className="bg-white/[0.02] border border-white/[0.04] rounded-3xl p-6 space-y-4 md:col-span-2">
                       <span className="text-[10px] font-black uppercase text-white/10 tracking-[0.2em] block ml-1">{t.appInfo}</span>
                       <div className="bg-white/[0.01] border border-white/[0.04] p-6 rounded-2xl space-y-6 shadow-inner">
                          <p className="text-sm text-white/30 leading-relaxed font-medium">{t.appDescription}</p>
@@ -372,9 +371,6 @@ const Controls: React.FC<ControlsProps> = ({
                     </div>
                   </>
                 )}
-              </div>
-              <div className="flex justify-center opacity-[0.05]">
-                 <p className="text-[8px] font-black tracking-[0.4em] uppercase text-white">SonicVision AI • Gemini 3</p>
               </div>
             </div>
           </div>
