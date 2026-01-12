@@ -37,11 +37,13 @@ const App: React.FC = () => {
 
   const getStorage = useCallback(<T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') return fallback;
-    const saved = localStorage.getItem(STORAGE_PREFIX + key);
-    if (saved !== null) {
+    const fullKey = STORAGE_PREFIX + key;
+    const saved = localStorage.getItem(fullKey);
+    if (saved !== null && saved !== 'undefined') {
       try {
         return JSON.parse(saved) as T;
       } catch (e) {
+        console.warn(`Storage load failed for ${fullKey}:`, e);
         return fallback;
       }
     }
@@ -76,7 +78,7 @@ const App: React.FC = () => {
       settings, 
       lyricsStyle, 
       showLyrics, 
-      language, 
+      language, // 确保 language 被包含并监听
       region, 
       deviceId: selectedDeviceId 
     };
