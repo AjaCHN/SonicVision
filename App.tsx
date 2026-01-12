@@ -122,11 +122,14 @@ const App: React.FC = () => {
   // Request Wake Lock
   const requestWakeLock = async () => {
     try {
-      if ('wakeLock' in navigator) {
+      if ('wakeLock' in navigator && !wakeLockRef.current) {
         wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+        wakeLockRef.current.addEventListener('release', () => {
+          wakeLockRef.current = null;
+        });
       }
     } catch (err) {
-      console.log(`Wake Lock error: ${err}`);
+      console.warn(`Wake Lock request failed: ${err}`);
     }
   };
 
@@ -136,10 +139,24 @@ const App: React.FC = () => {
         await wakeLockRef.current.release();
         wakeLockRef.current = null;
       } catch (err) {
-        console.log(`Wake Lock release error: ${err}`);
+        console.warn(`Wake Lock release failed: ${err}`);
       }
     }
   };
+
+  // Handle visibility change to re-acquire wake lock
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      if (document.visibilityState === 'visible' && isListening) {
+        await requestWakeLock();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
+  }, [isListening]);
 
   // Auto Rotate Logic
   useEffect(() => {
@@ -205,7 +222,7 @@ const App: React.FC = () => {
   // Initialize Audio Logic
   const startAudio = async (deviceId?: string) => {
     // Release any previous wake lock first
-    releaseWakeLock();
+    await releaseWakeLock();
     // Stop previous stream if any
     if (isListening) stopAudio();
 
@@ -236,7 +253,7 @@ const App: React.FC = () => {
       setIsListening(true);
       
       setupRecorder(stream);
-      requestWakeLock(); // Keep screen on!
+      await requestWakeLock(); // Keep screen on while listening!
 
     } catch (err) {
       console.error("Error accessing microphone:", err);
@@ -244,7 +261,7 @@ const App: React.FC = () => {
     }
   };
 
-  const stopAudio = () => {
+  const stopAudio = async () => {
     if (audioContext) audioContext.close();
     if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
     if (identificationTimeoutRef.current) clearTimeout(identificationTimeoutRef.current);
@@ -256,7 +273,7 @@ const App: React.FC = () => {
     setIsListening(false);
     setIsIdentifying(false);
     
-    releaseWakeLock();
+    await releaseWakeLock(); // Release the screen lock when stopping
     
     silenceDurationRef.current = 0;
     songChangeArmedRef.current = false;
