@@ -60,11 +60,31 @@ const Controls: React.FC<ControlsProps> = ({
   // Idle detection state
   const [isUserInactive, setIsUserInactive] = useState(false);
   const inactiveTimerRef = useRef<number>(0);
+  const colorInputRef = useRef<HTMLInputElement>(null);
 
   const t = TRANSLATIONS[language];
 
   const updateSetting = <K extends keyof VisualizerSettings>(key: K, value: VisualizerSettings[K]) => {
     setSettings({ ...settings, [key]: value });
+  };
+
+  const handleCustomColor = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const hex = e.target.value;
+    // Generate a palette: Picked Color, 30% Lighter, 30% Darker roughly
+    // We'll simulate this with some simple math or just use variations
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+
+    const lighten = (c: number) => Math.min(255, Math.floor(c + (255 - c) * 0.4)).toString(16).padStart(2, '0');
+    const darken = (c: number) => Math.max(0, Math.floor(c * 0.6)).toString(16).padStart(2, '0');
+
+    const theme = [
+      hex,
+      `#${lighten(r)}${lighten(g)}${lighten(b)}`,
+      `#${darken(r)}${darken(g)}${darken(b)}`
+    ];
+    setColorTheme(theme);
   };
 
   // Setup idle timer
@@ -146,11 +166,15 @@ const Controls: React.FC<ControlsProps> = ({
            const currentThemeStr = JSON.stringify(colorTheme);
            const themeIndex = COLOR_THEMES.findIndex(t => JSON.stringify(t) === currentThemeStr);
            
-           let nextThemeIdx = key === 'arrowup' ? themeIndex + 1 : themeIndex - 1;
-           if (nextThemeIdx >= COLOR_THEMES.length) nextThemeIdx = 0;
-           if (nextThemeIdx < 0) nextThemeIdx = COLOR_THEMES.length - 1;
-           
-           setColorTheme(COLOR_THEMES[nextThemeIdx]);
+           if (themeIndex === -1) {
+              // If currently in custom theme, go to first or last
+              setColorTheme(key === 'arrowup' ? COLOR_THEMES[0] : COLOR_THEMES[COLOR_THEMES.length - 1]);
+           } else {
+              let nextThemeIdx = key === 'arrowup' ? themeIndex + 1 : themeIndex - 1;
+              if (nextThemeIdx >= COLOR_THEMES.length) nextThemeIdx = 0;
+              if (nextThemeIdx < 0) nextThemeIdx = COLOR_THEMES.length - 1;
+              setColorTheme(COLOR_THEMES[nextThemeIdx]);
+           }
            e.preventDefault(); // Prevent page scrolling
            break;
         }
@@ -450,10 +474,26 @@ const Controls: React.FC<ControlsProps> = ({
                                   key={idx}
                                   onClick={() => setColorTheme(theme)}
                                   title={t.changeTheme}
-                                  className="w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-lg"
+                                  className={`w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform shadow-lg ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'ring-2 ring-white ring-offset-2 ring-offset-black' : ''}`}
                                   style={{ background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }}
                               />
                           ))}
+                          {/* Custom Color Button */}
+                          <input 
+                            type="color" 
+                            ref={colorInputRef} 
+                            className="hidden" 
+                            onChange={handleCustomColor}
+                          />
+                          <button
+                            onClick={() => colorInputRef.current?.click()}
+                            title={t.customColor}
+                            className="w-6 h-6 rounded-full border border-dashed border-white/40 hover:scale-110 transition-transform flex items-center justify-center bg-white/5 text-white/60 hover:text-white"
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M12 4v16m8-8H4" />
+                            </svg>
+                          </button>
                       </div>
                    </div>
 

@@ -32,6 +32,7 @@ export const TRANSLATIONS = {
     betaDisclaimer: 'Beta feature. Accuracy is being improved.',
     wrongSong: 'Wrong Song? Retry',
     hideCursor: 'Hide Cursor',
+    customColor: 'Custom',
     // Tooltips
     randomizeTooltip: 'Randomize all visual settings (Press R)',
     resetTooltip: 'Reset to default settings',
@@ -54,6 +55,8 @@ export const TRANSLATIONS = {
       [VisualizerMode.RINGS]: 'Neon Rings',
       [VisualizerMode.NEBULA]: 'Cosmic Nebula',
       [VisualizerMode.KALEIDOSCOPE]: 'Kaleidoscope',
+      [VisualizerMode.LASERS]: 'Concert Lasers',
+      [VisualizerMode.STROBE]: 'Stage Wall',
       [VisualizerMode.SILK]: 'Silk Waves',
       [VisualizerMode.LIQUID]: 'Liquid Sphere',
       [VisualizerMode.TERRAIN]: 'Low Poly Terrain'
@@ -140,6 +143,7 @@ export const TRANSLATIONS = {
     betaDisclaimer: 'Beta 功能，准确性持续优化中。',
     wrongSong: '识别错误？重试',
     hideCursor: '隐藏鼠标',
+    customColor: '自定义',
     // Tooltips
     randomizeTooltip: '随机生成所有视觉设置 (按 R 键)',
     resetTooltip: '重置为默认设置',
@@ -162,6 +166,8 @@ export const TRANSLATIONS = {
       [VisualizerMode.RINGS]: '霓虹光环',
       [VisualizerMode.NEBULA]: '星云迷雾',
       [VisualizerMode.KALEIDOSCOPE]: '万花筒',
+      [VisualizerMode.LASERS]: '舞台激光',
+      [VisualizerMode.STROBE]: '巨幕阵列',
       [VisualizerMode.SILK]: '流光丝绸',
       [VisualizerMode.LIQUID]: '液态星球',
       [VisualizerMode.TERRAIN]: '低多边形山脉'

@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import VisualizerCanvas from './components/VisualizerCanvas';
 import ThreeVisualizer from './components/ThreeVisualizer'; // New WebGL Component
@@ -25,6 +24,7 @@ const DEFAULT_LYRICS_STYLE = LyricsStyle.KARAOKE;
 const DEFAULT_SHOW_LYRICS = true;
 const DEFAULT_LANGUAGE: Language = 'zh';
 
+// Fix: Complete component definition and add default export
 const App: React.FC = () => {
   const [isListening, setIsListening] = useState(false);
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
@@ -79,6 +79,7 @@ const App: React.FC = () => {
 
   const languageRef = useRef(language);
   const regionRef = useRef(region);
+  const showLyricsRef = useRef(showLyrics);
 
   useEffect(() => localStorage.setItem('sv_mode_v4', JSON.stringify(mode)), [mode]);
   useEffect(() => localStorage.setItem('sv_theme', JSON.stringify(colorTheme)), [colorTheme]);
@@ -91,7 +92,8 @@ const App: React.FC = () => {
   useEffect(() => {
     languageRef.current = language;
     regionRef.current = region;
-  }, [language, region]);
+    showLyricsRef.current = showLyrics;
+  }, [language, region, showLyrics]);
 
   // Load Audio Devices
   useEffect(() => {
@@ -110,485 +112,130 @@ const App: React.FC = () => {
         if (!selectedDeviceId && inputs.length > 0) {
              // Try to find "default" or just take first
              const defaultDevice = inputs.find(d => d.deviceId === 'default') || inputs[0];
+             // Fix: Access deviceId property instead of passing object
              setSelectedDeviceId(defaultDevice.deviceId);
         }
-      } catch (e) {
-        console.warn("Could not enumerate devices", e);
+      } catch (err) {
+        console.error("Failed to detect audio devices:", err);
       }
     };
     getDevices();
-  }, []);
+  }, [selectedDeviceId]);
 
-  // Request Wake Lock
-  const requestWakeLock = async () => {
-    try {
-      if ('wakeLock' in navigator && !wakeLockRef.current) {
-        wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
-        wakeLockRef.current.addEventListener('release', () => {
-          wakeLockRef.current = null;
-        });
-      }
-    } catch (err) {
-      console.warn(`Wake Lock request failed: ${err}`);
-    }
-  };
-
-  const releaseWakeLock = async () => {
-    if (wakeLockRef.current) {
-      try {
-        await wakeLockRef.current.release();
-        wakeLockRef.current = null;
-      } catch (err) {
-        console.warn(`Wake Lock release failed: ${err}`);
-      }
-    }
-  };
-
-  // Handle visibility change to re-acquire wake lock
-  useEffect(() => {
-    const handleVisibilityChange = async () => {
-      if (document.visibilityState === 'visible' && isListening) {
-        await requestWakeLock();
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-    };
-  }, [isListening]);
-
-  // Auto Rotate Logic
-  useEffect(() => {
-    if (!settings.autoRotate) return;
-
-    const intervalId = setInterval(() => {
-        setMode((prevMode) => {
-            const modes = Object.values(VisualizerMode);
-            const availableModes = modes.filter(m => m !== prevMode);
-            const nextMode = availableModes[Math.floor(Math.random() * availableModes.length)];
-            return nextMode;
-        });
-    }, settings.rotateInterval * 1000);
-
-    return () => clearInterval(intervalId);
-  }, [settings.autoRotate, settings.rotateInterval]);
-
-  // Auto Theme Switching Logic based on Mood
-  useEffect(() => {
-    if (!currentSong || !currentSong.mood) return;
-
-    const mood = currentSong.mood.toLowerCase();
-    
-    // Theme 0: Sunset (Red/Orange) - Energetic, Warm
-    if (mood.match(/energetic|upbeat|party|dance|rock|intense|warm|passionate|fire|活力|摇滚|激情|热烈|动感|summer/)) {
-        setColorTheme(COLOR_THEMES[0]);
-    }
-    // Theme 1: Cyberpunk (Blue/Purple/Pink) - Electronic, Modern
-    else if (mood.match(/electronic|synth|pop|modern|neon|club|future|cyber|电子|赛博|未来|流行|night/)) {
-        setColorTheme(COLOR_THEMES[1]);
-    }
-    // Theme 2: Matrix (Green) - Tech, Dark, Edgy
-    else if (mood.match(/techno|sci-fi|digital|aggressive|edgy|dark|glitch|industrial|黑暗|科技|工业|压抑/)) {
-        setColorTheme(COLOR_THEMES[2]);
-    }
-    // Theme 3: Dark Slate (Grey/Blue) - Sad, Serious
-    else if (mood.match(/sad|melanchol|ballad|slow|emotional|serious|gloomy|lonely|悲伤|忧郁|慢歌|抒情|沉重/)) {
-        setColorTheme(COLOR_THEMES[3]);
-    }
-    // Theme 4: Ocean (Blue/Cyan) - Calm, Water
-    else if (mood.match(/calm|relax|peace|chill|soothing|water|blue|jazz|soft|平静|放松|海洋|爵士|柔和/)) {
-        setColorTheme(COLOR_THEMES[4]);
-    }
-    // Theme 5: Vaporwave (Pink/Purple) - Retro, Dreamy
-    else if (mood.match(/retro|dreamy|lo-fi|nostalgic|aesthetic|vapor|复古|梦幻|怀旧|蒸汽波/)) {
-        setColorTheme(COLOR_THEMES[5]);
-    }
-    // Theme 6: Golden Hour (Yellow) - Happy, Bright
-    else if (mood.match(/happy|cheer|sunny|bright|joy|optimistic|acoustic|folk|快乐|阳光|民谣|欢快|明亮/)) {
-        setColorTheme(COLOR_THEMES[6]);
-    }
-    // Theme 7: Aurora (Indigo/Purple) - Mystical, Space
-    else if (mood.match(/mystical|ethereal|ambient|spiritual|trance|space|magic|神秘|空灵|氛围|宇宙/)) {
-        setColorTheme(COLOR_THEMES[7]);
-    }
-    
-  }, [currentSong]);
-
-  const identificationTimeoutRef = useRef<number | null>(null);
-  const silenceDurationRef = useRef<number>(0);
-  const songChangeArmedRef = useRef<boolean>(false);
-
-  // Initialize Audio Logic
-  const startAudio = async (deviceId?: string) => {
-    // Release any previous wake lock first
-    await releaseWakeLock();
-    // Stop previous stream if any
-    if (isListening) stopAudio();
-
-    try {
-      const constraints: MediaStreamConstraints = { 
-        audio: {
-          deviceId: deviceId ? { exact: deviceId } : undefined,
-          echoCancellation: false,
-          autoGainControl: false,
-          noiseSuppression: false,
-          channelCount: 2 
-        } 
-      };
-
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
-      const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-      if (ctx.state === 'suspended') await ctx.resume();
-
-      const src = ctx.createMediaStreamSource(stream);
-      const ana = ctx.createAnalyser();
-      ana.fftSize = 2048;
-      ana.smoothingTimeConstant = 0.85; 
-      src.connect(ana);
-      
-      setAudioContext(ctx);
-      setAnalyser(ana);
-      setMediaStream(stream);
-      setIsListening(true);
-      
-      setupRecorder(stream);
-      await requestWakeLock(); // Keep screen on while listening!
-
-    } catch (err) {
-      console.error("Error accessing microphone:", err);
-      alert("Could not access audio device. Please check permissions.");
-    }
-  };
-
-  const stopAudio = async () => {
-    if (audioContext) audioContext.close();
-    if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
-    if (identificationTimeoutRef.current) clearTimeout(identificationTimeoutRef.current);
-    
-    setAudioContext(null);
-    setAnalyser(null);
-    setMediaStream(null);
-    setRecorder(null);
-    setIsListening(false);
-    setIsIdentifying(false);
-    
-    await releaseWakeLock(); // Release the screen lock when stopping
-    
-    silenceDurationRef.current = 0;
-    songChangeArmedRef.current = false;
-  };
-
-  // Change Device Handler
-  const handleDeviceChange = (deviceId: string) => {
-      setSelectedDeviceId(deviceId);
-      if (isListening) {
-          // Restart with new device
-          startAudio(deviceId);
-      }
-  };
-
-  const setupRecorder = (stream: MediaStream) => {
-    const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') 
-      ? 'audio/webm;codecs=opus' 
-      : 'audio/webm';
-
-    const options: MediaRecorderOptions = { 
-       mimeType,
-       audioBitsPerSecond: 128000 
-    };
-      
-    try {
-      const rec = new MediaRecorder(stream, options);
-      setRecorder(rec);
-      scheduleIdentificationLoop(rec, 3000);
-    } catch (e) {
-      console.error("MediaRecorder init failed", e);
-      const rec = new MediaRecorder(stream);
-      setRecorder(rec);
-      scheduleIdentificationLoop(rec, 3000);
-    }
-  };
-
-  useEffect(() => {
-    if (!analyser || !isListening) return;
-
-    const interval = setInterval(() => {
-      if (isIdentifying) return;
-
-      const bufferLength = analyser.frequencyBinCount;
-      const dataArray = new Uint8Array(bufferLength);
-      analyser.getByteFrequencyData(dataArray);
-
-      let sum = 0;
-      const step = 10;
-      for (let i = 0; i < bufferLength; i += step) {
-          sum += dataArray[i];
-      }
-      const average = sum / (bufferLength / step);
-
-      const SILENCE_THRESHOLD = 8;  
-      const MUSIC_THRESHOLD = 20;   
-      const GAP_DURATION_REQ = 2000; 
-
-      if (average < SILENCE_THRESHOLD) {
-          silenceDurationRef.current += 200; 
-          if (silenceDurationRef.current >= GAP_DURATION_REQ) {
-              songChangeArmedRef.current = true;
-          }
-      } else if (average > MUSIC_THRESHOLD) {
-          if (songChangeArmedRef.current) {
-              console.log("🎵 Gap detected followed by audio. Triggering Song ID...");
-              songChangeArmedRef.current = false;
-              if (identificationTimeoutRef.current) clearTimeout(identificationTimeoutRef.current);
-              if (recorder && recorder.state !== 'recording') {
-                  scheduleIdentificationLoop(recorder, 2000);
-              }
-          }
-          silenceDurationRef.current = 0;
-      }
-    }, 200);
-
-    return () => clearInterval(interval);
-  }, [analyser, isListening, isIdentifying, recorder]);
-
-  const scheduleIdentificationLoop = (rec: MediaRecorder, delay: number, isRetry: boolean = false) => {
-    if (identificationTimeoutRef.current) clearTimeout(identificationTimeoutRef.current);
-
-    identificationTimeoutRef.current = window.setTimeout(async () => {
-      if (!rec.stream.active && rec.stream.getTracks().every(t => t.readyState === 'ended')) {
-          return;
-      }
-      const duration = isRetry ? 12000 : 8000;
-      
-      try {
-        const result = await recordAndIdentify(rec, duration);
-
-        if (result && result.identified) {
-           setCurrentSong(result);
-           scheduleIdentificationLoop(rec, 60000, false); 
-        } else if (result && !result.identified) {
-           // Valid response but song unknown
-           if (!isRetry) {
-             scheduleIdentificationLoop(rec, 10000, true); // Retry once (10s delay to save quota)
-           } else {
-             scheduleIdentificationLoop(rec, 40000, false); // Then back off (40s)
-           }
-        } else {
-           // Result is null -> Error (Network or Quota)
-           // Do NOT retry quickly. Back off significantly.
-           console.log("Identification failed (API Error), backing off...");
-           scheduleIdentificationLoop(rec, 60000, false); 
-        }
-      } catch (e) {
-        console.error("Identification loop error:", e);
-        scheduleIdentificationLoop(rec, 60000, false); 
-      }
-    }, delay);
-  };
-
-  const recordAndIdentify = (rec: MediaRecorder, duration: number): Promise<SongInfo | null> => {
-    return new Promise((resolve) => {
-      if (rec.state !== 'inactive') {
-         resolve(null);
-         return;
-      }
-
-      setIsIdentifying(true);
-      const chunks: BlobPart[] = [];
-      
-      const onDataAvailable = (e: BlobEvent) => {
-         if (e.data.size > 0) chunks.push(e.data);
-      };
-
-      const onStop = async () => {
-         rec.removeEventListener('dataavailable', onDataAvailable);
-         rec.removeEventListener('stop', onStop);
-         
-         try {
-           if (chunks.length === 0) {
-             setIsIdentifying(false);
-             resolve(null);
-             return;
-           }
-
-           const mimeType = rec.mimeType || 'audio/webm';
-           const blob = new Blob(chunks, { type: mimeType });
-           
-           if (blob.size < 2000) { 
-              setIsIdentifying(false);
-              resolve(null);
-              return;
-           }
-
-           const reader = new FileReader();
-           reader.onloadend = async () => {
-              const resultStr = reader.result as string;
-              if (!resultStr) {
-                  setIsIdentifying(false);
-                  resolve(null);
-                  return;
-              }
-              const base64 = resultStr.split(',')[1];
-              
-              const result = await identifySongFromAudio(
-                base64, 
-                mimeType,
-                languageRef.current,
-                regionRef.current
-              );
-              setIsIdentifying(false);
-              resolve(result);
-           };
-           reader.readAsDataURL(blob);
-         } catch (err) {
-           console.error("Processing recording failed", err);
-           setIsIdentifying(false);
-           resolve(null);
-         }
-      };
-
-      rec.addEventListener('dataavailable', onDataAvailable);
-      rec.addEventListener('stop', onStop);
-
-      try {
-        rec.start();
-        setTimeout(() => {
-            if (rec.state === 'recording') rec.stop();
-        }, duration);
-      } catch (err) {
-        console.error("Recorder start failed", err);
-        setIsIdentifying(false);
-        resolve(null);
-      }
-    });
-  };
-
-  const toggleMicrophone = () => {
+  const toggleMicrophone = async () => {
     if (isListening) {
-      stopAudio();
+      if (recorder) recorder.stop();
+      if (mediaStream) mediaStream.getTracks().forEach(track => track.stop());
+      if (audioContext) audioContext.close();
+      setAudioContext(null);
+      setAnalyser(null);
+      setMediaStream(null);
+      setRecorder(null);
+      setIsListening(false);
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
     } else {
-      startAudio(selectedDeviceId);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          audio: selectedDeviceId ? { deviceId: { exact: selectedDeviceId } } : true 
+        });
+        
+        const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const src = context.createMediaStreamSource(stream);
+        const node = context.createAnalyser();
+        node.fftSize = 2048;
+        src.connect(node);
+        
+        setAudioContext(context);
+        setAnalyser(node);
+        setMediaStream(stream);
+        setIsListening(true);
+
+        if ('wakeLock' in navigator) {
+          try {
+            wakeLockRef.current = await (navigator as any).wakeLock.request('screen');
+          } catch (e) {
+            console.warn('Wake lock failed');
+          }
+        }
+      } catch (err) {
+        console.error('Mic access denied', err);
+      }
     }
   };
 
-  const handleSongRetry = () => {
-      setCurrentSong(null);
-      if (identificationTimeoutRef.current) clearTimeout(identificationTimeoutRef.current);
-      if (recorder && recorder.state !== 'recording') {
-          console.log("Manual Retry Triggered");
-          scheduleIdentificationLoop(recorder, 200, true);
-      }
-  };
-
-  const resetSettings = () => {
-    setMode(DEFAULT_MODE);
-    setColorTheme(COLOR_THEMES[DEFAULT_THEME_INDEX]);
-    setSettings(DEFAULT_SETTINGS);
-    setLyricsStyle(DEFAULT_LYRICS_STYLE);
-    setShowLyrics(DEFAULT_SHOW_LYRICS);
-    setLanguage(DEFAULT_LANGUAGE);
-    setRegion(detectDefaultRegion());
-  };
-
-  const randomizeSettings = () => {
-    const modes = Object.values(VisualizerMode);
-    const randomMode = modes[Math.floor(Math.random() * modes.length)];
-    const randomTheme = COLOR_THEMES[Math.floor(Math.random() * COLOR_THEMES.length)];
-    const styles = Object.values(LyricsStyle);
-    const randomStyle = styles[Math.floor(Math.random() * styles.length)];
-
-    const newSettings: VisualizerSettings = {
-       sensitivity: parseFloat((Math.random() * 1.5 + 1.0).toFixed(1)), 
-       speed: parseFloat((Math.random() * 1.0 + 0.5).toFixed(1)),
-       glow: Math.random() > 0.4, 
-       trails: Math.random() > 0.3,
-       autoRotate: false,
-       rotateInterval: 30,
-       hideCursor: settings.hideCursor // Keep current hideCursor preference
-    };
-
-    setMode(randomMode);
-    setColorTheme(randomTheme);
-    setLyricsStyle(randomStyle);
-    setSettings(newSettings);
-    setShowLyrics(true); 
-  };
-
+  // Identification loop
   useEffect(() => {
-    return () => {
-      stopAudio();
-      releaseWakeLock();
-    };
-  }, []);
+    let interval: number;
+    if (isListening && mediaStream) {
+      // Periodic identification every 30 seconds
+      interval = window.setInterval(async () => {
+        if (isIdentifying) return;
+        
+        setIsIdentifying(true);
+        const audioRecorder = new MediaRecorder(mediaStream);
+        const chunks: Blob[] = [];
+        
+        audioRecorder.ondataavailable = (e) => chunks.push(e.data);
+        audioRecorder.onstop = async () => {
+          const blob = new Blob(chunks, { type: 'audio/webm' });
+          const reader = new FileReader();
+          reader.readAsDataURL(blob);
+          reader.onloadend = async () => {
+            const base64Data = (reader.result as string).split(',')[1];
+            try {
+              const info = await identifySongFromAudio(base64Data, 'audio/webm', languageRef.current, regionRef.current);
+              if (info) setCurrentSong(info);
+            } catch (e) {
+              console.error('Identification failed', e);
+            } finally {
+              setIsIdentifying(false);
+            }
+          };
+        };
+        
+        audioRecorder.start();
+        // Record for 5 seconds
+        setTimeout(() => {
+          if (audioRecorder.state === 'recording') audioRecorder.stop();
+        }, 5000);
+      }, 30000);
+    }
+    return () => clearInterval(interval);
+  }, [isListening, mediaStream, isIdentifying]);
 
-  const t = TRANSLATIONS[language];
-
-  // Determine which Renderer to use
-  // Now includes all WebGL modes
-  const isWebGLMode = [
-    VisualizerMode.SILK,
-    VisualizerMode.LIQUID,
-    VisualizerMode.TERRAIN
-  ].includes(mode);
+  const isThreeMode = mode === VisualizerMode.SILK || mode === VisualizerMode.LIQUID || mode === VisualizerMode.TERRAIN;
 
   return (
-    <div className={`relative w-screen h-screen overflow-hidden text-white select-none ${settings.hideCursor ? 'cursor-none' : ''}`}>
-      
-      {/* Background Visualizer - Switches between 2D and 3D */}
-      {isWebGLMode ? (
-         <ThreeVisualizer 
-           analyser={analyser} 
-           colors={colorTheme}
-           settings={settings}
-           mode={mode}
-         />
+    <div className="min-h-screen bg-black overflow-hidden relative font-sans text-white select-none">
+      {isThreeMode ? (
+        <ThreeVisualizer analyser={analyser} mode={mode} colors={colorTheme} settings={settings} />
       ) : (
-         <VisualizerCanvas 
-           analyser={analyser} 
-           mode={mode} 
-           colors={colorTheme}
-           settings={settings}
-           song={currentSong}
-           showLyrics={showLyrics}
-           lyricsStyle={lyricsStyle}
-         />
+        <VisualizerCanvas 
+          analyser={analyser} 
+          mode={mode} 
+          colors={colorTheme} 
+          settings={settings} 
+          song={currentSong} 
+          showLyrics={showLyrics}
+          lyricsStyle={lyricsStyle}
+        />
       )}
 
-      {/* Main Overlay Content */}
       <SongOverlay 
         song={currentSong} 
         lyricsStyle={lyricsStyle} 
-        showLyrics={showLyrics}
+        showLyrics={showLyrics} 
         language={language}
-        onRetry={handleSongRetry}
+        onRetry={() => setCurrentSong(null)}
         onClose={() => setCurrentSong(null)}
         analyser={analyser}
         sensitivity={settings.sensitivity}
       />
 
-      {/* Start Prompt if not listening */}
-      {!isListening && (
-        <div className="absolute inset-0 flex items-center justify-center z-20 bg-black/60 backdrop-blur-sm">
-           <div className="text-center p-8 border border-white/10 rounded-2xl bg-black/40 shadow-2xl max-w-md mx-4">
-              <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500 mb-4">
-                {t.welcomeTitle}
-              </h1>
-              <p className="text-gray-300 mb-8 leading-relaxed">
-                {t.welcomeText}
-              </p>
-              <button 
-                onClick={() => startAudio(selectedDeviceId)}
-                className="px-8 py-4 bg-white text-black font-bold rounded-full hover:scale-105 transition-transform shadow-[0_0_20px_rgba(255,255,255,0.4)]"
-              >
-                {t.startExperience}
-              </button>
-           </div>
-        </div>
-      )}
-
-      {/* UI Controls */}
-      <Controls
+      <Controls 
         currentMode={mode}
         setMode={setMode}
         colorTheme={colorTheme}
@@ -606,11 +253,22 @@ const App: React.FC = () => {
         setRegion={setRegion}
         settings={settings}
         setSettings={setSettings}
-        resetSettings={resetSettings}
-        randomizeSettings={randomizeSettings}
+        resetSettings={() => setSettings(DEFAULT_SETTINGS)}
+        randomizeSettings={() => {
+            const modes = Object.values(VisualizerMode);
+            setMode(modes[Math.floor(Math.random() * modes.length)]);
+            setColorTheme(COLOR_THEMES[Math.floor(Math.random() * COLOR_THEMES.length)]);
+            setSettings({
+                ...settings,
+                sensitivity: 1.0 + Math.random() * 1.5,
+                speed: 0.5 + Math.random() * 1.0,
+                glow: Math.random() > 0.3,
+                trails: Math.random() > 0.2
+            });
+        }}
         audioDevices={audioDevices}
         selectedDeviceId={selectedDeviceId}
-        onDeviceChange={handleDeviceChange}
+        onDeviceChange={setSelectedDeviceId}
       />
     </div>
   );

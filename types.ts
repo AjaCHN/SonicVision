@@ -10,8 +10,10 @@ export enum VisualizerMode {
   TUNNEL = 'TUNNEL',
   SHAPES = 'SHAPES',
   RINGS = 'RINGS',
-  NEBULA = 'NEBULA', // Renamed from SMOKE
+  NEBULA = 'NEBULA', 
   KALEIDOSCOPE = 'KALEIDOSCOPE',
+  LASERS = 'LASERS',   
+  STROBE = 'STROBE',   
   // WebGL Modes
   SILK = 'SILK',
   LIQUID = 'LIQUID',

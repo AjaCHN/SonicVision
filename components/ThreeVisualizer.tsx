@@ -19,7 +19,8 @@ interface ThreeVisualizerProps {
 const SilkWavesScene: React.FC<{ analyser: AnalyserNode; colors: string[]; settings: VisualizerSettings }> = ({ analyser, colors, settings }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
-  const geometry = useMemo(() => new THREE.PlaneGeometry(50, 50, 64, 64), []);
+  // Increase segments for smoother silk detail
+  const geometry = useMemo(() => new THREE.PlaneGeometry(60, 60, 100, 100), []);
 
   useFrame((state) => {
     if (!meshRef.current) return;
@@ -30,44 +31,51 @@ const SilkWavesScene: React.FC<{ analyser: AnalyserNode; colors: string[]; setti
     vol = (vol / 40) * settings.sensitivity;
 
     const positions = meshRef.current.geometry.attributes.position;
-    const time = state.clock.getElapsedTime() * settings.speed * 0.4;
+    const time = state.clock.getElapsedTime() * settings.speed * 0.3;
 
     for (let i = 0; i < positions.count; i++) {
         const x = positions.getX(i);
         const y = positions.getY(i);
-        const z1 = Math.sin(x * 0.2 + time) * Math.cos(y * 0.2 + time * 0.8) * 4.5;
-        const z2 = Math.sin(x * 0.6 - time * 1.5) * Math.sin(y * 0.6 + time) * 2.0;
-        const audioAmp = 1 + (vol / 255) * 3.0; 
+        
+        // Multi-layered noise for silk-like folds
+        const z1 = Math.sin(x * 0.15 + time) * Math.cos(y * 0.12 + time * 0.7) * 5.5;
+        const z2 = Math.sin(x * 0.4 - time * 1.2) * Math.sin(y * 0.35 + time * 0.9) * 2.5;
+        const z3 = Math.sin(x * 0.8 + time * 2) * 0.8; // High freq micro-folds
+        
+        const audioAmp = 1 + (vol / 255) * 4.0; 
         const dist = Math.sqrt(x*x + y*y);
-        const ripple = Math.sin(dist * 1.5 - time * 5) * (vol / 255) * 1.5;
-        positions.setZ(i, (z1 + z2) * audioAmp + ripple);
+        const ripple = Math.sin(dist * 1.2 - time * 6) * (vol / 255) * 2.0;
+        
+        positions.setZ(i, (z1 + z2 + z3) * audioAmp + ripple);
     }
     positions.needsUpdate = true;
     meshRef.current.geometry.computeVertexNormals();
-    meshRef.current.rotation.x = -Math.PI / 2.2;
-    meshRef.current.rotation.z = time * 0.08;
+    meshRef.current.rotation.x = -Math.PI / 2.5;
+    meshRef.current.rotation.z = time * 0.05;
   });
 
   return (
     <>
-      <color attach="background" args={['#050510']} /> 
-      <pointLight position={[20, 30, 20]} intensity={9.0} color={colors[0]} distance={120} />
-      <pointLight position={[-20, 15, 20]} intensity={6.0} color={colors[1]} distance={120} />
-      <spotLight position={[0, -30, 20]} angle={0.8} penumbra={0.5} intensity={20.0} color={colors[2] || '#ffffff'} distance={100} />
-      <ambientLight intensity={1.5} />
+      <color attach="background" args={['#020205']} /> 
+      <pointLight position={[25, 40, 25]} intensity={12.0} color={colors[0]} distance={150} />
+      <pointLight position={[-25, 20, 25]} intensity={8.0} color={colors[1]} distance={150} />
+      <spotLight position={[0, -40, 30]} angle={0.9} penumbra={0.6} intensity={25.0} color={colors[2] || '#ffffff'} distance={120} />
+      <ambientLight intensity={1.2} />
       <mesh ref={meshRef}>
          <primitive object={geometry} attach="geometry" />
          <meshPhysicalMaterial 
             color={colors[0]} 
             emissive={colors[1]} 
-            emissiveIntensity={0.6}
-            metalness={0.6}
-            roughness={0.25}
-            clearcoat={0.8}
-            clearcoatRoughness={0.2}
-            sheen={0.8}
+            emissiveIntensity={0.4}
+            metalness={0.7}
+            roughness={0.15}
+            clearcoat={1.0}
+            clearcoatRoughness={0.1}
+            sheen={1.0}
             sheenColor={new THREE.Color(colors[2] || '#ffffff')}
+            sheenRoughness={0.2}
             side={THREE.DoubleSide}
+            flatShading={false}
          />
       </mesh>
     </>

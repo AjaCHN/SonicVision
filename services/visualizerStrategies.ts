@@ -176,33 +176,47 @@ export class ShapesRenderer implements IVisualizerRenderer {
   init() {}
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
-    const bass = getAverage(data, 0, 10) * settings.sensitivity;
+    const bassVal = getAverage(data, 0, 12);
+    const bass = bassVal * settings.sensitivity;
+    const bassNorm = bassVal / 255;
     const mids = getAverage(data, 10, 60) * settings.sensitivity;
+    
     ctx.save();
     ctx.translate(w/2, h/2);
     for (let i = 0; i < 8; i++) {
         const sides = 3 + i;
-        const radius = (Math.min(w, h) * 0.05 * (i + 1)) + (bass / 255) * 50;
+        const radius = (Math.min(w, h) * 0.05 * (i + 1)) + (bass / 255) * 60;
         const angleOffset = rotation * (0.5 + i * 0.1) * (i % 2 === 0 ? 1 : -1);
+        
+        // Flashing logic: specific lines (even index) flash aggressively with bass
+        const isFlashingLine = i % 2 === 0;
+        const pulseEffect = isFlashingLine ? (bassNorm * 3.5) : (bassNorm * 0.4);
+        const baseAlpha = isFlashingLine ? (0.05 + pulseEffect) : (0.4 + pulseEffect);
+        
+        ctx.globalAlpha = Math.min(Math.max(baseAlpha, 0.05), 1.0);
         ctx.strokeStyle = colors[i % colors.length];
-        ctx.lineWidth = 2 + (mids / 100);
+        ctx.lineWidth = (2 + (mids / 80)) * settings.sensitivity;
+        
         ctx.beginPath();
         for (let j = 0; j <= sides; j++) {
             const a = (j / sides) * Math.PI * 2 + angleOffset;
             const px = Math.cos(a) * radius;
             const py = Math.sin(a) * radius;
-            if (j === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+            if (j === 0) ctx.moveTo(px, px); else ctx.lineTo(px, py);
         }
         ctx.stroke();
+
+        // Extra glow ring on bass hits for flashing shapes
+        if (isFlashingLine && bassNorm > 0.6) {
+            ctx.globalAlpha = (bassNorm - 0.6) * 1.5;
+            ctx.lineWidth = 1;
+            ctx.stroke();
+        }
     }
     ctx.restore();
   }
 }
 
-/**
- * 终极优化版 NebulaRenderer (星云迷雾)
- * 模拟星云内部的流体涡流和气体分形质感。
- */
 export class NebulaRenderer implements IVisualizerRenderer {
   private particles: Array<{
     x: number; y: number; 
@@ -222,7 +236,6 @@ export class NebulaRenderer implements IVisualizerRenderer {
     this.spriteCache = {};
   }
 
-  // 生成具有“分形”质感的烟雾精灵图
   private getSprite(color: string): HTMLCanvasElement {
     if (this.spriteCache[color]) return this.spriteCache[color];
 
@@ -236,7 +249,6 @@ export class NebulaRenderer implements IVisualizerRenderer {
     const centerX = size / 2;
     const centerY = size / 2;
 
-    // 通过绘制数十个半透明、大小不一的偏移径向块来模拟气体内部的不均匀质感
     for (let i = 0; i < 24; i++) {
         const offsetX = (Math.random() - 0.5) * size * 0.25;
         const offsetY = (Math.random() - 0.5) * size * 0.25;
@@ -253,7 +265,6 @@ export class NebulaRenderer implements IVisualizerRenderer {
         ctx.fill();
     }
 
-    // 遮盖染色
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, size, size);
@@ -264,22 +275,22 @@ export class NebulaRenderer implements IVisualizerRenderer {
 
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
-
-    // 音频维度：低音驱动亮度，中音驱动旋转，高音触发星尘
     const bass = getAverage(data, 0, 15) / 255; 
     const mids = getAverage(data, 15, 60) / 255; 
     const highs = getAverage(data, 100, 200) / 255; 
 
-    const maxParticles = 60; // 较少的粒子数但每个粒子更大、更细腻
+    const maxParticles = 60; 
     if (this.particles.length < maxParticles) {
         for (let i = 0; i < 1; i++) {
+            // Nebula cloud sizes reduced by 30%
+            const baseSize = (w * 0.28) + (Math.random() * w * 0.28); 
             this.particles.push({
                 x: Math.random() * w,
                 y: Math.random() * h,
                 vx: 0, vy: 0,
                 life: Math.random() * 800,
                 maxLife: 800 + Math.random() * 400,
-                size: (w * 0.4) + (Math.random() * w * 0.4),
+                size: baseSize,
                 colorIndex: Math.floor(Math.random() * colors.length),
                 rotation: Math.random() * Math.PI * 2,
                 rotationSpeed: (Math.random() - 0.5) * 0.005,
@@ -290,52 +301,36 @@ export class NebulaRenderer implements IVisualizerRenderer {
 
     ctx.save();
     ctx.globalCompositeOperation = 'screen';
-
     const sensitivity = settings.sensitivity;
     const speedScale = settings.speed;
 
     for (let i = this.particles.length - 1; i >= 0; i--) {
         const p = this.particles[i];
         p.life += speedScale * 1.5;
-
-        // --- 流体动力学模拟 (Fluid Motion) ---
-        // 这里的公式模拟了空气涡流：根据位置和时间产生旋转力
         const timeFactor = rotation * 0.4;
         const driftX = Math.sin(p.x * 0.002 + timeFactor) * 0.2;
         const driftY = Math.cos(p.y * 0.002 + timeFactor) * 0.2;
-        
-        // 音频扰动
         const energy = (bass * 3.0 + mids * 1.5) * sensitivity;
         p.vx += (driftX + (Math.random() - 0.5) * 0.05) * speedScale;
-        p.vy += (driftY - 0.02) * speedScale; // 整体微弱的上升感
-        
+        p.vy += (driftY - 0.02) * speedScale; 
         p.vx *= 0.99; p.vy *= 0.99;
         p.x += p.vx * (1 + energy);
         p.y += p.vy * (1 + energy);
         p.rotation += p.rotationSpeed * (1 + mids * 6) * speedScale;
-
-        // 边界处理
         const margin = p.size * 0.6;
         if (p.x < -margin) p.x = w + margin;
         if (p.x > w + margin) p.x = -margin;
         if (p.y < -margin) p.y = h + margin;
         if (p.y > h + margin) p.y = -margin;
-
         if (p.life > p.maxLife) {
             p.life = 0;
             p.colorIndex = (p.colorIndex + 1) % colors.length;
         }
-
-        // --- 视觉表现 ---
         const fadeInOut = Math.sin((p.life / p.maxLife) * Math.PI);
-        // 低音瞬间提亮：模拟气体被“点燃”的炽热感
         const dynamicAlpha = (0.08 + bass * 0.35) * fadeInOut * sensitivity;
-        
         const c = colors[p.colorIndex % colors.length] || '#fff';
         const sprite = this.getSprite(c);
-        // 低音带来的体积膨胀
         const finalSize = p.size * (1 + bass * 0.25 * sensitivity);
-
         ctx.globalAlpha = Math.min(0.5, dynamicAlpha);
         ctx.save();
         ctx.translate(p.x, p.y);
@@ -343,9 +338,6 @@ export class NebulaRenderer implements IVisualizerRenderer {
         ctx.drawImage(sprite, -finalSize/2, -finalSize/2, finalSize, finalSize);
         ctx.restore();
     }
-
-    // --- 星尘图层 (Stardust) ---
-    // 高频激发细碎的、闪烁的背景星尘
     if (highs > 0.35) {
         ctx.globalAlpha = (highs - 0.35) * 2;
         ctx.fillStyle = '#ffffff';
@@ -353,12 +345,9 @@ export class NebulaRenderer implements IVisualizerRenderer {
             const sx = Math.random() * w;
             const sy = Math.random() * h;
             const sz = Math.random() * 2 * sensitivity;
-            ctx.beginPath();
-            ctx.arc(sx, sy, sz, 0, Math.PI * 2);
-            ctx.fill();
+            ctx.beginPath(); ctx.arc(sx, sy, sz, 0, Math.PI * 2); ctx.fill();
         }
     }
-
     ctx.restore();
   }
 }
@@ -373,7 +362,6 @@ export class KaleidoscopeRenderer implements IVisualizerRenderer {
         const segments = 12;
         const angleStep = (Math.PI * 2) / segments;
         const radius = Math.max(w, h) * 0.65;
-
         for (let i = 0; i < segments; i++) {
             ctx.save();
             ctx.rotate(i * angleStep);
@@ -391,4 +379,149 @@ export class KaleidoscopeRenderer implements IVisualizerRenderer {
         }
         ctx.restore();
     }
+}
+
+export class LasersRenderer implements IVisualizerRenderer {
+  init() {}
+  draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
+    if (colors.length === 0) return;
+    const highs = getAverage(data, 100, 255) / 255;
+    const bass = getAverage(data, 0, 20) / 255;
+    const mids = getAverage(data, 20, 80) / 255;
+    const beamCount = 12; // Increase beams for more density
+    
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    
+    const origins = [
+      { x: 0, y: h },
+      { x: w, y: h },
+      { x: w / 2, y: h + 100 }
+    ];
+
+    origins.forEach((origin, oIdx) => {
+      // Map frequency data chunk to this origin's beams
+      const chunkStart = oIdx * beamCount * 2;
+      
+      for (let i = 0; i < beamCount; i++) {
+        // Individual frequency participation for this beam
+        const freqVal = (data[chunkStart + i * 2] || 0) / 255;
+        
+        const angleBase = (oIdx === 0 ? -0.2 : oIdx === 1 ? -Math.PI + 0.2 : -Math.PI/2);
+        
+        // Fanning effect: beams spread more when music is intense
+        const fanSpread = 0.7 + (bass * 0.4);
+        
+        // Jitter: high frequencies add tiny random-like vibrations
+        const jitter = Math.sin(rotation * 50 + i) * highs * 0.05;
+        
+        const angle = angleBase + Math.sin(rotation * settings.speed * 0.4 + i * 0.4) * fanSpread + jitter;
+        
+        const length = Math.max(w, h) * 2.5;
+        const endX = origin.x + Math.cos(angle) * length;
+        const endY = origin.y + Math.sin(angle) * length;
+
+        const color = colors[i % colors.length];
+        
+        // Participation logic: 
+        // 1. Base intensity from individual frequency bin
+        // 2. Pulse strength driven by bass and high-freq spikes
+        const baseIntensity = (0.1 + freqVal * 0.9) * settings.sensitivity;
+        const pulse = (0.4 + bass * 2.5 + highs * 1.5);
+        
+        // Different behavior for different beam indices
+        let finalAlpha = baseIntensity * pulse;
+        if (i % 3 === 0) finalAlpha *= (0.5 + highs * 2); // Some beams react more to treble
+        if (i % 2 === 0) finalAlpha *= (0.5 + bass * 1.5);  // Others more to bass
+
+        finalAlpha = Math.min(Math.max(finalAlpha, 0.05), 1.0);
+
+        ctx.beginPath();
+        const g = ctx.createLinearGradient(origin.x, origin.y, endX, endY);
+        g.addColorStop(0, color);
+        g.addColorStop(0.5 + mids * 0.2, color); // Midrange pushes the solid color further out
+        g.addColorStop(1, 'transparent');
+        
+        ctx.strokeStyle = g;
+        // Width reacts to overall intensity (mids/bass)
+        ctx.lineWidth = (1.2 + bass * 15 + mids * 5) * settings.sensitivity;
+        ctx.globalAlpha = finalAlpha;
+        ctx.moveTo(origin.x, origin.y);
+        ctx.lineTo(endX, endY);
+        ctx.stroke();
+
+        // Secondary glow layer for high-intensity participation
+        if (finalAlpha > 0.4) {
+            ctx.lineWidth = ctx.lineWidth * 2.5;
+            ctx.globalAlpha = finalAlpha * 0.3;
+            ctx.stroke();
+        }
+      }
+    });
+
+    // Central flash on bass peak
+    if (bass > 0.8) {
+        const centerX = w / 2;
+        const centerY = h;
+        const radialG = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, w * 0.5 * bass);
+        radialG.addColorStop(0, colors[0]);
+        radialG.addColorStop(1, 'transparent');
+        ctx.fillStyle = radialG;
+        ctx.globalAlpha = (bass - 0.7) * 0.5;
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, w * 0.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    ctx.restore();
+  }
+}
+
+export class StrobeRenderer implements IVisualizerRenderer {
+  init() {}
+  draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings) {
+    const cols = 12;
+    const rows = 8;
+    const cellW = w / cols;
+    const cellH = h / rows;
+    const bass = getAverage(data, 0, 10) / 255;
+
+    ctx.save();
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        const idx = (r * cols + c) % (data.length / 4);
+        const val = data[Math.floor(idx)] / 255;
+        const color = colors[(r + c) % colors.length];
+        
+        const padding = 2; 
+        const x = c * cellW + padding;
+        const y = r * cellH + padding;
+        const curW = cellW - padding * 2;
+        const curH = cellH - padding * 2;
+
+        // Participation: threshold set very low to include more blocks
+        const threshold = 0.15; 
+        const intensity = val > threshold ? (val - threshold) / (1 - threshold) : 0;
+        
+        // Grid flashing: participation of almost all blocks during bass kicks
+        const gridFactor = (r + c) % 3 === 0 ? bass * 1.2 : bass * 0.6;
+        const finalAlpha = (intensity * settings.sensitivity) + gridFactor;
+
+        if (finalAlpha > 0.05) {
+            ctx.fillStyle = color;
+            ctx.globalAlpha = Math.min(finalAlpha, 1.0);
+            ctx.fillRect(x, y, curW, curH);
+            
+            if (settings.glow && finalAlpha > 0.3) {
+                ctx.shadowBlur = 30 * finalAlpha * settings.sensitivity;
+                ctx.shadowColor = color;
+                ctx.strokeStyle = '#ffffff';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(x, y, curW, curH);
+            }
+        }
+      }
+    }
+    ctx.restore();
+  }
 }
