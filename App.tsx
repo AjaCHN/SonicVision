@@ -20,12 +20,12 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   rotateInterval: 30,
   hideCursor: false,
   smoothing: 0.8,
-  fftSize: 2048,
+  fftSize: 512, 
   quality: 'high'
 };
 const DEFAULT_LYRICS_STYLE = LyricsStyle.KARAOKE; 
 const DEFAULT_SHOW_LYRICS = false;
-const DEFAULT_LANGUAGE: Language = 'zh';
+const DEFAULT_LANGUAGE: Language = 'en'; 
 
 const App: React.FC = () => {
   const [hasStarted, setHasStarted] = useState(false);
@@ -80,7 +80,10 @@ const App: React.FC = () => {
     localStorage.setItem('sv_mode_v4', JSON.stringify(mode));
     localStorage.setItem('sv_show_lyrics', JSON.stringify(showLyrics));
     localStorage.setItem('sv_language', JSON.stringify(language));
-  }, [settings, mode, showLyrics, language, analyser]);
+    localStorage.setItem('sv_theme', JSON.stringify(colorTheme));
+    localStorage.setItem('sv_lyrics_style_v3', JSON.stringify(lyricsStyle));
+    localStorage.setItem('sv_region', JSON.stringify(region));
+  }, [settings, mode, showLyrics, language, colorTheme, lyricsStyle, region, analyser]);
 
   useEffect(() => {
     const fetchDevices = async () => {
@@ -97,14 +100,65 @@ const App: React.FC = () => {
     fetchDevices();
   }, []);
 
+  /**
+   * Smart Random Logic
+   * Ensures high-quality visual results by avoiding extreme/unstable parameter sets.
+   */
   const randomizeSettings = useCallback(() => {
-    const themes = COLOR_THEMES;
-    setColorTheme(themes[Math.floor(Math.random() * themes.length)]);
+    // 1. Theme selection from expanded library
+    const randomTheme = COLOR_THEMES[Math.floor(Math.random() * COLOR_THEMES.length)];
+    setColorTheme(randomTheme);
+
+    // 2. Mode selection
     const modes = Object.values(VisualizerMode);
-    setMode(modes[Math.floor(Math.random() * modes.length)]);
+    const randomMode = modes[Math.floor(Math.random() * modes.length)];
+    setMode(randomMode);
+
+    // 3. Smart parameter randomization (Sweet-spot ranges)
+    setSettings(prev => ({
+      ...prev,
+      speed: 0.8 + Math.random() * 0.8, // Range [0.8, 1.6] - Dynamic but not chaotic
+      sensitivity: 1.2 + Math.random() * 1.0, // Range [1.2, 2.2] - Strong response
+      glow: Math.random() > 0.15, // 85% chance of Glow for better aesthetics
+      trails: Math.random() > 0.2, // 80% chance of Trails for smoother motion
+      smoothing: 0.7 + Math.random() * 0.2 // Range [0.7, 0.9] - Smooth but responsive
+    }));
   }, []);
 
-  // Handle Auto Rotate logic simplified
+  /**
+   * Full Factory Reset
+   */
+  const resetAppSettings = useCallback(() => {
+    localStorage.clear(); 
+    setSettings(DEFAULT_SETTINGS);
+    setMode(DEFAULT_MODE);
+    setColorTheme(COLOR_THEMES[DEFAULT_THEME_INDEX]);
+    setLanguage(DEFAULT_LANGUAGE);
+    setRegion(detectDefaultRegion());
+    setLyricsStyle(DEFAULT_LYRICS_STYLE);
+    setShowLyrics(DEFAULT_SHOW_LYRICS);
+    setSelectedDeviceId('');
+    setCurrentSong(null);
+    // Reload can be used to ensure a clean state, but state resetting is usually enough
+    window.location.reload(); 
+  }, []);
+
+  /**
+   * Reset Visual Effects ONLY
+   */
+  const resetVisualSettings = useCallback(() => {
+    setMode(DEFAULT_MODE);
+    setColorTheme(COLOR_THEMES[DEFAULT_THEME_INDEX]);
+    setSettings(prev => ({
+      ...prev,
+      speed: DEFAULT_SETTINGS.speed,
+      glow: DEFAULT_SETTINGS.glow,
+      trails: DEFAULT_SETTINGS.trails,
+      autoRotate: DEFAULT_SETTINGS.autoRotate,
+      smoothing: DEFAULT_SETTINGS.smoothing
+    }));
+  }, []);
+
   useEffect(() => {
     let interval: number | undefined;
     if (isListening && settings.autoRotate) {
@@ -222,7 +276,9 @@ const App: React.FC = () => {
         toggleMicrophone={toggleMicrophone} isListening={isListening} isIdentifying={isIdentifying}
         lyricsStyle={lyricsStyle} setLyricsStyle={setLyricsStyle} showLyrics={showLyrics} setShowLyrics={setShowLyrics}
         language={language} setLanguage={setLanguage} region={region} setRegion={setRegion}
-        settings={settings} setSettings={setSettings} resetSettings={() => setSettings(DEFAULT_SETTINGS)}
+        settings={settings} setSettings={setSettings} 
+        resetSettings={resetAppSettings}
+        resetVisualSettings={resetVisualSettings}
         randomizeSettings={randomizeSettings}
         audioDevices={audioDevices} selectedDeviceId={selectedDeviceId} onDeviceChange={setSelectedDeviceId}
       />
