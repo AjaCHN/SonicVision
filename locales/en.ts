@@ -95,6 +95,12 @@ export const en = {
   textSize: 'Font Size',
   textRotation: 'Rotation',
   textFont: 'Font Family',
+  quality: 'Visual Quality',
+  qualities: {
+    low: 'Low',
+    med: 'Medium',
+    high: 'High'
+  },
   system: {
     shortcuts: {
       mic: 'Mic',

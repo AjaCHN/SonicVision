@@ -95,6 +95,12 @@ export const es = {
   textSize: 'Tamaño de Fuente',
   textRotation: 'Rotación',
   textFont: 'Fuente',
+  quality: 'Calidad Visual',
+  qualities: {
+    low: 'Baja',
+    med: 'Media',
+    high: 'Alta'
+  },
   system: {
     shortcuts: {
       mic: 'Mic',

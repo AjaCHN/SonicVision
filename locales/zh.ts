@@ -95,6 +95,12 @@ export const zh = {
   textSize: '字体大小',
   textRotation: '旋转角度',
   textFont: '字体样式',
+  quality: '渲染画质',
+  qualities: {
+    low: '低',
+    med: '中',
+    high: '高'
+  },
   system: {
     shortcuts: {
       mic: '麦克风',

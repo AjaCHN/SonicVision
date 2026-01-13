@@ -95,6 +95,12 @@ export const de = {
   textSize: 'Schriftgröße',
   textRotation: 'Drehung',
   textFont: 'Schriftart',
+  quality: 'Qualität',
+  qualities: {
+    low: 'Niedrig',
+    med: 'Mittel',
+    high: 'Hoch'
+  },
   system: {
     shortcuts: {
       mic: 'Mikro',

@@ -95,6 +95,12 @@ export const ja = {
   textSize: 'フォントサイズ',
   textRotation: '回転角度',
   textFont: 'フォントファミリー',
+  quality: '画質',
+  qualities: {
+    low: '低',
+    med: '中',
+    high: '高'
+  },
   system: {
     shortcuts: {
       mic: 'マイク',

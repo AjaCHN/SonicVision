@@ -95,6 +95,12 @@ export const fr = {
   textSize: 'Taille de la police',
   textRotation: 'Rotation',
   textFont: 'Police',
+  quality: 'Qualité',
+  qualities: {
+    low: 'Basse',
+    med: 'Moyenne',
+    high: 'Haute'
+  },
   system: {
     shortcuts: {
       mic: 'Micro',

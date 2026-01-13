@@ -95,6 +95,12 @@ export const tw = {
   textSize: '字體大小',
   textRotation: '旋轉角度',
   textFont: '字體樣式',
+  quality: '渲染畫質',
+  qualities: {
+    low: '低',
+    med: '中',
+    high: '高'
+  },
   system: {
     shortcuts: {
       mic: '麥克風',

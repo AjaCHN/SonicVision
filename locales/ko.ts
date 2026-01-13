@@ -95,6 +95,12 @@ export const ko = {
   textSize: '글꼴 크기',
   textRotation: '회전',
   textFont: '글꼴',
+  quality: '화질',
+  qualities: {
+    low: '낮음',
+    med: '중간',
+    high: '높음'
+  },
   system: {
     shortcuts: {
       mic: '마이크',
