@@ -1,10 +1,10 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
-import VisualizerCanvas from './components/VisualizerCanvas';
-import ThreeVisualizer from './components/ThreeVisualizer';
-import Controls from './components/Controls';
-import SongOverlay from './components/SongOverlay';
-import CustomTextOverlay from './components/CustomTextOverlay';
+import VisualizerCanvas from './components/visualizers/VisualizerCanvas';
+import ThreeVisualizer from './components/visualizers/ThreeVisualizer';
+import Controls from './components/controls/Controls';
+import SongOverlay from './components/ui/SongOverlay';
+import CustomTextOverlay from './components/ui/CustomTextOverlay';
 import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region } from './types';
 import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
