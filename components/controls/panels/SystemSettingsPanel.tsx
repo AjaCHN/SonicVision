@@ -14,12 +14,12 @@ interface SystemSettingsPanelProps {
 export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
   language, setLanguage, resetSettings, t
 }) => {
-  const h = t.helpModal; // Access help modal translations for consistent text
-  const s = h.shortcutItems; // Shortcut descriptions
+  const h = t.helpModal; 
+  const s = h.shortcutItems; 
 
   return (
     <>
-      <div className="p-4 space-y-4 border-b lg:border-b-0 lg:border-r border-white/5 flex flex-col justify-between h-full">
+      <div className="p-4 space-y-4 border-b lg:border-b-0 lg:border-r border-white/5 flex flex-col h-full pt-6">
         <CustomSelect 
           label={t.language} 
           value={language} 
@@ -37,7 +37,7 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
           onChange={(val) => setLanguage(val as Language)} 
         />
         
-        <div className="space-y-4">
+        <div className="space-y-4 mt-auto">
             <button onClick={resetSettings} className="w-full py-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 font-bold text-xs uppercase tracking-widest hover:bg-red-500/20 transition-all flex items-center justify-center gap-2 group">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 opacity-70 group-hover:opacity-100 transition-opacity" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -50,7 +50,7 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
         </div>
       </div>
 
-      <div className="p-4 flex flex-col h-full overflow-y-auto custom-scrollbar space-y-4">
+      <div className="p-4 flex flex-col h-full overflow-y-auto custom-scrollbar space-y-4 col-span-2">
           {/* Project Info Section */}
           <div className="bg-white/[0.04] p-3 rounded-xl border border-white/5">
              <h4 className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
@@ -65,7 +65,7 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
           {/* Shortcuts Expanded List */}
           <div className="space-y-2">
              <h4 className="text-[9px] font-black text-purple-400 uppercase tracking-widest ml-1">{h.shortcutsTitle}</h4>
-             <div className="grid grid-cols-2 gap-2">
+             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <ShortcutItem label={s.toggleMic} k="Space" />
                 <ShortcutItem label={s.fullscreen} k="F" />
                 <ShortcutItem label={s.lyrics} k="L" />

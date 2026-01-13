@@ -2,6 +2,14 @@
 import { VisualizerMode, LyricsStyle } from '../types';
 
 export const zh = {
+  common: {
+    on: '开启',
+    off: '关闭',
+    visible: '显示',
+    hidden: '隐藏',
+    active: '启用',
+    muted: '静音'
+  },
   tabs: {
     visual: '视觉',
     text: '文字',

@@ -16,6 +16,7 @@
 ```
 /
 ├── components/
+│   ├── App.tsx            # 应用主组件 (原根目录 App.tsx)
 │   ├── controls/          # UI 控制层
 │   │   ├── panels/        # 设置面板子组件
 │   │   ├── Controls.tsx   # 主控制栏容器
@@ -30,6 +31,8 @@
 │   │   ├── LyricsOverlay.tsx
 │   │   ├── CustomTextOverlay.tsx
 │   │   └── HelpModal.tsx
+├── styles/                # 样式文件
+│   └── index.css
 ├── services/              # 业务逻辑服务
 ├── hooks/                 # React Hooks
 ├── types/                 # 全局类型定义
@@ -39,7 +42,7 @@
 ├── i18n/                  # 国际化字典
 │   └── index.ts
 ├── locales/               # 语言文件
-└── App.tsx                # 应用入口
+└── index.tsx              # 应用入口
 ```
 
 ## 3. 应用生命周期

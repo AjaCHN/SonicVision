@@ -2,6 +2,14 @@
 import { VisualizerMode, LyricsStyle } from '../types';
 
 export const tw = {
+  common: {
+    on: '開啟',
+    off: '關閉',
+    visible: '顯示',
+    hidden: '隱藏',
+    active: '啟用',
+    muted: '靜音'
+  },
   tabs: {
     visual: '視覺',
     text: '文字',

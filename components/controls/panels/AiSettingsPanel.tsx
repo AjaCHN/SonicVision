@@ -21,7 +21,8 @@ export const AiSettingsPanel: React.FC<AiSettingsPanelProps> = ({
   return (
     <>
       <TooltipArea text={t.hints.lyrics}>
-        <div className="p-4 h-full flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/5">
+        {/* Removed justify-center to align items to top */}
+        <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pt-6">
           <SettingsToggle 
              label={t.lyrics}
              statusText={showLyrics ? t.aiState.active : t.aiState.enable}
@@ -31,7 +32,8 @@ export const AiSettingsPanel: React.FC<AiSettingsPanelProps> = ({
           />
         </div>
       </TooltipArea>
-      <div className="p-4 space-y-4 h-full flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/5">
+      {/* Removed justify-center */}
+      <div className="p-4 space-y-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pt-6">
         <CustomSelect 
           label={`${t.lyrics} ${t.styleTheme}`} 
           value={lyricsStyle} 
@@ -40,7 +42,8 @@ export const AiSettingsPanel: React.FC<AiSettingsPanelProps> = ({
           onChange={(val) => setLyricsStyle(val as LyricsStyle)} 
         />
       </div>
-      <div className="p-4 space-y-4 h-full flex flex-col justify-center">
+      {/* Removed justify-center */}
+      <div className="p-4 space-y-4 h-full flex flex-col pt-6">
          <CustomSelect 
            label={t.region} 
            value={region} 
@@ -49,7 +52,7 @@ export const AiSettingsPanel: React.FC<AiSettingsPanelProps> = ({
            onChange={(val) => setRegion(val as Region)} 
          />
          
-         <button onClick={resetAiSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
+         <button onClick={resetAiSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 mt-auto">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {t.resetAi}
         </button>

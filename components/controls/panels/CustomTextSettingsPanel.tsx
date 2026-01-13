@@ -16,7 +16,7 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
 }) => {
   return (
     <>
-      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5">
+      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pt-6">
         <div className="space-y-3">
            <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.customText}</span>
            
@@ -41,7 +41,7 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
                {/* Master Toggle */}
                <SettingsToggle 
                  label={t.showText} 
-                 statusText={settings.showCustomText ? 'VISIBLE' : 'HIDDEN'}
+                 statusText={settings.showCustomText ? t.common.visible : t.common.hidden}
                  value={settings.showCustomText}
                  onChange={() => setSettings({...settings, showCustomText: !settings.showCustomText})}
                  activeColor="blue"
@@ -50,7 +50,7 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
                {/* Pulse Toggle */}
                <SettingsToggle 
                  label={t.pulseBeat} 
-                 statusText={settings.textPulse ? 'ON' : 'OFF'}
+                 statusText={settings.textPulse ? t.common.on : t.common.off}
                  value={settings.textPulse}
                  onChange={() => setSettings({...settings, textPulse: !settings.textPulse})}
                  activeColor="blue"
@@ -59,7 +59,8 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
         </div>
       </div>
 
-      <div className="p-4 h-full flex flex-col justify-center space-y-6">
+      {/* Removed justify-center to align top */}
+      <div className="p-4 h-full flex flex-col space-y-6 pt-6">
          <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1 -mb-2">{t.textProperties}</span>
          
          <Slider 
@@ -83,8 +84,9 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
          />
       </div>
       
-      <div className="p-4 h-full flex flex-col justify-center items-center">
-         <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
+      {/* Removed justify-center, use mt-auto to push reset button to bottom if desired, or just top align */}
+      <div className="p-4 h-full flex flex-col pt-6">
+         <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 mt-auto">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {t.resetText}
          </button>

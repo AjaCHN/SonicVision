@@ -37,7 +37,7 @@ export const AudioSettingsPanel: React.FC<AudioSettingsPanelProps> = ({
         
         <SettingsToggle 
             label={t.monitorAudio} 
-            statusText={settings.monitor ? 'ACTIVE' : 'MUTED'}
+            statusText={settings.monitor ? t.common.active : t.common.muted}
             value={settings.monitor}
             onChange={() => setSettings({...settings, monitor: !settings.monitor})}
             hintText={t.hints.monitor}

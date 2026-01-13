@@ -2,6 +2,14 @@
 import { VisualizerMode, LyricsStyle } from '../types';
 
 export const ko = {
+  common: {
+    on: '켜짐',
+    off: '꺼짐',
+    visible: '표시',
+    hidden: '숨김',
+    active: '활성',
+    muted: '음소거'
+  },
   tabs: {
     visual: '시각 효과',
     text: '텍스트',

@@ -2,6 +2,14 @@
 import { VisualizerMode, LyricsStyle } from '../types';
 
 export const en = {
+  common: {
+    on: 'ON',
+    off: 'OFF',
+    visible: 'VISIBLE',
+    hidden: 'HIDDEN',
+    active: 'ACTIVE',
+    muted: 'MUTED'
+  },
   tabs: {
     visual: 'Visual',
     text: 'Text',
