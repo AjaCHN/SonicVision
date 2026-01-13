@@ -26,8 +26,17 @@ export const generateFingerprint = async (base64Audio: string): Promise<number[]
 
     // 2. Decode Audio
     // Note: Creating a new context is cheap, but decoding takes a moment.
+    // CRITICAL FIX: We must close this context immediately after decoding, 
+    // otherwise Chrome will throw "The number of hardware contexts provided (6) has been reached".
     const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
     const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+    
+    // Immediately release the hardware context
+    try {
+        await audioCtx.close();
+    } catch (e) {
+        console.warn("Error closing temporary decoding context", e);
+    }
 
     // 3. Setup Offline Analysis
     const offlineCtx = new OfflineAudioContext(1, audioBuffer.length, audioBuffer.sampleRate);
