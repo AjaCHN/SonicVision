@@ -1,4 +1,6 @@
 
+import 'react';
+
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
 export type Region = 'global' | 'US' | 'CN' | 'JP' | 'KR' | 'EU' | 'LATAM';
@@ -83,7 +85,29 @@ export interface AudioDevice {
   label: string;
 }
 
-// Global JSX IntrinsicElements augmentation for React Three Fiber
+// React 18+ / React-JSX Module Augmentation
+declare module 'react' {
+  namespace JSX {
+    interface IntrinsicElements {
+      mesh: any;
+      group: any;
+      pointLight: any;
+      spotLight: any;
+      ambientLight: any;
+      primitive: any;
+      color: any;
+      fog: any;
+      circleGeometry: any;
+      meshBasicMaterial: any;
+      meshStandardMaterial: any;
+      meshPhysicalMaterial: any;
+      planeGeometry: any;
+      icosahedronGeometry: any;
+    }
+  }
+}
+
+// Global JSX IntrinsicElements augmentation for backwards compatibility or global usage
 declare global {
   namespace JSX {
     interface IntrinsicElements {

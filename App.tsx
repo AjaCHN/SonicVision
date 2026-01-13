@@ -5,6 +5,7 @@ import ThreeVisualizer from './components/visualizers/ThreeVisualizer';
 import Controls from './components/controls/Controls';
 import SongOverlay from './components/ui/SongOverlay';
 import CustomTextOverlay from './components/ui/CustomTextOverlay';
+import LyricsOverlay from './components/ui/LyricsOverlay';
 import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region } from './types';
 import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
@@ -299,10 +300,11 @@ const App: React.FC = () => {
       {isThreeMode ? (
         <ThreeVisualizer analyser={analyser} mode={mode} colors={colorTheme} settings={settings} />
       ) : (
-        <VisualizerCanvas analyser={analyser} mode={mode} colors={colorTheme} settings={settings} song={currentSong} showLyrics={showLyrics} lyricsStyle={lyricsStyle} />
+        <VisualizerCanvas analyser={analyser} mode={mode} colors={colorTheme} settings={settings} />
       )}
       
       <CustomTextOverlay settings={settings} analyser={analyser} />
+      <LyricsOverlay settings={settings} song={currentSong} showLyrics={showLyrics} lyricsStyle={lyricsStyle} analyser={analyser} />
       
       <SongOverlay song={currentSong} lyricsStyle={lyricsStyle} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
       <Controls 
