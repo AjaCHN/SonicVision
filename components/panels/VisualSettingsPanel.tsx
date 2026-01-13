@@ -40,76 +40,103 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
         </div>
       </div>
       
-      {/* Removed h-full and overflow-y-auto to allow content to dictate grid height */}
-      <div className="flex flex-col p-5 space-y-5">
-        <div className="space-y-6 pb-6 border-b border-white/10">
+      <div className="flex flex-col p-5 space-y-4">
+        {/* Sliders Group */}
+        <div className="space-y-4 pb-4 border-b border-white/10">
           <Slider label={t.speed} hintText={t.hints.speed} value={settings.speed} min={0.1} max={3.0} step={0.1} onChange={(v:any) => setSettings({...settings, speed: v})} />
-          
-          <div className="space-y-2">
-             <span className="text-xs font-black uppercase text-white/50 tracking-[0.18em] block ml-1">Quality</span>
-             <div className="flex gap-2">
+          <Slider label={t.sensitivity} hintText={t.hints.sensitivity} value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v:any) => setSettings({...settings, sensitivity: v})} />
+        </div>
+
+        {/* Compact Toggles & Quality */}
+        <div className="space-y-4 pb-4 border-b border-white/10">
+           {/* Quality Segmented Control */}
+           <div className="flex items-center gap-3">
+             <span className="text-[10px] font-black uppercase text-white/40 tracking-wider w-12 flex-shrink-0">Quality</span>
+             <div className="flex-1 flex bg-white/[0.04] rounded-lg p-1 border border-white/5">
                {(['low', 'med', 'high'] as const).map(q => (
                  <button 
                    key={q} 
                    onClick={() => setSettings({...settings, quality: q})} 
-                   className={`flex-1 py-3 rounded-xl text-[11px] font-black uppercase tracking-widest border transition-all ${settings.quality === q ? 'bg-white/20 border-white/40 text-white' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white'}`}
+                   className={`flex-1 py-1.5 rounded-md text-[9px] font-black uppercase tracking-wider transition-all ${settings.quality === q ? 'bg-white/20 text-white shadow-sm' : 'text-white/30 hover:text-white/70'}`}
                  >
                    {q}
                  </button>
                ))}
              </div>
-          </div>
+           </div>
 
-          <div className="flex gap-3">
-             <ControlPanelButton onClick={() => setSettings({...settings, glow: !settings.glow})} label={t.glow} active={settings.glow} hintText={t.hints.glow} />
-             <ControlPanelButton onClick={() => setSettings({...settings, trails: !settings.trails})} label={t.trails} active={settings.trails} hintText={t.hints.trails} />
-          </div>
-          <div className="flex gap-3">
-             <ControlPanelButton onClick={() => setSettings({...settings, hideCursor: !settings.hideCursor})} label={t.hideCursor} active={settings.hideCursor} />
-          </div>
+           {/* 3-Column Compact Toggles */}
+           <div className="grid grid-cols-3 gap-2">
+             <button onClick={() => setSettings({...settings, glow: !settings.glow})} className={`py-3 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all ${settings.glow ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08]'}`}>
+               {t.glow}
+             </button>
+             <button onClick={() => setSettings({...settings, trails: !settings.trails})} className={`py-3 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all ${settings.trails ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08]'}`}>
+               {t.trails}
+             </button>
+             <button onClick={() => setSettings({...settings, hideCursor: !settings.hideCursor})} className={`py-3 rounded-lg border text-[9px] font-bold uppercase tracking-wider transition-all ${settings.hideCursor ? 'bg-blue-500/20 border-blue-500/40 text-blue-300' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08]'}`}>
+               {t.hideCursor}
+             </button>
+           </div>
         </div>
 
-        <div className="space-y-6 pt-2">
-          <SettingsToggle 
-            label={t.autoRotate} 
-            statusText={settings.autoRotate ? `${settings.rotateInterval}s` : 'DISABLED'}
-            value={settings.autoRotate}
-            onChange={() => setSettings({...settings, autoRotate: !settings.autoRotate})}
-            hintText={t.hints.autoRotate}
-          >
-            <Slider 
-              label={t.rotateInterval} 
-              hintText={t.hints.rotateInterval} 
-              value={settings.rotateInterval} 
-              min={5} 
-              max={120} 
-              step={1} 
-              unit="s"
-              onChange={(v:any) => setSettings({...settings, rotateInterval: v})} 
-            />
-          </SettingsToggle>
+        {/* Custom Text Section */}
+        <div className="space-y-2 pb-4 border-b border-white/10">
+           <span className="text-[10px] font-black uppercase text-white/40 tracking-wider block">{t.customText}</span>
+           <div className="flex gap-2">
+              <input 
+                type="text" 
+                value={settings.customText}
+                onChange={(e) => setSettings({...settings, customText: e.target.value.toUpperCase()})}
+                placeholder={t.customTextPlaceholder}
+                className="flex-1 bg-white/[0.04] border border-white/10 rounded-lg px-3 text-xs font-bold text-white tracking-widest uppercase focus:outline-none focus:border-blue-500/50 focus:bg-white/[0.08] transition-all"
+              />
+              <button 
+                 onClick={() => setSettings({...settings, showCustomText: !settings.showCustomText})} 
+                 className={`px-3 py-2 rounded-lg border transition-all ${settings.showCustomText ? 'bg-green-500/20 border-green-500/40 text-green-300' : 'bg-white/[0.04] border-transparent text-white/30 hover:text-white'}`}
+                 title={t.showText}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              </button>
+              <button 
+                 onClick={() => setSettings({...settings, textPulse: !settings.textPulse})} 
+                 className={`px-3 py-2 rounded-lg border transition-all ${settings.textPulse ? 'bg-pink-500/20 border-pink-500/40 text-pink-300' : 'bg-white/[0.04] border-transparent text-white/30 hover:text-white'}`}
+                 title={t.pulseBeat}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>
+              </button>
+           </div>
+        </div>
 
-          <SettingsToggle 
-            label={t.cycleColors} 
-            statusText={settings.cycleColors ? `${settings.colorInterval}s` : 'DISABLED'}
-            value={settings.cycleColors}
-            onChange={() => setSettings({...settings, cycleColors: !settings.cycleColors})}
-            hintText={t.hints.cycleColors}
-          >
-            <Slider 
-              label={t.colorInterval} 
-              hintText={t.hints.colorInterval} 
-              value={settings.colorInterval} 
-              min={5} 
-              max={120} 
-              step={1} 
-              unit="s"
-              onChange={(v:any) => setSettings({...settings, colorInterval: v})} 
-            />
-          </SettingsToggle>
+        {/* Auto Rotate Controls (Simplified) */}
+        <div className="space-y-3 pt-1">
+           <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase text-white/40 tracking-wider">{t.autoRotate}</span>
+              <div className="flex items-center gap-2">
+                 <span className="text-[9px] font-mono text-white/30">{settings.rotateInterval}s</span>
+                 <button 
+                   onClick={() => setSettings({...settings, autoRotate: !settings.autoRotate})}
+                   className={`w-8 h-4 rounded-full relative transition-all ${settings.autoRotate ? 'bg-blue-500' : 'bg-white/10'}`}
+                 >
+                   <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all ${settings.autoRotate ? 'translate-x-4' : 'translate-x-0'}`} />
+                 </button>
+              </div>
+           </div>
 
-          <button onClick={resetVisualSettings} className="w-full py-4 bg-white/[0.04] rounded-xl text-[11px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-300 flex items-center justify-center gap-3">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+           <div className="flex items-center justify-between">
+              <span className="text-[10px] font-black uppercase text-white/40 tracking-wider">{t.cycleColors}</span>
+              <div className="flex items-center gap-2">
+                 <span className="text-[9px] font-mono text-white/30">{settings.colorInterval}s</span>
+                 <button 
+                   onClick={() => setSettings({...settings, cycleColors: !settings.cycleColors})}
+                   className={`w-8 h-4 rounded-full relative transition-all ${settings.cycleColors ? 'bg-blue-500' : 'bg-white/10'}`}
+                 >
+                   <div className={`absolute top-0.5 left-0.5 w-3 h-3 bg-white rounded-full transition-all ${settings.cycleColors ? 'translate-x-4' : 'translate-x-0'}`} />
+                 </button>
+              </div>
+           </div>
+
+           <button onClick={resetVisualSettings} className="w-full py-3 mt-2 bg-white/[0.04] rounded-lg text-[9px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {t.resetVisual}
           </button>
         </div>

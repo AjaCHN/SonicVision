@@ -71,6 +71,10 @@ export const ko = {
   appDescription: '실시간 스펙트럼 분석 및 Gemini AI 인식을 기반으로 한 몰입형 시각화 제품군.',
   version: '빌드',
   defaultMic: '기본 마이크',
+  customText: '사용자 지정 텍스트',
+  customTextPlaceholder: '텍스트 입력',
+  showText: '텍스트 표시',
+  pulseBeat: '비트 반응',
   errors: {
     title: '오디오 오류',
     accessDenied: '접근이 거부되었습니다. 마이크 권한을 확인해주세요.',

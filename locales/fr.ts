@@ -71,6 +71,10 @@ export const fr = {
   appDescription: 'Une suite de visualisation immersive propulsée par l\'analyse spectrale en temps réel et l\'IA Gemini.',
   version: 'Version',
   defaultMic: 'Micro par défaut',
+  customText: 'Texte Perso',
+  customTextPlaceholder: 'ENTRER TEXTE',
+  showText: 'Afficher/Masquer',
+  pulseBeat: 'Pulsation',
   errors: {
     title: 'Erreur Audio',
     accessDenied: 'Accès refusé. Veuillez vérifier les permissions de votre navigateur.',

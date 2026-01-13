@@ -75,6 +75,10 @@ export const en = {
   appDescription: 'An immersive visualization suite driven by real-time spectral analysis and Gemini AI recognition.',
   version: 'Build',
   defaultMic: 'Default Microphone',
+  customText: 'Custom Text',
+  customTextPlaceholder: 'ENTER TEXT',
+  showText: 'Toggle Text',
+  pulseBeat: 'Pulse with Beat',
   errors: {
     title: 'Audio Error',
     accessDenied: 'Access denied. Please check your browser permissions for microphone.',

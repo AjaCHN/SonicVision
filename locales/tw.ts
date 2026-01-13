@@ -71,6 +71,10 @@ export const tw = {
   appDescription: '一個基於即時頻域分析與 Gemini AI 語意辨識的沉浸式音樂視覺化套件。',
   version: '版本號',
   defaultMic: '系統預設麥克風',
+  customText: '自訂文字',
+  customTextPlaceholder: '輸入文字',
+  showText: '顯示/隱藏',
+  pulseBeat: '隨節奏律動',
   errors: {
     title: '音訊錯誤',
     accessDenied: '無法存取麥克風，請檢查瀏覽器權限。',

@@ -71,6 +71,10 @@ export const ja = {
   appDescription: 'リアルタイムのオーディオ分析とAI認識を活用した没入型の音楽可视化体験。',
   version: 'バージョン',
   defaultMic: 'デフォルトのマイク',
+  customText: 'カスタムテキスト',
+  customTextPlaceholder: 'テキスト入力',
+  showText: '表示/非表示',
+  pulseBeat: 'ビート連動',
   errors: {
     title: 'オーディオエラー',
     accessDenied: 'アクセスが拒否されました。マイクの権限を確認してください。',

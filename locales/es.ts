@@ -71,6 +71,10 @@ export const es = {
   appDescription: 'Una suite de visualización inmersiva impulsada por análisis espectral en tiempo real y IA Gemini.',
   version: 'Versión',
   defaultMic: 'Micrófono Predeterminado',
+  customText: 'Texto Personalizado',
+  customTextPlaceholder: 'INGRESAR TEXTO',
+  showText: 'Mostrar/Ocultar',
+  pulseBeat: 'Pulsar con Ritmo',
   errors: {
     title: 'Error de Audio',
     accessDenied: 'Acceso denegado. Por favor revisa los permisos del micrófono.',

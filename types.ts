@@ -52,6 +52,10 @@ export interface VisualizerSettings {
   fftSize: number;
   quality: 'low' | 'med' | 'high';
   monitor: boolean;
+  // Custom Text Settings
+  customText: string;
+  showCustomText: boolean;
+  textPulse: boolean;
 }
 
 export interface VisualizerConfig {

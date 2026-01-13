@@ -71,6 +71,10 @@ export const de = {
   appDescription: 'Eine immersive Visualisierungssuite, angetrieben durch Echtzeit-Spektralanalyse und Gemini KI.',
   version: 'Build',
   defaultMic: 'Standardmikrofon',
+  customText: 'Benutzertext',
+  customTextPlaceholder: 'TEXT EINGEBEN',
+  showText: 'Text umschalten',
+  pulseBeat: 'Pulsieren zum Beat',
   errors: {
     title: 'Audio-Fehler',
     accessDenied: 'Zugriff verweigert. Bitte überprüfen Sie Ihre Browser-Berechtigungen.',

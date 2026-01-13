@@ -75,6 +75,10 @@ export const zh = {
   appDescription: '一个基于实时频域分析与 Gemini AI 语义识别的沉浸式音乐可视化套件。',
   version: '版本号',
   defaultMic: '系统默认麦克风',
+  customText: '自定义文字',
+  customTextPlaceholder: '输入文字',
+  showText: '显示/隐藏',
+  pulseBeat: '随节奏律动',
   errors: {
     title: '音频错误',
     accessDenied: '无法访问麦克风，请检查浏览器权限。',

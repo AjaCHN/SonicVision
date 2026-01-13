@@ -4,6 +4,7 @@ import VisualizerCanvas from './components/VisualizerCanvas';
 import ThreeVisualizer from './components/ThreeVisualizer';
 import Controls from './components/Controls';
 import SongOverlay from './components/SongOverlay';
+import CustomTextOverlay from './components/CustomTextOverlay';
 import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region } from './types';
 import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
@@ -26,7 +27,10 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   smoothing: 0.8,
   fftSize: 512, 
   quality: 'high',
-  monitor: false
+  monitor: false,
+  customText: 'AURA',
+  showCustomText: false,
+  textPulse: true
 };
 const DEFAULT_LYRICS_STYLE = LyricsStyle.KARAOKE; 
 const DEFAULT_SHOW_LYRICS = false;
@@ -134,7 +138,10 @@ const App: React.FC = () => {
       cycleColors: DEFAULT_SETTINGS.cycleColors,
       smoothing: DEFAULT_SETTINGS.smoothing,
       hideCursor: DEFAULT_SETTINGS.hideCursor,
-      quality: DEFAULT_SETTINGS.quality
+      quality: DEFAULT_SETTINGS.quality,
+      customText: DEFAULT_SETTINGS.customText,
+      showCustomText: DEFAULT_SETTINGS.showCustomText,
+      textPulse: DEFAULT_SETTINGS.textPulse
     }));
   }, []);
 
@@ -257,6 +264,9 @@ const App: React.FC = () => {
       ) : (
         <VisualizerCanvas analyser={analyser} mode={mode} colors={colorTheme} settings={settings} song={currentSong} showLyrics={showLyrics} lyricsStyle={lyricsStyle} />
       )}
+      
+      <CustomTextOverlay settings={settings} analyser={analyser} />
+      
       <SongOverlay song={currentSong} lyricsStyle={lyricsStyle} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
       <Controls 
         currentMode={mode} setMode={setMode} colorTheme={colorTheme} setColorTheme={setColorTheme}
