@@ -13,7 +13,7 @@
 
 由 **Google Gemini 3.0 Pro** 驱动，它超越了简单的可视化，通过定期监听音频流来**识别歌曲**，检测音乐情绪，并实时获取同步歌词。它现在利用 **Google Search Grounding** 来确保全球范围内歌曲识别的高准确率。
 
-> ✨ **在线演示:** [在此插入链接]
+> ✨ **在线演示:** [https://aura.tanox.net/](https://aura.tanox.net/)
 
 ---
 

@@ -13,7 +13,7 @@
 
 Powered by **Google Gemini 3.0 Pro**, it goes beyond simple visualization by periodically listening to the audio stream to **identify songs**, detect the musical mood, and fetch synchronized lyrics in real-time. It now leverages **Google Search Grounding** to ensure high accuracy for song identification across global regions.
 
-> ✨ **Live Demo:** [Insert Link Here]
+> ✨ **Live Demo:** [https://aura.tanox.net/](https://aura.tanox.net/)
 
 ---
 

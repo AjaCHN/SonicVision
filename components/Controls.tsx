@@ -278,14 +278,14 @@ const Controls: React.FC<ControlsProps> = ({
                 {activeTab === 'ai' && (
                   <>
                     <TooltipArea text={t.hints.lyrics}>
-                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
+                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
                         <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.lyrics}</span>
-                        <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-6 rounded-3xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
+                        <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-5 rounded-xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
                           {showLyrics ? t.aiState.active : t.aiState.enable}
                         </button>
                       </div>
                     </TooltipArea>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
+                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
                       <CustomSelect 
                         label={`${t.lyrics} ${t.styleTheme}`} 
                         value={lyricsStyle} 
@@ -294,7 +294,7 @@ const Controls: React.FC<ControlsProps> = ({
                         onChange={(val) => setLyricsStyle(val as LyricsStyle)} 
                       />
                     </div>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
+                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
                        <CustomSelect 
                          label={t.region} 
                          value={region} 
