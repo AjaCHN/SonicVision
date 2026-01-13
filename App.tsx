@@ -67,7 +67,14 @@ const App: React.FC = () => {
 
   const [mode, setMode] = useState<VisualizerMode>(() => getStorage('mode', DEFAULT_MODE));
   const [colorTheme, setColorTheme] = useState<string[]>(() => getStorage('theme', COLOR_THEMES[DEFAULT_THEME_INDEX]));
-  const [settings, setSettings] = useState<VisualizerSettings>(() => getStorage('settings', DEFAULT_SETTINGS));
+  
+  // FIXED: Merge stored settings with defaults to ensure all keys (like colorInterval) exist.
+  // This prevents crashes when new features are added but old settings are in localStorage.
+  const [settings, setSettings] = useState<VisualizerSettings>(() => {
+    const saved = getStorage('settings', DEFAULT_SETTINGS);
+    return { ...DEFAULT_SETTINGS, ...saved };
+  });
+
   const [lyricsStyle, setLyricsStyle] = useState<LyricsStyle>(() => getStorage('lyricsStyle', DEFAULT_LYRICS_STYLE));
   const [showLyrics, setShowLyrics] = useState<boolean>(() => getStorage('showLyrics', DEFAULT_SHOW_LYRICS));
   const [language, setLanguage] = useState<Language>(() => getStorage('language', DEFAULT_LANGUAGE));
