@@ -1,5 +1,5 @@
 
-export type Language = 'en' | 'zh' | 'ja' | 'es' | 'ko' | 'de';
+export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
 export type Region = 'global' | 'US' | 'CN' | 'JP' | 'KR' | 'EU' | 'LATAM';
 

@@ -34,9 +34,13 @@ export const identifySongFromAudio = async (
         // 必须在调用前新建实例以保证使用最新的 API Key
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         
-        const langContext = language === 'zh' 
-          ? '请使用中文输出 mood 字段。对于中文歌曲，title 和 artist 必须使用汉字。' 
-          : 'Output mood in English. Use original language for title and artist.';
+        let langContext = 'Output mood in English. Use original language for title and artist.';
+        
+        if (language === 'zh') {
+             langContext = '请使用简体中文输出 mood 字段。对于中文歌曲，title 和 artist 必须使用汉字。';
+        } else if (language === 'tw') {
+             langContext = '請使用繁體中文輸出 mood 欄位。對於中文歌曲，title 和 artist 必須使用繁體漢字。';
+        }
 
         let regionContext = '';
         if (region !== 'global') {

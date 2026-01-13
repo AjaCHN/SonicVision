@@ -34,12 +34,22 @@ type TabType = 'visual' | 'audio' | 'ai' | 'system';
 
 const FloatingTooltip = ({ text, visible }: { text: string; visible: boolean }) => (
   <div 
-    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg shadow-2xl whitespace-normal w-44 text-center pointer-events-none transition-all duration-300 z-[100] ${visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'}`}
+    className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-3 px-3 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg shadow-2xl whitespace-normal w-max max-w-[240px] text-center pointer-events-none transition-all duration-300 z-[100] ${visible ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-2 scale-95'}`}
   >
     {text}
     <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-blue-600" />
   </div>
 );
+
+const TooltipArea = ({ children, text }: { children: React.ReactNode, text: string }) => {
+  const [isHovered, setIsHovered] = useState(false);
+  return (
+    <div className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+      <FloatingTooltip text={text} visible={isHovered} />
+      {children}
+    </div>
+  );
+};
 
 const CustomSelect = ({ label, value, options, onChange, hint }: { label: string, value: string, options: {value: string, label: string}[], onChange: (val: any) => void, hint?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -318,7 +328,7 @@ const Controls: React.FC<ControlsProps> = ({
                       <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.styleTheme}</span>
                       <div className="flex flex-wrap gap-4 p-2 max-h-[260px] overflow-y-auto custom-scrollbar">
                         {COLOR_THEMES.map((theme, i) => (
-                          <button key={i} onClick={() => setColorTheme(theme)} className={`w-10 h-10 rounded-full border-2 flex-shrink-0 transition-all duration-300 hover:scale-110 ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'border-white/80 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
+                          <button key={i} onClick={() => setColorTheme(theme)} className={`w-10 h-10 rounded-full border-2 flex-shrink-0 transition-all duration-300 hover:scale-110 overflow-hidden ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'border-white/80 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
                         ))}
                       </div>
                     </div>
@@ -389,26 +399,30 @@ const Controls: React.FC<ControlsProps> = ({
                         activeColor="red"
                       />
                     </div>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
-                      <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.fftSize}</span>
-                      <div className="grid grid-cols-2 gap-3">
-                         {[512, 1024, 2048, 4096].map(size => (
-                           <button key={size} onClick={() => setSettings({...settings, fftSize: size})} className={`py-4 rounded-xl border text-[13px] font-mono font-bold transition-all duration-300 ${settings.fftSize === size ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
-                             {size}
-                           </button>
-                         ))}
+                    <TooltipArea text={t.hints.fftSize}>
+                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
+                        <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.fftSize}</span>
+                        <div className="grid grid-cols-2 gap-3">
+                          {[512, 1024, 2048, 4096].map(size => (
+                            <button key={size} onClick={() => setSettings({...settings, fftSize: size})} className={`py-4 rounded-xl border text-[13px] font-mono font-bold transition-all duration-300 ${settings.fftSize === size ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
+                              {size}
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
+                    </TooltipArea>
                   </>
                 )}
                 {activeTab === 'ai' && (
                   <>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
-                      <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.lyrics}</span>
-                      <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-6 rounded-3xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
-                        {showLyrics ? t.aiState.active : t.aiState.enable}
-                      </button>
-                    </div>
+                    <TooltipArea text={t.hints.lyrics}>
+                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
+                        <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.lyrics}</span>
+                        <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-6 rounded-3xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
+                          {showLyrics ? t.aiState.active : t.aiState.enable}
+                        </button>
+                      </div>
+                    </TooltipArea>
                     <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
                       <CustomSelect 
                         label={`${t.lyrics} ${t.styleTheme}`} 
@@ -438,8 +452,13 @@ const Controls: React.FC<ControlsProps> = ({
                         hint={t.hints.language} 
                         options={[
                            { value: 'en', label: 'English' },
-                           { value: 'zh', label: '中文 (Chinese)' },
-                           { value: 'ja', label: '日本語 (Japanese)' }
+                           { value: 'zh', label: '简体中文 (Simplified Chinese)' },
+                           { value: 'tw', label: '繁體中文 (Traditional Chinese)' },
+                           { value: 'ja', label: '日本語 (Japanese)' },
+                           { value: 'es', label: 'Español (Spanish)' },
+                           { value: 'ko', label: '한국어 (Korean)' },
+                           { value: 'de', label: 'Deutsch (German)' },
+                           { value: 'fr', label: 'Français (French)' }
                         ]} 
                         onChange={(val) => setLanguage(val as Language)} 
                       />
