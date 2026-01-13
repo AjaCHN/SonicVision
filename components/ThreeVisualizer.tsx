@@ -47,10 +47,10 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
         {renderScene()}
         {settings.glow && (
             <EffectComposer enableNormalPass={false}>
+                {/* Optimized Bloom: Threshold raised to 0.4 to process fewer pixels. Removed invalid 'height' prop. */}
                 <Bloom 
-                    luminanceThreshold={0.2} 
+                    luminanceThreshold={0.4} 
                     luminanceSmoothing={0.85} 
-                    height={300} 
                     intensity={getBloomIntensity()} 
                 />
                 <ChromaticAberration 

@@ -22,6 +22,8 @@ export const zh = {
     region: '针对特定音乐市场优化 AI 搜索的匹配算法。',
     autoRotate: '每隔 30 秒自动循环切换可视化引擎。',
     rotateInterval: '设置自动循环模式时的切换间隔时间（秒）。',
+    cycleColors: '定期自动切换不同的色彩主题。',
+    colorInterval: '每个色彩主题的持续时间。',
     monitor: '将麦克风声音通过扬声器播放。注意：可能会产生刺耳的啸叫声！',
     reset: '将所有应用配置、语言及音频选项恢复至出厂状态。',
     resetVisual: '仅将视觉特效参数（速度、光晕、拖尾）回归默认。',
@@ -40,6 +42,8 @@ export const zh = {
   trails: '动态拖尾',
   autoRotate: '自动循环',
   rotateInterval: '切换间隔 (秒)',
+  cycleColors: '自动循环配色',
+  colorInterval: '切换间隔 (秒)',
   audioInput: '输入源选择',
   monitorAudio: '监听输入',
   lyrics: 'AI 曲目识别',
@@ -106,7 +110,7 @@ export const zh = {
     [VisualizerMode.RIPPLES]: '动感水波',
     [VisualizerMode.SILK]: '流光绸缎 (WebGL)',
     [VisualizerMode.LIQUID]: '液态星球 (WebGL)',
-    [VisualizerMode.TERRAIN]: '低多边形山脉 (WebGL)'
+    [VisualizerMode.TERRAIN]: '低多边形山脈 (WebGL)'
   },
   lyricsStyles: {
     [LyricsStyle.STANDARD]: '标准排版',

@@ -1,15 +1,16 @@
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import VisualizerCanvas from './components/VisualizerCanvas';
 import ThreeVisualizer from './components/ThreeVisualizer';
 import Controls from './components/Controls';
 import SongOverlay from './components/SongOverlay';
-import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice } from './types';
+import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region } from './types';
 import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
 import { TRANSLATIONS } from './translations';
+import { useAudio } from './hooks/useAudio';
 
-const STORAGE_PREFIX = 'av_v1_'; // Changed from sv_v6_ to av_v1_ for Aura Vision
+const STORAGE_PREFIX = 'av_v1_'; 
 const DEFAULT_MODE = VisualizerMode.PLASMA; 
 const DEFAULT_THEME_INDEX = 1; 
 const DEFAULT_SETTINGS: VisualizerSettings = {
@@ -19,6 +20,8 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   trails: true,
   autoRotate: false,
   rotateInterval: 30,
+  cycleColors: false,
+  colorInterval: 45,
   hideCursor: false,
   smoothing: 0.8,
   fftSize: 512, 
@@ -31,17 +34,7 @@ const DEFAULT_LANGUAGE: Language = 'en';
 
 const App: React.FC = () => {
   const [hasStarted, setHasStarted] = useState(false);
-  const [isListening, setIsListening] = useState(false);
-  const [audioContext, setAudioContext] = useState<AudioContext | null>(null);
-  const [analyser, setAnalyser] = useState<AnalyserNode | null>(null);
-  const [mediaStream, setMediaStream] = useState<MediaStream | null>(null);
-  const [audioDevices, setAudioDevices] = useState<AudioDevice[]>([]);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   
-  // Ref to track the active audio context for robust cleanup
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const monitorGainNodeRef = useRef<GainNode | null>(null);
-
   const getStorage = useCallback(<T,>(key: string, fallback: T): T => {
     if (typeof window === 'undefined') return fallback;
     const fullKey = STORAGE_PREFIX + key;
@@ -74,6 +67,19 @@ const App: React.FC = () => {
   const [region, setRegion] = useState<Region>(() => getStorage('region', detectDefaultRegion()));
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(() => getStorage('deviceId', ''));
 
+  // Use the new custom hook to handle all audio logic
+  const { 
+    isListening, 
+    audioContext, 
+    analyser, 
+    mediaStream, 
+    audioDevices, 
+    errorMessage, 
+    setErrorMessage,
+    startMicrophone, 
+    toggleMicrophone 
+  } = useAudio({ settings, language });
+
   const [isIdentifying, setIsIdentifying] = useState(false);
   const [currentSong, setCurrentSong] = useState<SongInfo | null>(null);
 
@@ -92,49 +98,6 @@ const App: React.FC = () => {
       localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(value));
     });
   }, [mode, colorTheme, settings, lyricsStyle, showLyrics, language, region, selectedDeviceId]);
-
-  useEffect(() => {
-    if (analyser) {
-      analyser.smoothingTimeConstant = settings.smoothing;
-      if (analyser.fftSize !== settings.fftSize) {
-        analyser.fftSize = settings.fftSize;
-      }
-    }
-  }, [settings.smoothing, settings.fftSize, analyser]);
-
-  // Handle monitor gain changes dynamically
-  useEffect(() => {
-    if (monitorGainNodeRef.current && audioContextRef.current) {
-        const targetGain = settings.monitor ? 1 : 0;
-        // Smooth transition to avoid clicking
-        monitorGainNodeRef.current.gain.setTargetAtTime(targetGain, audioContextRef.current.currentTime, 0.1);
-    }
-  }, [settings.monitor]);
-
-  const updateAudioDevices = useCallback(async () => {
-    try {
-      // Check if enumerateDevices is supported
-      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-      
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const inputs = devices
-        .filter(d => d.kind === 'audioinput')
-        .map(d => ({ deviceId: d.deviceId, label: d.label || `Mic ${d.deviceId.slice(0, 5)}` }));
-      setAudioDevices(inputs);
-    } catch (e) {
-      console.warn("Device fetch warning:", e);
-    }
-  }, []);
-
-  useEffect(() => {
-    updateAudioDevices();
-    if (navigator.mediaDevices) {
-      navigator.mediaDevices.addEventListener('devicechange', updateAudioDevices);
-      return () => {
-        navigator.mediaDevices.removeEventListener('devicechange', updateAudioDevices);
-      };
-    }
-  }, [updateAudioDevices]);
 
   const randomizeSettings = useCallback(() => {
     const randomTheme = COLOR_THEMES[Math.floor(Math.random() * COLOR_THEMES.length)];
@@ -168,12 +131,14 @@ const App: React.FC = () => {
       glow: DEFAULT_SETTINGS.glow,
       trails: DEFAULT_SETTINGS.trails,
       autoRotate: DEFAULT_SETTINGS.autoRotate,
+      cycleColors: DEFAULT_SETTINGS.cycleColors,
       smoothing: DEFAULT_SETTINGS.smoothing,
       hideCursor: DEFAULT_SETTINGS.hideCursor,
       quality: DEFAULT_SETTINGS.quality
     }));
   }, []);
 
+  // Auto Mode Cycle
   useEffect(() => {
     let interval: number | undefined;
     if (isListening && settings.autoRotate) {
@@ -186,156 +151,28 @@ const App: React.FC = () => {
     return () => clearInterval(interval);
   }, [isListening, settings.autoRotate, settings.rotateInterval, mode]);
 
-  const startMicrophone = useCallback(async (deviceId?: string) => {
-    setErrorMessage(null);
-    try {
-      let stream: MediaStream;
-
-      // 1. Clean up existing context before creating a new one
-      const oldContext = audioContextRef.current;
-      if (oldContext) {
-        audioContextRef.current = null;
-        if (oldContext.state !== 'closed') {
-          try {
-             await oldContext.close();
-          } catch(e) {
-             console.warn("Error closing old context", e);
-          }
-        }
-      }
-      
-      // Note: we don't need to close 'audioContext' state variable separately 
-      // because it points to the same object as oldContext.
-
-      // 2. Acquire Stream
-      try {
-          const constraints: MediaStreamConstraints = { 
-              audio: {
-                deviceId: deviceId ? { exact: deviceId } : undefined,
-                echoCancellation: false,
-                noiseSuppression: false,
-                autoGainControl: false
-              }
-          };
-          stream = await navigator.mediaDevices.getUserMedia(constraints);
-      } catch (e: any) {
-           // Fallback: If specific device fails (e.g. unplugged), try default device
-           if (deviceId && (e.name === 'OverconstrainedError' || e.name === 'NotFoundError' || e.name === 'NotReadableError')) {
-               console.warn(`Device ${deviceId} unavailable, falling back to default.`);
-               const fallbackConstraints = { 
-                   audio: {
-                     echoCancellation: false,
-                     noiseSuppression: false,
-                     autoGainControl: false
-                   }
-               };
-               stream = await navigator.mediaDevices.getUserMedia(fallbackConstraints);
-               // Don't update state here to avoid race condition loop
-           } else {
-               throw e;
-           }
-      }
-      
-      // 3. Create Audio Context
-      const context = new (window.AudioContext || (window as any).webkitAudioContext)();
-      
-      // Ensure context is running (sometimes it starts suspended)
-      if (context.state === 'suspended') {
-        await context.resume();
-      }
-
-      const src = context.createMediaStreamSource(stream);
-      const node = context.createAnalyser();
-      node.fftSize = settings.fftSize;
-      node.smoothingTimeConstant = settings.smoothing;
-      
-      src.connect(node);
-
-      // Monitoring Path
-      const monitorNode = context.createGain();
-      monitorNode.gain.value = settings.monitor ? 1 : 0;
-      src.connect(monitorNode);
-      monitorNode.connect(context.destination);
-      monitorGainNodeRef.current = monitorNode;
-      
-      audioContextRef.current = context;
-      setAudioContext(context);
-      setAnalyser(node);
-      setMediaStream(stream);
-      setIsListening(true);
-
-      // 4. Refresh devices list to get permission-gated labels
-      updateAudioDevices();
-
-    } catch (err: any) {
-      const t = TRANSLATIONS[language];
-      
-      // Graceful error handling
-      const isPermissionError = err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError';
-      
-      if (isPermissionError) {
-         console.warn("Microphone permission denied.");
-      } else {
-         console.error('Audio initialization error:', err);
-      }
-      
-      setIsListening(false);
-      
-      let msg = t.errors.general;
-      if (isPermissionError) {
-          msg = t.errors.accessDenied;
-      } else if (err.name === 'NotFoundError') {
-          msg = t.errors.noDevice;
-      } else if (err.name === 'NotReadableError') {
-          msg = t.errors.deviceBusy;
-      } else if (err.message) {
-          msg = err.message;
-      }
-      setErrorMessage(msg);
+  // Auto Color Cycle
+  useEffect(() => {
+    let interval: number | undefined;
+    if (isListening && settings.cycleColors) {
+      interval = window.setInterval(() => {
+        const currentIndex = COLOR_THEMES.findIndex(t => JSON.stringify(t) === JSON.stringify(colorTheme));
+        const idx = currentIndex === -1 ? 0 : currentIndex;
+        const nextIndex = (idx + 1) % COLOR_THEMES.length;
+        setColorTheme(COLOR_THEMES[nextIndex]);
+      }, settings.colorInterval * 1000);
     }
-  }, [settings.fftSize, settings.smoothing, settings.monitor, updateAudioDevices, language]);
-
-  const toggleMicrophone = useCallback(() => {
-    if (isListening) {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(t => t.stop());
-      }
-      
-      const oldContext = audioContextRef.current;
-      if (oldContext) {
-        audioContextRef.current = null;
-        if (oldContext.state !== 'closed') {
-           oldContext.close().catch(e => console.warn("Error closing context on toggle", e));
-        }
-      }
-      setAudioContext(null);
-      setIsListening(false);
-    } else {
-      startMicrophone(selectedDeviceId);
-    }
-  }, [isListening, mediaStream, selectedDeviceId, startMicrophone]);
+    return () => clearInterval(interval);
+  }, [isListening, settings.cycleColors, settings.colorInterval, colorTheme]);
 
   // Restart microphone when device changes (only if already listening)
   useEffect(() => {
     if (isListening) {
-      // Cleanup old stream
-      if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-      // Start new one
+      // Logic handled inside useAudio hook would be cleaner, but we trigger the restart here
+      // to keep the hook focused on mechanism, not policy
       startMicrophone(selectedDeviceId);
     }
-    // Note: startMicrophone is intentionally excluded to prevent restart on settings change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedDeviceId]);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      const ctx = audioContextRef.current;
-      if (ctx && ctx.state !== 'closed') {
-        ctx.close().catch(e => console.warn("Error closing context on unmount", e));
-      }
-    };
-  }, []);
 
   const performIdentification = useCallback(async (stream: MediaStream) => {
     if (!showLyrics || isIdentifying) return;
@@ -423,7 +260,7 @@ const App: React.FC = () => {
       <SongOverlay song={currentSong} lyricsStyle={lyricsStyle} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
       <Controls 
         currentMode={mode} setMode={setMode} colorTheme={colorTheme} setColorTheme={setColorTheme}
-        toggleMicrophone={toggleMicrophone} isListening={isListening} isIdentifying={isIdentifying}
+        toggleMicrophone={() => toggleMicrophone(selectedDeviceId)} isListening={isListening} isIdentifying={isIdentifying}
         lyricsStyle={lyricsStyle} setLyricsStyle={setLyricsStyle} showLyrics={showLyrics} setShowLyrics={setShowLyrics}
         language={language} setLanguage={setLanguage} region={region} setRegion={setRegion}
         settings={settings} setSettings={setSettings} 

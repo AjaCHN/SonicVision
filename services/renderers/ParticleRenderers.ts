@@ -15,13 +15,13 @@ export class ParticlesRenderer implements IVisualizerRenderer {
     let bass = getAverage(data, 0, 10) / 255;
     
     if (settings.glow) {
+        // Optimization: Use simple fillRect with opacity instead of full-screen radial gradient
+        // Radial gradients on large areas are very expensive in Canvas 2D
         ctx.save();
-        const nebulaRadius = Math.max(w, h) * (0.4 + bass * 0.3 * settings.sensitivity);
-        const gradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, nebulaRadius);
-        ctx.globalAlpha = 0.1 + (bass * 0.2);
-        gradient.addColorStop(0, colors[1] || colors[0]);
-        gradient.addColorStop(1, 'transparent');
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = colors[1] || colors[0];
+        // Calculate opacity based on bass intensity
+        const glowOpacity = 0.05 + (bass * 0.15 * settings.sensitivity);
+        ctx.globalAlpha = Math.min(0.2, glowOpacity);
         ctx.fillRect(0, 0, w, h);
         ctx.restore();
     }

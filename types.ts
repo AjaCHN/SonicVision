@@ -45,6 +45,8 @@ export interface VisualizerSettings {
   trails: boolean;
   autoRotate: boolean;
   rotateInterval: number;
+  cycleColors: boolean;
+  colorInterval: number;
   hideCursor: boolean;
   smoothing: number;
   fftSize: number;
