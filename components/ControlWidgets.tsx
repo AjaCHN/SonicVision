@@ -139,17 +139,20 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
   onChange: () => void, 
   hintText?: string, 
   children?: React.ReactNode,
-  activeColor?: 'blue' | 'red' 
+  activeColor?: 'blue' | 'red' | 'green'
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
-  const bgClass = activeColor === 'red' 
-    ? (value ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]' : 'bg-white/10')
-    : (value ? 'bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.4)]' : 'bg-white/10');
+  let bgClass = 'bg-white/10';
+  if (value) {
+      if (activeColor === 'red') bgClass = 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.4)]';
+      else if (activeColor === 'green') bgClass = 'bg-green-600 shadow-[0_0_15px_rgba(34,197,94,0.4)]';
+      else bgClass = 'bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,0.4)]';
+  }
 
   return (
-    <div className="bg-black/20 rounded-2xl p-5 space-y-5">
+    <div className="bg-black/20 rounded-2xl p-5 space-y-5 border border-white/5 hover:border-white/10 transition-colors">
       <div 
         ref={containerRef}
         className="flex items-center justify-between relative group cursor-pointer"
@@ -160,14 +163,14 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
          {hintText && <FloatingTooltip text={hintText} visible={isHovered} anchorRef={containerRef} />}
          <div className="flex flex-col">
            <span className="text-xs font-black uppercase text-white/60 tracking-widest">{label}</span>
-           <span className="text-[10px] text-white/30 font-bold mt-0.5">{statusText}</span>
+           <span className={`text-[10px] font-bold mt-0.5 transition-colors ${value ? 'text-white' : 'text-white/30'}`}>{statusText}</span>
          </div>
          <button onClick={(e) => { e.stopPropagation(); onChange(); }} className={`w-12 h-6.5 rounded-full relative transition-all duration-500 ${bgClass}`}>
            <div className={`absolute top-1 left-1 w-4.5 h-4.5 bg-white rounded-full shadow-lg transition-all duration-500 ${value ? 'translate-x-[22px]' : 'translate-x-0'}`} />
          </button>
       </div>
       {value && children && (
-         <div className="animate-fade-in-up">
+         <div className="animate-fade-in-up pt-4 border-t border-white/5">
            {children}
          </div>
       )}
