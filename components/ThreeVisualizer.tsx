@@ -5,45 +5,10 @@ import { Environment } from '@react-three/drei';
 import * as THREE from 'three';
 import { VisualizerMode, VisualizerSettings } from '../types';
 
-// Add global JSX augmentation to ensure Three.js intrinsic elements are recognized by the TypeScript compiler.
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      mesh: any;
-      pointLight: any;
-      spotLight: any;
-      ambientLight: any;
-      primitive: any;
-      meshPhysicalMaterial: any;
-      color: any;
-      directionalLight: any;
-      fog: any;
-      circleGeometry: any;
-      meshBasicMaterial: any;
-      meshStandardMaterial: any;
-    }
-  }
-
-  // Augment React.JSX namespace for compatibility with newer React types
-  namespace React {
-    namespace JSX {
-      interface IntrinsicElements {
-        mesh: any;
-        pointLight: any;
-        spotLight: any;
-        ambientLight: any;
-        primitive: any;
-        meshPhysicalMaterial: any;
-        color: any;
-        directionalLight: any;
-        fog: any;
-        circleGeometry: any;
-        meshBasicMaterial: any;
-        meshStandardMaterial: any;
-      }
-    }
-  }
-}
+// Fix: By extending THREE, we make its components available to react-three-fiber,
+// both for the renderer and for TypeScript. This resolves errors where JSX elements
+// like <mesh>, <color>, etc., were not recognized.
+extend(THREE);
 
 interface ThreeVisualizerProps {
   analyser: AnalyserNode | null;

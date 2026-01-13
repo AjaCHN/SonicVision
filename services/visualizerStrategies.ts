@@ -11,6 +11,17 @@ function getAverage(data: Uint8Array, start: number, end: number) {
   return sum / (safeEnd - safeStart);
 }
 
+// --- Ripple Type ---
+interface Ripple {
+  x: number;
+  y: number;
+  radius: number;
+  life: number;
+  maxLife: number;
+  speed: number;
+  color: string;
+}
+
 // --- Renderers ---
 
 export class BarsRenderer implements IVisualizerRenderer {
@@ -36,6 +47,61 @@ export class BarsRenderer implements IVisualizerRenderer {
     }
   }
 }
+
+export class WaterRipplesRenderer implements IVisualizerRenderer {
+  private ripples: Ripple[] = [];
+  private lastBass: number = 0;
+
+  init() {
+    this.ripples = [];
+    this.lastBass = 0;
+  }
+
+  draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings) {
+    const bass = getAverage(data, 0, 10);
+    const hitThreshold = 25 * settings.sensitivity; // Bass needs to jump by this much
+    const minBassForHit = 80;
+
+    // Detect a "bass hit"
+    if (bass > this.lastBass + hitThreshold && bass > minBassForHit) {
+      const newRipple: Ripple = {
+        x: Math.random() * w,
+        y: Math.random() * h,
+        radius: bass / 255 * 20, // Start radius based on hit intensity
+        life: 120, // 2 seconds at 60fps
+        maxLife: 120,
+        speed: (bass / 255) * 1.5 + 0.5, // Ripple speed based on hit intensity
+        color: colors[this.ripples.length % colors.length] || colors[0] || '#fff'
+      };
+      this.ripples.push(newRipple);
+    }
+    this.lastBass = bass;
+
+    // Update and draw ripples
+    ctx.save();
+    for (let i = this.ripples.length - 1; i >= 0; i--) {
+      const r = this.ripples[i];
+      r.life -= settings.speed;
+      
+      if (r.life <= 0) {
+        this.ripples.splice(i, 1);
+        continue;
+      }
+      
+      const progress = 1 - (r.life / r.maxLife);
+      const currentRadius = r.radius + progress * Math.min(w, h) * 0.2 * r.speed;
+      
+      ctx.beginPath();
+      ctx.strokeStyle = r.color;
+      ctx.lineWidth = 4 * (1 - progress);
+      ctx.globalAlpha = 0.8 * (1 - progress); // Fade out
+      ctx.arc(r.x, r.y, currentRadius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
 
 export class RingsRenderer implements IVisualizerRenderer {
   init() {}
