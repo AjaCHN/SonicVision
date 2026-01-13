@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle, Language } from './types';
 
 // Translation dictionary for supported languages
@@ -80,6 +81,7 @@ export const TRANSLATIONS: Record<Language, any> = {
       [VisualizerMode.KALEIDOSCOPE]: 'Kaleidoscope',
       [VisualizerMode.LASERS]: 'Concert Lasers',
       [VisualizerMode.STROBE]: 'Grid Matrix',
+      [VisualizerMode.SMOKE]: 'Ethereal Smoke',
       [VisualizerMode.SILK]: 'Silk Waves',
       [VisualizerMode.LIQUID]: 'Liquid Sphere',
       [VisualizerMode.TERRAIN]: 'Low-Poly Terrain'
@@ -205,6 +207,7 @@ export const TRANSLATIONS: Record<Language, any> = {
       [VisualizerMode.KALEIDOSCOPE]: '迷幻万花筒',
       [VisualizerMode.LASERS]: '舞台激光矩阵',
       [VisualizerMode.STROBE]: '巨幕点阵阵列',
+      [VisualizerMode.SMOKE]: '空灵烟雾',
       [VisualizerMode.SILK]: '流光绸缎 (WebGL)',
       [VisualizerMode.LIQUID]: '液态星球 (WebGL)',
       [VisualizerMode.TERRAIN]: '低多边形山脉 (WebGL)'
@@ -330,6 +333,7 @@ export const TRANSLATIONS: Record<Language, any> = {
       [VisualizerMode.KALEIDOSCOPE]: '万華鏡',
       [VisualizerMode.LASERS]: 'コンサート・レーザー',
       [VisualizerMode.STROBE]: 'グリッド・マトリックス',
+      [VisualizerMode.SMOKE]: 'エーテル・スモーク',
       [VisualizerMode.SILK]: 'シルク・ウェーブ',
       [VisualizerMode.LIQUID]: 'リキッド・スフィア',
       [VisualizerMode.TERRAIN]: 'ローポリ・テレイン'
