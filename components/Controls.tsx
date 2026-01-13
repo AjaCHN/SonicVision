@@ -54,6 +54,14 @@ const Controls: React.FC<ControlsProps> = ({
   const idleTimerRef = useRef<number | null>(null);
   const t = TRANSLATIONS[language];
 
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+    } else if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  };
+
   useEffect(() => {
     const handleActivity = () => {
       setIsIdle(false);
@@ -80,13 +88,77 @@ const Controls: React.FC<ControlsProps> = ({
     };
   }, []);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      document.documentElement.requestFullscreen();
-    } else if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
-  };
+  // Keyboard Shortcuts Handler
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'SELECT' || target.tagName === 'TEXTAREA') return;
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+      switch (e.code) {
+        case 'Space':
+          e.preventDefault();
+          toggleMicrophone();
+          break;
+        case 'KeyF':
+          toggleFullscreen();
+          break;
+        case 'KeyR':
+          randomizeSettings();
+          break;
+        case 'KeyL':
+          setShowLyrics(!showLyrics);
+          break;
+        case 'KeyH':
+          setIsExpanded(prev => !prev);
+          break;
+        case 'KeyG':
+          setSettings({ ...settings, glow: !settings.glow });
+          break;
+        case 'KeyT':
+          setSettings({ ...settings, trails: !settings.trails });
+          break;
+        case 'ArrowRight': {
+          const modes = Object.keys(VISUALIZER_PRESETS) as VisualizerMode[];
+          const currentIndex = modes.indexOf(currentMode);
+          const nextIndex = (currentIndex + 1) % modes.length;
+          setMode(modes[nextIndex]);
+          break;
+        }
+        case 'ArrowLeft': {
+          const modes = Object.keys(VISUALIZER_PRESETS) as VisualizerMode[];
+          const currentIndex = modes.indexOf(currentMode);
+          const prevIndex = (currentIndex - 1 + modes.length) % modes.length;
+          setMode(modes[prevIndex]);
+          break;
+        }
+        case 'ArrowDown': {
+          e.preventDefault();
+          const currentIndex = COLOR_THEMES.findIndex(t => JSON.stringify(t) === JSON.stringify(colorTheme));
+          const idx = currentIndex === -1 ? 0 : currentIndex;
+          const nextIndex = (idx + 1) % COLOR_THEMES.length;
+          setColorTheme(COLOR_THEMES[nextIndex]);
+          break;
+        }
+        case 'ArrowUp': {
+          e.preventDefault();
+          const currentIndex = COLOR_THEMES.findIndex(t => JSON.stringify(t) === JSON.stringify(colorTheme));
+          const idx = currentIndex === -1 ? 0 : currentIndex;
+          const prevIndex = (idx - 1 + COLOR_THEMES.length) % COLOR_THEMES.length;
+          setColorTheme(COLOR_THEMES[prevIndex]);
+          break;
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [
+    currentMode, colorTheme, settings, showLyrics, 
+    toggleMicrophone, toggleFullscreen, randomizeSettings, 
+    setMode, setColorTheme, setSettings, setShowLyrics, setIsExpanded
+  ]);
 
   return (
     <>

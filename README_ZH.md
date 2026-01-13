@@ -1,5 +1,5 @@
 
-# SonicVision AI 🎵👁️
+# Aura Vision 🎵👁️
 
 [English](README.md)
 
@@ -9,7 +9,7 @@
 ![Gemini AI](https://img.shields.io/badge/AI-Gemini%203.0-8E75B2?logo=google&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind-38B2AC?logo=tailwindcss&logoColor=white)
 
-**SonicVision AI** 是一个沉浸式的、基于浏览器的音乐可视化体验。它将麦克风捕捉到的实时音频转化为令人惊叹的实时生成艺术。
+**Aura Vision** 是一个沉浸式的、基于浏览器的音乐可视化体验。它将麦克风捕捉到的实时音频转化为令人惊叹的实时生成艺术。
 
 由 **Google Gemini 3.0 Pro** 驱动，它超越了简单的可视化，通过定期监听音频流来**识别歌曲**，检测音乐情绪，并实时获取同步歌词。它现在利用 **Google Search Grounding** 来确保全球范围内歌曲识别的高准确率。
 
@@ -28,7 +28,7 @@
 *   **区域优先:** 根据您选择的区域（全球、美国、中国、日本等）进行上下文感知的识别。
 
 ### 🎨 可视化模式
-SonicVision AI 具有 8 种独特的、数学生成的视觉引擎：
+Aura Vision 具有 8 种独特的、数学生成的视觉引擎：
 
 *   **频率条 (Frequency Bars):** 带有渐变填充的经典镜像频谱分析仪。
 *   **霓虹光环 (Neon Rings):** 随中频扩展和脉动的同心圆。
@@ -70,8 +70,8 @@ SonicVision AI 具有 8 种独特的、数学生成的视觉引擎：
 
 1.  **克隆仓库**
     ```bash
-    git clone https://github.com/yourusername/sonicvision-ai.git
-    cd sonicvision-ai
+    git clone https://github.com/yourusername/aura-vision.git
+    cd aura-vision
     ```
 
 2.  **安装依赖**
@@ -106,7 +106,7 @@ SonicVision AI 具有 8 种独特的、数学生成的视觉引擎：
     
     > **🎧 关键音频提示:** 为了获得最佳视觉体验，请确保您的操作系统或浏览器**没有**对麦克风输入应用“噪声抑制”或“回声消除”。这些功能会过滤掉音乐频率（低音/高音），使可视化效果看起来平坦。
     >
-    > *SonicVision 会尝试自动禁用这些功能，但系统级设置可能会覆盖它。*
+    > *Aura Vision 会尝试自动禁用这些功能，但系统级设置可能会覆盖它。*
 
 2.  **控制:**
     *   **底部栏:** 访问控制面板以切换模式、更改颜色或调整设置。

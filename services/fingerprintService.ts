@@ -1,7 +1,7 @@
 
 import { SongInfo } from '../types';
 
-const STORAGE_KEY = 'sv_fingerprints_v1';
+const STORAGE_KEY = 'av_fingerprints_v1'; // Changed from sv_fingerprints_v1
 const MAX_CACHE_SIZE = 50;
 const SIMILARITY_THRESHOLD = 0.25; // Jaccard threshold (low because clips vary in content)
 

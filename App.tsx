@@ -9,7 +9,7 @@ import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
 import { TRANSLATIONS } from './translations';
 
-const STORAGE_PREFIX = 'sv_v6_';
+const STORAGE_PREFIX = 'av_v1_'; // Changed from sv_v6_ to av_v1_ for Aura Vision
 const DEFAULT_MODE = VisualizerMode.PLASMA; 
 const DEFAULT_THEME_INDEX = 1; 
 const DEFAULT_SETTINGS: VisualizerSettings = {

@@ -1,5 +1,5 @@
 
-# SonicVision AI 🎵👁️
+# Aura Vision 🎵👁️
 
 [中文文档](README_ZH.md)
 
@@ -9,7 +9,7 @@
 ![Gemini AI](https://img.shields.io/badge/AI-Gemini%203.0-8E75B2?logo=google&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Styling-Tailwind-38B2AC?logo=tailwindcss&logoColor=white)
 
-**SonicVision AI** is an immersive, browser-based music visualization experience. It transforms live audio from your microphone into stunning, real-time generative art.
+**Aura Vision** is an immersive, browser-based music visualization experience. It transforms live audio from your microphone into stunning, real-time generative art.
 
 Powered by **Google Gemini 3.0 Pro**, it goes beyond simple visualization by periodically listening to the audio stream to **identify songs**, detect the musical mood, and fetch synchronized lyrics in real-time. It now leverages **Google Search Grounding** to ensure high accuracy for song identification across global regions.
 
@@ -28,7 +28,7 @@ Powered by **Google Gemini 3.0 Pro**, it goes beyond simple visualization by per
 *   **Region Prioritization:** Context-aware identification based on your selected region (Global, US, China, Japan, etc.).
 
 ### 🎨 Visualizer Modes
-SonicVision AI features 8 distinct, mathematically generated visualization engines:
+Aura Vision features 8 distinct, mathematically generated visualization engines:
 
 *   **Frequency Bars:** Classic mirrored spectrum analyzer with gradient fills.
 *   **Neon Rings:** Concentric circles that expand and pulse with mid-range frequencies.
@@ -70,8 +70,8 @@ SonicVision AI features 8 distinct, mathematically generated visualization engin
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/yourusername/sonicvision-ai.git
-    cd sonicvision-ai
+    git clone https://github.com/yourusername/aura-vision.git
+    cd aura-vision
     ```
 
 2.  **Install dependencies**
@@ -106,7 +106,7 @@ SonicVision AI features 8 distinct, mathematically generated visualization engin
     
     > **🎧 Critical Audio Tip:** For the best visual experience, ensure your operating system or browser is **NOT** applying "Noise Suppression" or "Echo Cancellation" to your microphone input. These features filter out music frequencies (bass/treble), making the visualizer look flat.
     >
-    > *SonicVision attempts to disable these automatically, but system-level settings may override this.*
+    > *Aura Vision attempts to disable these automatically, but system-level settings may override this.*
 
 2.  **Controls:**
     *   **Bottom Bar:** Access the control panel to switch modes, change colors, or adjust settings.

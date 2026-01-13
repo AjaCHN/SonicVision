@@ -51,7 +51,7 @@ export const ja = {
   listening: 'アクティブ',
   identifying: 'AI解析中...',
   startExperience: '体験を開始',
-  welcomeTitle: 'SonicVision AI',
+  welcomeTitle: 'Aura Vision',
   welcomeText: 'オーディオを生成的なデジタルアートに変換します。リアルタイムのスペクトル分析とAI認識による没入型体験。',
   hideOptions: '閉じる',
   showOptions: 'オプションを表示',
@@ -114,8 +114,8 @@ export const ja = {
     [LyricsStyle.MINIMAL]: 'ミニマル'
   },
   helpModal: {
-    title: 'SonicVision AI ガイド',
-    intro: 'SonicVision AIは、デバイスのマイクを使用して音楽と同期したリアルタイムのアートを生成する没入型の視聴覚体験です。',
+    title: 'Aura Vision ガイド',
+    intro: 'Aura Visionは、デバイスのマイクを使用して音楽と同期したリアルタイムのアートを生成する没入型の視聴覚体験です。',
     shortcutsTitle: 'ショートカットキー',
     shortcutItems: {
       toggleMic: 'マイク開始 / 停止',

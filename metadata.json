@@ -1,5 +1,5 @@
 {
-  "name": "SonicVision AI",
+  "name": "Aura Vision",
   "description": "Transform live audio into stunning, real-time generative art powered by Gemini AI.",
   "requestFramePermissions": [
     "microphone"

@@ -51,7 +51,7 @@ export const fr = {
   listening: 'Actif',
   identifying: 'Analyse IA...',
   startExperience: 'Lancer l\'Expérience',
-  welcomeTitle: 'SonicVision AI',
+  welcomeTitle: 'Aura Vision',
   welcomeText: 'Traduisez l\'audio en art génératif. Découvrez l\'identification musicale en temps réel et la visualisation immersive.',
   hideOptions: 'Réduire',
   showOptions: 'Options',
@@ -114,8 +114,8 @@ export const fr = {
     [LyricsStyle.MINIMAL]: 'Minimaliste'
   },
   helpModal: {
-    title: 'Guide SonicVision AI',
-    intro: 'SonicVision AI transforme votre entrée microphone en art numérique génératif hautement réactif grâce à une analyse spectrale avancée.',
+    title: 'Guide Aura Vision',
+    intro: 'Aura Vision transforme votre entrée microphone en art numérique génératif hautement réactif grâce à une analyse spectrale avancée.',
     shortcutsTitle: 'Raccourcis Clavier',
     shortcutItems: {
       toggleMic: 'Entrée Audio On/Off',
