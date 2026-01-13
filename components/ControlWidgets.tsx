@@ -41,15 +41,19 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
 
   return createPortal(
     <div 
-      className="fixed z-[9999] px-3 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg shadow-2xl whitespace-normal w-max max-w-[240px] text-center pointer-events-none animate-fade-in-up"
+      className="fixed z-[9999] pointer-events-none"
       style={{
         top: coords.top,
         left: coords.left,
         transform: 'translate(-50%, -100%)'
       }}
     >
-      {text}
-      <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-blue-600" />
+      <div className="animate-fade-in-up">
+        <div className="px-3 py-2 bg-blue-600 text-white text-[11px] font-bold rounded-lg shadow-2xl whitespace-normal w-max max-w-[240px] text-center relative">
+          {text}
+          <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-blue-600" />
+        </div>
+      </div>
     </div>,
     document.body
   );
@@ -159,7 +163,7 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
            <span className="text-[9px] text-white/30 font-bold mt-0.5">{statusText}</span>
          </div>
          <button onClick={(e) => { e.stopPropagation(); onChange(); }} className={`w-12 h-6.5 rounded-full relative transition-all duration-500 ${bgClass}`}>
-           <div className={`absolute top-1 w-4.5 h-4.5 bg-white rounded-full shadow-lg transition-all duration-500 ${value ? 'translate-x-[22px]' : 'translate-x-0 left-1'}`} />
+           <div className={`absolute top-1 left-1 w-4.5 h-4.5 bg-white rounded-full shadow-lg transition-all duration-500 ${value ? 'translate-x-[22px]' : 'translate-x-0'}`} />
          </button>
       </div>
       {value && children && (
@@ -235,7 +239,7 @@ export const ControlPanelButton = ({ onClick, label, active, hintText }: { onCli
         onMouseEnter={() => setIsHovered(true)} 
         onMouseLeave={() => setIsHovered(false)}
       >
-        {hintText && <FloatingTooltip text={hintText} visible={isHovered} anchorRef={buttonRef} />}
+        {hintText && <FloatingTooltip text={hintText} visible={isHovered} anchorRef={buttonRef} /> }
         <button 
           onClick={onClick} 
           className={`w-full py-4 rounded-xl border text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-300 ${active ? 'bg-white/15 border-white/30 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/10'}`}

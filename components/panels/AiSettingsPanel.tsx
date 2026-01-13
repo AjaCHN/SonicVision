@@ -20,12 +20,13 @@ export const AiSettingsPanel: React.FC<AiSettingsPanelProps> = ({
   return (
     <>
       <TooltipArea text={t.hints.lyrics}>
-        <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
-          <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.lyrics}</span>
-          {/* Adjusted padding to py-3.5 to match CustomSelect height */}
-          <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-3.5 rounded-xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
-            {showLyrics ? t.aiState.active : t.aiState.enable}
-          </button>
+        <div className="bg-white/[0.04] rounded-[2rem] p-8 shadow-2xl h-full flex flex-col justify-center">
+          <div className="space-y-2">
+            <span className="text-[11px] font-bold uppercase text-white/50 tracking-[0.18em] block ml-1">{t.lyrics}</span>
+            <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-3.5 rounded-xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
+              {showLyrics ? t.aiState.active : t.aiState.enable}
+            </button>
+          </div>
         </div>
       </TooltipArea>
       <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
