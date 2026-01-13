@@ -31,11 +31,12 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
 
         // Scale based on bass and sensitivity
         const scale = 1 + (bass * 0.5 * settings.sensitivity);
-        textRef.current.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        // Fix: Removed translate(-50%, -50%) as the parent container is already centered
+        textRef.current.style.transform = `scale(${scale})`;
         textRef.current.style.opacity = `${0.6 + bass * 0.4}`;
       } else if (textRef.current) {
         // Reset if pulse is disabled or no audio
-        textRef.current.style.transform = `translate(-50%, -50%) scale(1)`;
+        textRef.current.style.transform = `scale(1)`;
         textRef.current.style.opacity = '0.9';
       }
       requestRef.current = requestAnimationFrame(animate);
@@ -57,7 +58,7 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
     >
       <div 
         ref={textRef} 
-        className="text-white font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none"
+        className="text-white font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block"
         style={{ 
             fontSize: 'min(12vw, 160px)', 
             textShadow: '0 0 40px rgba(255,255,255,0.3)',
