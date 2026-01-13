@@ -15,8 +15,16 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
   const meshRef = useRef<THREE.Mesh>(null);
   const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
   
-  // Optimized: Level 3 detail
-  const geometry = useMemo(() => new THREE.IcosahedronGeometry(4, 3), []);
+  // Optimized: Reduce polyhedron detail based on quality
+  // Detail 3 = High vertex count (~640 faces)
+  // Detail 2 = Medium (~320 faces)
+  // Detail 1 = Low (~80 faces) - creates a cool low-poly look for low-end devices
+  const geometry = useMemo(() => {
+      let detail = 1;
+      if (settings.quality === 'med') detail = 2;
+      if (settings.quality === 'high') detail = 3;
+      return new THREE.IcosahedronGeometry(4, detail);
+  }, [settings.quality]);
   
   const originalPositions = useMemo(() => {
      const pos = geometry.attributes.position;
@@ -51,9 +59,15 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
         const oy = originalPositions[i*3+1];
         const oz = originalPositions[i*3+2];
         
+        // Simplified Noise Calculation
+        // Removed one layer of trig functions for speed
         const noise1 = Math.sin(ox * 0.4 + time) * Math.cos(oy * 0.3 + time * 0.8) * Math.sin(oz * 0.4 + time * 1.2);
         
-        const noise2 = Math.sin(ox * 2.5 + time * 1.5) * Math.cos(oy * 2.5 + time * 1.7) * Math.sin(oz * 2.5 + time * 1.3);
+        let noise2 = 0;
+        // Only calc detailed noise on Med/High
+        if (settings.quality !== 'low') {
+            noise2 = Math.sin(ox * 2.5 + time * 1.5) * Math.cos(oy * 2.5 + time * 1.7) * Math.sin(oz * 2.5 + time * 1.3);
+        }
         
         const reactivity = (bass / 255);
         const vibration = (treble / 255);
@@ -95,6 +109,7 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
             reflectivity={1.0}
             envMapIntensity={1.2}
             side={THREE.DoubleSide}
+            flatShading={settings.quality === 'low'}
          />
       </mesh>
     </>

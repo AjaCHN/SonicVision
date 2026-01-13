@@ -1,0 +1,47 @@
+
+import React from 'react';
+import { Language } from '../../types';
+import { APP_VERSION } from '../../constants';
+import { CustomSelect } from '../ControlWidgets';
+
+interface SystemSettingsPanelProps {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  resetSettings: () => void;
+  t: any;
+}
+
+export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
+  language, setLanguage, resetSettings, t
+}) => {
+  return (
+    <>
+      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
+        <CustomSelect 
+          label={t.language} 
+          value={language} 
+          hintText={t.hints.language} 
+          options={[
+             { value: 'en', label: 'English' },
+             { value: 'zh', label: '简体中文 (Simplified Chinese)' },
+             { value: 'tw', label: '繁體中文 (Traditional Chinese)' },
+             { value: 'ja', label: '日本語 (Japanese)' },
+             { value: 'es', label: 'Español (Spanish)' },
+             { value: 'ko', label: '한국어 (Korean)' },
+             { value: 'de', label: 'Deutsch (German)' },
+             { value: 'fr', label: 'Français (French)' }
+          ]} 
+          onChange={(val) => setLanguage(val as Language)} 
+        />
+      </div>
+      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl flex flex-col justify-center">
+          <button onClick={resetSettings} className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 font-bold text-xs uppercase tracking-widest hover:bg-red-500/20 transition-all">
+          {t.reset}
+          </button>
+           <div className="text-center">
+              <span className="text-[10px] text-white/20 font-mono">v{APP_VERSION}</span>
+          </div>
+      </div>
+    </>
+  );
+};

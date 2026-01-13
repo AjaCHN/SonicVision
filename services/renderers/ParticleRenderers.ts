@@ -15,17 +15,17 @@ export class ParticlesRenderer implements IVisualizerRenderer {
     let bass = getAverage(data, 0, 10) / 255;
     
     if (settings.glow) {
-        // Optimization: Use simple fillRect with opacity instead of full-screen radial gradient
-        // Radial gradients on large areas are very expensive in Canvas 2D
         ctx.save();
         ctx.fillStyle = colors[1] || colors[0];
-        // Calculate opacity based on bass intensity
         const glowOpacity = 0.05 + (bass * 0.15 * settings.sensitivity);
         ctx.globalAlpha = Math.min(0.2, glowOpacity);
         ctx.fillRect(0, 0, w, h);
         ctx.restore();
     }
-    const maxParticles = 200;
+    
+    // Quality-based limiting
+    const maxParticles = settings.quality === 'high' ? 200 : settings.quality === 'med' ? 120 : 60;
+    
     while (this.particles.length < maxParticles) {
         this.particles.push({
             x: (Math.random() - 0.5) * w * 2, 
@@ -46,21 +46,23 @@ export class ParticlesRenderer implements IVisualizerRenderer {
             continue;
         }
         
-        // Safety: Prevent scale explosion if life gets too close to 0
         const safeLife = Math.max(0.1, p.life);
         const scale = 250 / safeLife;
         
-        // Use direct coordinates for linear movement
         const rx = p.x;
         const ry = p.y;
         const sx = centerX + rx * scale;
         const sy = centerY + ry * scale;
         
+        // Skip drawing if outside canvas (Optimization)
+        if (sx < 0 || sx > w || sy < 0 || sy > h) continue;
+        
         ctx.globalAlpha = Math.min(1, p.life > w * 0.8 ? (w - p.life) / (w * 0.2) : p.life / 50);
         ctx.fillStyle = warpSpeed > 10 ? (colors[i % colors.length] || '#fff') : '#fff';
         ctx.beginPath();
-        // Reduced size multiplier from 5 to 1.5 (~1/3 size)
-        ctx.arc(sx, sy, p.size * scale * 1.5, 0, Math.PI * 2);
+        // Dynamic size: Low quality = slightly larger particles to compensate for fewer count
+        const sizeMult = settings.quality === 'low' ? 2.5 : 1.5;
+        ctx.arc(sx, sy, p.size * scale * sizeMult, 0, Math.PI * 2);
         ctx.fill();
     }
     ctx.globalAlpha = 1.0;
@@ -99,21 +101,15 @@ export class NebulaRenderer implements IVisualizerRenderer {
     const centerX = size / 2;
     const centerY = size / 2;
 
-    for (let i = 0; i < 24; i++) {
-        const offsetX = (Math.random() - 0.5) * size * 0.25;
-        const offsetY = (Math.random() - 0.5) * size * 0.25;
-        const radius = size * (0.15 + Math.random() * 0.25);
-        const opacity = 0.04 + Math.random() * 0.08;
-
-        const g = ctx.createRadialGradient(centerX + offsetX, centerY + offsetY, 0, centerX + offsetX, centerY + offsetY, radius);
-        g.addColorStop(0, `rgba(255,255,255,${opacity})`);
-        g.addColorStop(1, 'rgba(255,255,255,0)');
-        
-        ctx.fillStyle = g;
-        ctx.beginPath();
-        ctx.arc(centerX + offsetX, centerY + offsetY, radius, 0, Math.PI * 2);
-        ctx.fill();
-    }
+    // Quality optimization: Fewer radial gradient steps on sprite generation
+    const g = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, size * 0.4);
+    g.addColorStop(0, `rgba(255,255,255,0.1)`);
+    g.addColorStop(1, 'rgba(255,255,255,0)');
+    
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(centerX, centerY, size * 0.4, 0, Math.PI * 2);
+    ctx.fill();
 
     ctx.globalCompositeOperation = 'source-in';
     ctx.fillStyle = color;
@@ -129,7 +125,9 @@ export class NebulaRenderer implements IVisualizerRenderer {
     const mids = getAverage(data, 15, 60) / 255; 
     const highs = getAverage(data, 100, 200) / 255; 
 
-    const maxParticles = 60; 
+    // Quality-based limits. Screen blend mode is heavy on mobile fill-rate.
+    const maxParticles = settings.quality === 'high' ? 60 : settings.quality === 'med' ? 40 : 25;
+
     if (this.particles.length < maxParticles) {
         for (let i = 0; i < 1; i++) {
             const baseSize = (w * 0.28) + (Math.random() * w * 0.28); 
@@ -175,8 +173,12 @@ export class NebulaRenderer implements IVisualizerRenderer {
             p.life = 0;
             p.colorIndex = (p.colorIndex + 1) % colors.length;
         }
+        
+        // Skip drawing if opacity too low
         const fadeInOut = Math.sin((p.life / p.maxLife) * Math.PI);
         const dynamicAlpha = (0.08 + bass * 0.35) * fadeInOut * sensitivity;
+        if (dynamicAlpha < 0.01) continue;
+
         const c = colors[p.colorIndex % colors.length] || '#fff';
         const sprite = this.getSprite(c);
         const finalSize = p.size * (1 + bass * 0.25 * sensitivity);
@@ -187,7 +189,9 @@ export class NebulaRenderer implements IVisualizerRenderer {
         ctx.drawImage(sprite, -finalSize/2, -finalSize/2, finalSize, finalSize);
         ctx.restore();
     }
-    if (highs > 0.35) {
+    
+    // Disable star twinkling on low quality to save draw calls
+    if (highs > 0.35 && settings.quality !== 'low') {
         ctx.globalAlpha = (highs - 0.35) * 2;
         ctx.fillStyle = '#ffffff';
         for (let j = 0; j < 6; j++) {
@@ -249,24 +253,20 @@ export class SmokeRenderer implements IVisualizerRenderer {
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
     
-    // Audio analysis
     const bass = getAverage(data, 0, 10) / 255;
     const mids = getAverage(data, 10, 50) / 255;
 
-    // Emission
-    // Reduced emission rate for better performance
-    // Max 2 particles per frame instead of potentially 6+
+    // Throttle spawn rate based on quality
+    const maxParticles = settings.quality === 'high' ? 200 : settings.quality === 'med' ? 120 : 60;
+    const spawnChance = settings.quality === 'high' ? 0.9 : 0.5;
+    
     const spawnRate = 1 + Math.floor(bass * 3 * settings.sensitivity); 
-    const maxParticles = 200; // Reduced from 400 to prevent fill-rate bottleneck
 
-    if (this.particles.length < maxParticles) {
+    if (this.particles.length < maxParticles && Math.random() < spawnChance) {
         for (let i = 0; i < spawnRate; i++) {
-            // Spawn from top
             if (Math.random() > 0.5) {
                 this.particles.push(this.createParticle(w, h, 'top', colors, settings));
-            }
-            // Spawn from bottom
-            else {
+            } else {
                 this.particles.push(this.createParticle(w, h, 'bottom', colors, settings));
             }
         }
@@ -277,43 +277,33 @@ export class SmokeRenderer implements IVisualizerRenderer {
 
     for (let i = this.particles.length - 1; i >= 0; i--) {
         const p = this.particles[i];
-        
-        // Movement toward center
         const centerY = h / 2;
         const distToCenter = centerY - p.y;
         
-        // Base vertical speed + audio reaction
         const speed = (0.5 + mids * 2.0) * settings.speed;
-        
-        // Move towards center with easing
         p.y += (distToCenter * 0.01 * speed) + p.vy * speed;
         
-        // Horizontal turbulence based on noise approximation
         const turbulence = Math.sin(p.y * 0.01 + rotation + p.life * 0.02) * (1 + bass * 2);
         p.x += (p.vx + turbulence) * speed;
 
         p.life--;
-        p.size *= 1.005; // Grow slightly as it dissipates
+        p.size *= 1.005; 
 
-        // Remove if near center or dead
         if (Math.abs(p.y - centerY) < 20 || p.life <= 0) {
             this.particles.splice(i, 1);
             continue;
         }
 
-        // Draw
-        const alpha = Math.min(1, p.life / 100) * 0.15; // Low opacity for subtle smoke
+        const alpha = Math.min(1, p.life / 100) * 0.15; 
         
-        // Performance Optimization: Use drawImage with pre-cached sprite instead of createRadialGradient
+        // Skip invisible particles
+        if (alpha < 0.01) continue;
+
         const sprite = this.getSprite(p.color);
         ctx.globalAlpha = alpha;
-        
-        // Draw the sprite centered at p.x, p.y with dimensions p.size * 2
-        // We multiply by 2 because size is radius
         ctx.drawImage(sprite, p.x - p.size, p.y - p.size, p.size * 2, p.size * 2);
     }
     
-    // Reset context
     ctx.globalCompositeOperation = 'source-over';
     ctx.globalAlpha = 1;
   }
@@ -324,13 +314,14 @@ export class SmokeRenderer implements IVisualizerRenderer {
       const vy = source === 'top' ? 1 : -1;
       const size = (30 + Math.random() * 50) * (settings.sensitivity || 1);
       const color = colors[Math.floor(Math.random() * colors.length)];
+      // Shorter life on low quality to reduce particle count
+      const lifeMult = settings.quality === 'low' ? 0.6 : 1.0;
       return {
           x, y,
           vx: (Math.random() - 0.5) * 0.5,
           vy: vy * (1 + Math.random()),
           size,
-          // Slightly reduced life duration to keep particle count in check
-          life: 200 + Math.random() * 200, 
+          life: (200 + Math.random() * 200) * lifeMult, 
           maxLife: 400,
           color,
           source

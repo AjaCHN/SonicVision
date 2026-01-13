@@ -37,6 +37,24 @@ export const useAudio = ({ settings, language }: UseAudioProps) => {
     }
   }, [settings.monitor]);
 
+  // Auto-resume AudioContext on visibility change (Mobile Safari fix)
+  useEffect(() => {
+    const handleVisibilityChange = async () => {
+      const ctx = audioContextRef.current;
+      if (document.visibilityState === 'visible' && ctx && ctx.state === 'suspended' && isListening) {
+         try {
+           await ctx.resume();
+           console.log("AudioContext resumed after visibility change.");
+         } catch (e) {
+           console.warn("Failed to resume AudioContext", e);
+         }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [isListening]);
+
   const updateAudioDevices = useCallback(async () => {
     try {
       if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;

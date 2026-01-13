@@ -30,33 +30,49 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
   };
 
   const getBloomIntensity = () => {
-      if (mode === VisualizerMode.SILK) return 1.8;
-      if (mode === VisualizerMode.LIQUID) return 2.5;
+      if (mode === VisualizerMode.SILK) return 1.5; // Reduced slightly
+      if (mode === VisualizerMode.LIQUID) return 2.0;
       return 2.0;
   };
 
-  const dpr = settings.quality === 'low' ? 1 : settings.quality === 'med' ? 1.5 : 2;
+  // Performance Optimization: Cap DPR to prevent overheating on high-res mobile screens
+  const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.2 : Math.min(window.devicePixelRatio, 2);
+
+  // Performance Optimization: Selective Post-Processing
+  const enableTiltShift = settings.quality === 'high' && (mode === VisualizerMode.LIQUID || mode === VisualizerMode.SILK);
+  const enableChromatic = settings.quality !== 'low'; // Disable chromatic aberration on low end
 
   return (
     <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`}>
       <Canvas 
         camera={{ position: [0, 2, 15], fov: 60 }} 
         dpr={dpr} 
-        gl={{ antialias: false, toneMapping: THREE.ReinhardToneMapping, preserveDrawingBuffer: true, autoClear: true }}
+        gl={{ 
+            antialias: false, 
+            toneMapping: THREE.ReinhardToneMapping, 
+            preserveDrawingBuffer: true, 
+            autoClear: true,
+            powerPreference: "high-performance"
+        }}
       >
         {renderScene()}
         {settings.glow && (
-            <EffectComposer enableNormalPass={false}>
-                {/* Optimized Bloom: Threshold raised to 0.4 to process fewer pixels. Removed invalid 'height' prop. */}
+            <EffectComposer enableNormalPass={false} multisampling={0}>
+                {/* Optimized Bloom: Threshold raised to 0.5 to process fewer pixels. */}
                 <Bloom 
-                    luminanceThreshold={0.4} 
-                    luminanceSmoothing={0.85} 
+                    luminanceThreshold={0.5} 
+                    luminanceSmoothing={0.8} 
                     intensity={getBloomIntensity()} 
+                    mipmapBlur={settings.quality !== 'low'} // Disable mipmap blur on low for speed
                 />
-                <ChromaticAberration 
-                    offset={new THREE.Vector2(0.002 * settings.sensitivity, 0.002)}
-                />
-                {(mode === VisualizerMode.LIQUID || mode === VisualizerMode.SILK) && (
+                {enableChromatic && (
+                    <ChromaticAberration 
+                        offset={new THREE.Vector2(0.002 * settings.sensitivity, 0.002)}
+                        radialModulation={false}
+                        modulationOffset={0}
+                    />
+                )}
+                {enableTiltShift && (
                     <TiltShift blur={0.1} />
                 )}
             </EffectComposer>

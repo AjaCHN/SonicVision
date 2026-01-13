@@ -1,17 +1,16 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice } from '../types';
-import { VISUALIZER_PRESETS, COLOR_THEMES, REGION_NAMES, APP_VERSION } from '../constants';
+import { VISUALIZER_PRESETS, COLOR_THEMES } from '../constants';
 import { TRANSLATIONS } from '../translations';
 import HelpModal from './HelpModal';
-import { 
-  TooltipArea, 
-  CustomSelect, 
-  SettingsToggle, 
-  Slider, 
-  ActionButton, 
-  ControlPanelButton 
-} from './ControlWidgets';
+import { ActionButton } from './ControlWidgets';
+
+// Import newly extracted panels
+import { VisualSettingsPanel } from './panels/VisualSettingsPanel';
+import { AudioSettingsPanel } from './panels/AudioSettingsPanel';
+import { AiSettingsPanel } from './panels/AiSettingsPanel';
+import { SystemSettingsPanel } from './panels/SystemSettingsPanel';
 
 interface ControlsProps {
   currentMode: VisualizerMode;
@@ -227,204 +226,47 @@ const Controls: React.FC<ControlsProps> = ({
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-stretch">
                 {activeTab === 'visual' && (
-                  <>
-                    <div className="flex flex-col bg-white/[0.04] rounded-[2rem] p-8 h-full space-y-6 shadow-2xl">
-                      <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.visualizerMode}</span>
-                      <div className="grid grid-cols-2 gap-3 max-h-[260px] overflow-y-auto custom-scrollbar p-1">
-                         {Object.keys(VISUALIZER_PRESETS).map(m => (
-                           <button key={m} onClick={() => setMode(m as VisualizerMode)} className={`px-4 py-4 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ${currentMode === m ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
-                             {t.modes[m as VisualizerMode]}
-                           </button>
-                         ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-col bg-white/[0.04] rounded-[2rem] p-8 h-full space-y-6 shadow-2xl">
-                      <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.styleTheme}</span>
-                      <div className="flex flex-wrap gap-4 p-2 max-h-[260px] overflow-y-auto custom-scrollbar">
-                        {COLOR_THEMES.map((theme, i) => (
-                          <button key={i} onClick={() => setColorTheme(theme)} className={`w-10 h-10 rounded-full border-2 flex-shrink-0 transition-all duration-300 hover:scale-110 overflow-hidden ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'border-white/80 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
-                        ))}
-                      </div>
-                    </div>
-                    <div className="flex flex-col bg-white/[0.04] rounded-[2rem] p-8 h-full space-y-6 shadow-2xl">
-                      <div className="space-y-6 pb-6 border-b border-white/10">
-                        <Slider label={t.speed} hintText={t.hints.speed} value={settings.speed} min={0.1} max={3.0} step={0.1} onChange={(v:any) => setSettings({...settings, speed: v})} />
-                        
-                        <div className="space-y-2">
-                           <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.18em] block ml-1">Quality</span>
-                           <div className="flex gap-2">
-                             {(['low', 'med', 'high'] as const).map(q => (
-                               <button 
-                                 key={q} 
-                                 onClick={() => setSettings({...settings, quality: q})} 
-                                 className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${settings.quality === q ? 'bg-white/20 border-white/40 text-white' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white'}`}
-                               >
-                                 {q}
-                               </button>
-                             ))}
-                           </div>
-                        </div>
-
-                        <div className="flex gap-3">
-                           <ControlPanelButton onClick={() => setSettings({...settings, glow: !settings.glow})} label={t.glow} active={settings.glow} hintText={t.hints.glow} />
-                           <ControlPanelButton onClick={() => setSettings({...settings, trails: !settings.trails})} label={t.trails} active={settings.trails} hintText={t.hints.trails} />
-                        </div>
-                        <div className="flex gap-3">
-                           <ControlPanelButton onClick={() => setSettings({...settings, hideCursor: !settings.hideCursor})} label={t.hideCursor} active={settings.hideCursor} />
-                        </div>
-                      </div>
-
-                      <div className="space-y-6 pt-4">
-                        <SettingsToggle 
-                          label={t.autoRotate} 
-                          statusText={settings.autoRotate ? `${settings.rotateInterval}s` : 'DISABLED'}
-                          value={settings.autoRotate}
-                          onChange={() => setSettings({...settings, autoRotate: !settings.autoRotate})}
-                          hintText={t.hints.autoRotate}
-                        >
-                          <Slider 
-                            label={t.rotateInterval} 
-                            hintText={t.hints.rotateInterval} 
-                            value={settings.rotateInterval} 
-                            min={5} 
-                            max={120} 
-                            step={1} 
-                            unit="s"
-                            onChange={(v:any) => setSettings({...settings, rotateInterval: v})} 
-                          />
-                        </SettingsToggle>
-
-                        <SettingsToggle 
-                          label={t.cycleColors} 
-                          statusText={settings.cycleColors ? `${settings.colorInterval}s` : 'DISABLED'}
-                          value={settings.cycleColors}
-                          onChange={() => setSettings({...settings, cycleColors: !settings.cycleColors})}
-                          hintText={t.hints.cycleColors}
-                        >
-                          <Slider 
-                            label={t.colorInterval} 
-                            hintText={t.hints.colorInterval} 
-                            value={settings.colorInterval} 
-                            min={5} 
-                            max={120} 
-                            step={1} 
-                            unit="s"
-                            onChange={(v:any) => setSettings({...settings, colorInterval: v})} 
-                          />
-                        </SettingsToggle>
-
-                        <button onClick={resetVisualSettings} className="w-full py-4 bg-white/[0.04] rounded-xl text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all duration-300 flex items-center justify-center gap-3">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
-                          {t.resetVisual}
-                        </button>
-                      </div>
-                    </div>
-                  </>
+                  <VisualSettingsPanel 
+                    currentMode={currentMode}
+                    setMode={setMode}
+                    colorTheme={colorTheme}
+                    setColorTheme={setColorTheme}
+                    settings={settings}
+                    setSettings={setSettings}
+                    resetVisualSettings={resetVisualSettings}
+                    t={t}
+                  />
                 )}
                 {activeTab === 'audio' && (
-                  <>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
-                      <CustomSelect 
-                        label={t.audioInput} 
-                        value={selectedDeviceId} 
-                        hintText={t.hints.device} 
-                        options={[
-                          { value: '', label: t.defaultMic }, 
-                          ...audioDevices.map(d => ({ value: d.deviceId, label: d.label }))
-                        ]} 
-                        onChange={onDeviceChange} 
-                      />
-                      <button onClick={toggleMicrophone} className={`w-full py-5 rounded-2xl font-black text-xs uppercase tracking-[0.2em] transition-all duration-300 ${isListening ? 'bg-red-500/15 text-red-400 border border-red-500/30' : 'bg-blue-600 text-white shadow-2xl shadow-blue-600/20 hover:bg-blue-500 hover:scale-[1.02]'}`}>
-                        {isListening ? t.stopMic : t.startMic}
-                      </button>
-                      
-                      <SettingsToggle 
-                          label={t.monitorAudio} 
-                          statusText={settings.monitor ? 'ACTIVE' : 'MUTED'}
-                          value={settings.monitor}
-                          onChange={() => setSettings({...settings, monitor: !settings.monitor})}
-                          hintText={t.hints.monitor}
-                          activeColor="red"
-                      />
-                    </div>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-10 shadow-2xl">
-                      <Slider label={t.sensitivity} hintText={t.hints.sensitivity} value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v:any) => setSettings({...settings, sensitivity: v})} />
-                      <Slider label={t.smoothing} hintText={t.hints.smoothing} value={settings.smoothing} min={0} max={0.95} step={0.01} onChange={(v:any) => setSettings({...settings, smoothing: v})} />
-                      
-                    </div>
-                    <TooltipArea text={t.hints.fftSize}>
-                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl">
-                        <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.fftSize}</span>
-                        <div className="grid grid-cols-2 gap-3">
-                          {[512, 1024, 2048, 4096].map(size => (
-                            <button key={size} onClick={() => setSettings({...settings, fftSize: size})} className={`py-4 rounded-xl border text-[13px] font-mono font-bold transition-all duration-300 ${settings.fftSize === size ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
-                              {size}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                    </TooltipArea>
-                  </>
+                  <AudioSettingsPanel 
+                    settings={settings}
+                    setSettings={setSettings}
+                    audioDevices={audioDevices}
+                    selectedDeviceId={selectedDeviceId}
+                    onDeviceChange={onDeviceChange}
+                    toggleMicrophone={toggleMicrophone}
+                    isListening={isListening}
+                    t={t}
+                  />
                 )}
                 {activeTab === 'ai' && (
-                  <>
-                    <TooltipArea text={t.hints.lyrics}>
-                      <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
-                        <span className="text-[11px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.lyrics}</span>
-                        <button onClick={() => setShowLyrics(!showLyrics)} className={`w-full py-5 rounded-xl border font-black text-sm uppercase tracking-[0.2em] transition-all duration-500 ${showLyrics ? 'bg-green-500/20 border-green-500/40 text-green-300 shadow-[0_0_40px_rgba(34,197,94,0.1)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:bg-white/[0.08] hover:text-white'}`}>
-                          {showLyrics ? t.aiState.active : t.aiState.enable}
-                        </button>
-                      </div>
-                    </TooltipArea>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
-                      <CustomSelect 
-                        label={`${t.lyrics} ${t.styleTheme}`} 
-                        value={lyricsStyle} 
-                        hintText={t.hints.lyricsStyle} 
-                        options={Object.values(LyricsStyle).map(s => ({ value: s, label: t.lyricsStyles[s] }))} 
-                        onChange={(val) => setLyricsStyle(val as LyricsStyle)} 
-                      />
-                    </div>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl h-full flex flex-col justify-center">
-                       <CustomSelect 
-                         label={t.region} 
-                         value={region} 
-                         hintText={t.hints.region} 
-                         options={Object.keys(REGION_NAMES).map(r => ({ value: r, label: t.regions[r] }))} 
-                         onChange={(val) => setRegion(val as Region)} 
-                       />
-                    </div>
-                  </>
+                  <AiSettingsPanel 
+                    showLyrics={showLyrics}
+                    setShowLyrics={setShowLyrics}
+                    lyricsStyle={lyricsStyle}
+                    setLyricsStyle={setLyricsStyle}
+                    region={region}
+                    setRegion={setRegion}
+                    t={t}
+                  />
                 )}
                 {activeTab === 'system' && (
-                  <>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-8 shadow-2xl">
-                      <CustomSelect 
-                        label={t.language} 
-                        value={language} 
-                        hintText={t.hints.language} 
-                        options={[
-                           { value: 'en', label: 'English' },
-                           { value: 'zh', label: '简体中文 (Simplified Chinese)' },
-                           { value: 'tw', label: '繁體中文 (Traditional Chinese)' },
-                           { value: 'ja', label: '日本語 (Japanese)' },
-                           { value: 'es', label: 'Español (Spanish)' },
-                           { value: 'ko', label: '한국어 (Korean)' },
-                           { value: 'de', label: 'Deutsch (German)' },
-                           { value: 'fr', label: 'Français (French)' }
-                        ]} 
-                        onChange={(val) => setLanguage(val as Language)} 
-                      />
-                    </div>
-                    <div className="bg-white/[0.04] rounded-[2rem] p-8 space-y-6 shadow-2xl flex flex-col justify-center">
-                        <button onClick={resetSettings} className="w-full py-5 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 font-bold text-xs uppercase tracking-widest hover:bg-red-500/20 transition-all">
-                        {t.reset}
-                        </button>
-                         <div className="text-center">
-                            <span className="text-[10px] text-white/20 font-mono">v{APP_VERSION}</span>
-                        </div>
-                    </div>
-                  </>
+                  <SystemSettingsPanel 
+                    language={language}
+                    setLanguage={setLanguage}
+                    resetSettings={resetSettings}
+                    t={t}
+                  />
                 )}
               </div>
             </div>
