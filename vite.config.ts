@@ -5,7 +5,7 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   plugins: [react()],
   define: {
-    // Polyfill process.env for Gemini SDK usage
+    // Polyfill process.env for Gemini SDK and other libs relying on it
     'process.env': process.env
   }
 })

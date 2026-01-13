@@ -40,7 +40,6 @@ body {
   -webkit-mask-image: linear-gradient(to right, black 85%, transparent 100%);
 }
 
-/* Animation defined in tailwind.config.js, keeping generic class if needed */
 .animate-fade-in-up {
   animation: fadeInUp 0.5s ease-out forwards;
 }
@@ -55,13 +54,12 @@ input[type=range]:focus {
   outline: none;
 }
 
-/* Chrome, Safari, Edge, Opera */
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
   height: 18px;
   width: 18px;
   border-radius: 50%;
-  background: #3b82f6; /* blue-500 */
+  background: #3b82f6;
   cursor: pointer;
   margin-top: -7px;
   box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
@@ -82,7 +80,6 @@ input[type=range]:active::-webkit-slider-thumb {
   box-shadow: 0 0 15px rgba(59, 130, 246, 0.8);
 }
 
-/* Firefox */
 input[type=range]::-moz-range-thumb {
   height: 16px;
   width: 16px;
