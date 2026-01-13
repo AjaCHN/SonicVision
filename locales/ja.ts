@@ -4,6 +4,7 @@ import { VisualizerMode, LyricsStyle } from '../types';
 export const ja = {
   tabs: {
     visual: 'ビジュアル',
+    text: 'テキスト',
     audio: 'オーディオ',
     ai: '曲識別',
     system: 'システム'
@@ -22,6 +23,8 @@ export const ja = {
     region: '特定の市場に基づいてAI識別を最適化します。',
     autoRotate: '30秒ごとに自動的にモードを切り替えます。',
     rotateInterval: '自動切り替えモード時の各モードの表示時間（秒）を設定します。',
+    cycleColors: '定期的にカラーテーマを自動切り替えします。',
+    colorInterval: '各カラーテーマの持続時間。',
     monitor: 'マイク音声をスピーカーから再生します。注意：ハウリングの恐れがあります。',
     reset: 'すべての設定をデフォルトに戻します。',
     resetVisual: 'ビジュアルパラメータのみをデフォルトにリセットします。',
@@ -40,6 +43,8 @@ export const ja = {
   trails: '残像エフェクト',
   autoRotate: '自動切替',
   rotateInterval: '間隔 (秒)',
+  cycleColors: '自動カラー切替',
+  colorInterval: '間隔 (秒)',
   audioInput: '入力ソース',
   monitorAudio: '入力モニター',
   lyrics: 'AI曲識別',
@@ -71,10 +76,13 @@ export const ja = {
   appDescription: 'リアルタイムのオーディオ分析とAI認識を活用した没入型の音楽可视化体験。',
   version: 'バージョン',
   defaultMic: 'デフォルトのマイク',
-  customText: 'カスタムテキスト',
-  customTextPlaceholder: 'テキスト入力',
-  showText: '表示/非表示',
+  customText: 'カスタムテキスト内容',
+  textProperties: 'タイポグラフィとレイアウト',
+  customTextPlaceholder: 'テキストを入力',
+  showText: '表示切り替え',
   pulseBeat: 'ビート連動',
+  textSize: 'フォントサイズ',
+  textRotation: '回転角度',
   errors: {
     title: 'オーディオエラー',
     accessDenied: 'アクセスが拒否されました。マイクの権限を確認してください。',

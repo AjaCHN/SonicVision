@@ -3,11 +3,11 @@
 
 ## 1. 视觉层级 (Z-Index)
 - **Z-0:** 核心渲染器 (Canvas/WebGL)。
-- **Z-10:** 自定义文字层 (Custom Text Overlay)。
 - **Z-20:** 歌曲信息与歌词徽章 (Song Badge & Lyrics)。
 - **Z-30:** 迷你交互栏 (Mini Bar)。
 - **Z-40:** 扩展设置面板 (Control Panel)。
 - **Z-50:** 模态框与全局提示 (Help/Identifying)。
+- **Z-100:** 自定义文字层 (Custom Text Overlay) - *Override: 确保显示在所有其他 UI 元素之上，以实现强视觉冲击。*
 
 ## 2. 交互状态
 - **Idle Timeout:** 3000ms。

@@ -4,6 +4,7 @@ import { VisualizerMode, LyricsStyle } from '../types';
 export const de = {
   tabs: {
     visual: 'Visuell',
+    text: 'Text',
     audio: 'Audio',
     ai: 'KI-Erkennung',
     system: 'System'
@@ -22,6 +23,8 @@ export const de = {
     region: 'Filtern Sie KI-Suchergebnisse basierend auf spezifischen Musikmärkten.',
     autoRotate: 'Wechselt automatisch alle 30s durch die Visualizer-Modi.',
     rotateInterval: 'Legen Sie die Dauer (in Sekunden) für jeden Modus fest.',
+    cycleColors: 'Wechseln Sie automatisch zwischen Farbthemen.',
+    colorInterval: 'Dauer für jedes Farbthema.',
     monitor: 'Geben Sie den Mikrofoneingang über lokale Lautsprecher wieder. VORSICHT: Rückkopplungsgefahr.',
     reset: 'Setzen Sie alle Anwendungseinstellungen auf die Standardwerte zurück.',
     resetVisual: 'Setzen Sie nur visuelle Parameter (Geschwindigkeit, Leuchten, Spuren) zurück.',
@@ -40,6 +43,8 @@ export const de = {
   trails: 'Bewegungsspuren',
   autoRotate: 'Modus-Zyklus',
   rotateInterval: 'Intervall (s)',
+  cycleColors: 'Farb-Zyklus',
+  colorInterval: 'Intervall (s)',
   audioInput: 'Eingabegerät',
   monitorAudio: 'Eingang überwachen',
   lyrics: 'Songtexte',
@@ -71,10 +76,13 @@ export const de = {
   appDescription: 'Eine immersive Visualisierungssuite, angetrieben durch Echtzeit-Spektralanalyse und Gemini KI.',
   version: 'Build',
   defaultMic: 'Standardmikrofon',
-  customText: 'Benutzertext',
+  customText: 'Benutzerdefinierter Text',
+  textProperties: 'Typografie & Layout',
   customTextPlaceholder: 'TEXT EINGEBEN',
-  showText: 'Text umschalten',
-  pulseBeat: 'Pulsieren zum Beat',
+  showText: 'Overlay anzeigen',
+  pulseBeat: 'Pulsieren im Takt',
+  textSize: 'Schriftgröße',
+  textRotation: 'Drehung',
   errors: {
     title: 'Audio-Fehler',
     accessDenied: 'Zugriff verweigert. Bitte überprüfen Sie Ihre Browser-Berechtigungen.',

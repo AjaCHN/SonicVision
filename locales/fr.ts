@@ -4,6 +4,7 @@ import { VisualizerMode, LyricsStyle } from '../types';
 export const fr = {
   tabs: {
     visual: 'Visuel',
+    text: 'Texte',
     audio: 'Audio',
     ai: 'Reconnaissance IA',
     system: 'Système'
@@ -22,6 +23,8 @@ export const fr = {
     region: 'Filtrez les résultats de l\'IA basés sur des marchés musicaux spécifiques.',
     autoRotate: 'Changez automatiquement de mode de visualisation toutes les 30s.',
     rotateInterval: 'Définissez la durée (en secondes) pour chaque mode.',
+    cycleColors: 'Changez automatiquement de thème de couleur périodiquement.',
+    colorInterval: 'Durée de chaque thème de couleur.',
     monitor: 'Renvoyez l\'entrée micro vers les haut-parleurs. ATTENTION : Risque de larsen.',
     reset: 'Restaurez tous les paramètres de l\'application par défaut.',
     resetVisual: 'Réinitialisez uniquement les paramètres visuels (vitesse, lueur, traînées).',
@@ -40,6 +43,8 @@ export const fr = {
   trails: 'Traînées',
   autoRotate: 'Cycle Auto',
   rotateInterval: 'Intervalle (s)',
+  cycleColors: 'Cycle Couleurs',
+  colorInterval: 'Intervalle (s)',
   audioInput: 'Entrée Audio',
   monitorAudio: 'Moniteur d\'Entrée',
   lyrics: 'Paroles',
@@ -71,10 +76,13 @@ export const fr = {
   appDescription: 'Une suite de visualisation immersive propulsée par l\'analyse spectrale en temps réel et l\'IA Gemini.',
   version: 'Version',
   defaultMic: 'Micro par défaut',
-  customText: 'Texte Perso',
+  customText: 'Texte Personnalisé',
+  textProperties: 'Typographie & Mise en page',
   customTextPlaceholder: 'ENTRER TEXTE',
-  showText: 'Afficher/Masquer',
-  pulseBeat: 'Pulsation',
+  showText: 'Afficher la superposition',
+  pulseBeat: 'Pulsation au rythme',
+  textSize: 'Taille de la police',
+  textRotation: 'Rotation',
   errors: {
     title: 'Erreur Audio',
     accessDenied: 'Accès refusé. Veuillez vérifier les permissions de votre navigateur.',

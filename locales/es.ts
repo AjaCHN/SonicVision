@@ -4,6 +4,7 @@ import { VisualizerMode, LyricsStyle } from '../types';
 export const es = {
   tabs: {
     visual: 'Visual',
+    text: 'Texto',
     audio: 'Audio',
     ai: 'Reconocimiento IA',
     system: 'Sistema'
@@ -22,6 +23,8 @@ export const es = {
     region: 'Filtra resultados de IA basados en mercados musicales específicos.',
     autoRotate: 'Cambia automáticamente los modos de visualización cada 30s.',
     rotateInterval: 'Establece la duración (en segundos) de cada modo antes del cambio automático.',
+    cycleColors: 'Cambia automáticamente entre temas de color periódicamente.',
+    colorInterval: 'Duración de cada tema de color.',
     monitor: 'Reproduce el audio del micrófono en los altavoces locales. PRECAUCIÓN: Puede causar retroalimentación.',
     reset: 'Restaura toda la configuración de la aplicación a los valores predeterminados.',
     resetVisual: 'Solo restablece parámetros visuales (velocidad, brillo, estelas).',
@@ -40,6 +43,8 @@ export const es = {
   trails: 'Estelas',
   autoRotate: 'Ciclo Automático',
   rotateInterval: 'Intervalo (s)',
+  cycleColors: 'Ciclo de Colores',
+  colorInterval: 'Intervalo (s)',
   audioInput: 'Dispositivo de Entrada',
   monitorAudio: 'Monitorizar Entrada',
   lyrics: 'Letras',
@@ -72,9 +77,12 @@ export const es = {
   version: 'Versión',
   defaultMic: 'Micrófono Predeterminado',
   customText: 'Texto Personalizado',
+  textProperties: 'Tipografía y Diseño',
   customTextPlaceholder: 'INGRESAR TEXTO',
-  showText: 'Mostrar/Ocultar',
-  pulseBeat: 'Pulsar con Ritmo',
+  showText: 'Mostrar Superposición',
+  pulseBeat: 'Pulsar con el Ritmo',
+  textSize: 'Tamaño de Fuente',
+  textRotation: 'Rotación',
   errors: {
     title: 'Error de Audio',
     accessDenied: 'Acceso denegado. Por favor revisa los permisos del micrófono.',

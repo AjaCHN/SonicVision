@@ -4,6 +4,7 @@ import { VisualizerMode, LyricsStyle } from '../types';
 export const ko = {
   tabs: {
     visual: '시각 효과',
+    text: '텍스트',
     audio: '오디오',
     ai: 'AI 인식',
     system: '시스템'
@@ -22,6 +23,8 @@ export const ko = {
     region: '특정 음악 시장을 기반으로 AI 검색 결과를 필터링합니다.',
     autoRotate: '30초마다 시각화 모드를 자동으로 순환합니다.',
     rotateInterval: '자동 전환 전 각 모드의 지속 시간(초)을 설정합니다.',
+    cycleColors: '주기적으로 색상 테마를 자동 전환합니다.',
+    colorInterval: '각 색상 테마의 지속 시간.',
     monitor: '마이크 입력을 로컬 스피커로 재생합니다. 주의: 피드백 루프가 발생할 수 있습니다.',
     reset: '모든 애플리케이션 설정을 기본값으로 복원합니다.',
     resetVisual: '시각적 매개변수(속도, 광선, 잔상)만 기본값으로 재설정합니다.',
@@ -40,6 +43,8 @@ export const ko = {
   trails: '모션 잔상',
   autoRotate: '모드 자동 순환',
   rotateInterval: '간격 (초)',
+  cycleColors: '색상 자동 순환',
+  colorInterval: '간격 (초)',
   audioInput: '입력 장치',
   monitorAudio: '입력 모니터링',
   lyrics: '가사',
@@ -72,9 +77,12 @@ export const ko = {
   version: '빌드',
   defaultMic: '기본 마이크',
   customText: '사용자 지정 텍스트',
+  textProperties: '타이포그래피 및 레이아웃',
   customTextPlaceholder: '텍스트 입력',
-  showText: '텍스트 표시',
+  showText: '오버레이 표시',
   pulseBeat: '비트 반응',
+  textSize: '글꼴 크기',
+  textRotation: '회전',
   errors: {
     title: '오디오 오류',
     accessDenied: '접근이 거부되었습니다. 마이크 권한을 확인해주세요.',
