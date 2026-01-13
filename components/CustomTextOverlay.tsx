@@ -53,7 +53,7 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
 
   return (
     <div 
-      className="pointer-events-none fixed top-1/2 left-1/2 z-10 w-full text-center mix-blend-overlay"
+      className="pointer-events-none fixed top-1/2 left-1/2 z-[100] w-full text-center mix-blend-overlay"
       style={{ transform: 'translate(-50%, -50%)' }}
     >
       <div 
