@@ -1,4 +1,3 @@
-
 import { VisualizerMode, LyricsStyle, Language } from './types';
 
 // Translation dictionary for supported languages
@@ -50,7 +49,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     listening: 'Active',
     identifying: 'AI Analyzing...',
     startExperience: 'Launch Experience',
-    welcomeTitle: 'SonicVision AI',
+    welcomeTitle: 'Aura',
     welcomeText: 'Translate audio into generative art. Experience real-time music identification and immersive visualization.',
     hideOptions: 'Collapse',
     showOptions: 'Expand Options',
@@ -90,8 +89,8 @@ export const TRANSLATIONS: Record<Language, any> = {
       [LyricsStyle.MINIMAL]: 'Minimalist'
     },
     helpModal: {
-      title: 'SonicVision AI Guide',
-      intro: 'SonicVision AI transforms your microphone input into highly responsive, generative digital art using advanced spectral analysis.',
+      title: 'Aura Guide',
+      intro: 'Aura transforms your microphone input into highly responsive, generative digital art using advanced spectral analysis.',
       shortcutsTitle: 'Keyboard Interaction',
       shortcutItems: {
         toggleMic: 'Toggle Audio Input',
@@ -174,7 +173,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     listening: '监听中',
     identifying: 'AI 正在解析曲目...',
     startExperience: '开启视听盛宴',
-    welcomeTitle: 'SonicVision AI',
+    welcomeTitle: '声辉 Aura',
     welcomeText: '将声波转化为数字艺术。通过实时频域分析与 AI 语义识别，开启前所未有的视听交互体验。',
     hideOptions: '收起',
     showOptions: '显示设置',
@@ -214,8 +213,8 @@ export const TRANSLATIONS: Record<Language, any> = {
       [LyricsStyle.MINIMAL]: '极简主义'
     },
     helpModal: {
-      title: 'SonicVision AI 交互指南',
-      intro: 'SonicVision AI 是一款沉浸式的视听交互工具，它利用高精度麦克风采样，将音频信号实时转化为数学生成的数字艺术。',
+      title: 'Aura 交互指南',
+      intro: 'Aura 是一款沉浸式的视听交互工具，它利用高精度麦克风采样，将音频信号实时转化为数学生成的数字艺术。',
       shortcutsTitle: '控制快捷键',
       shortcutItems: {
         toggleMic: '开启/关闭 音频采集',
@@ -298,7 +297,7 @@ export const TRANSLATIONS: Record<Language, any> = {
     listening: 'アクティブ',
     identifying: 'AI解析中...',
     startExperience: '体験を開始',
-    welcomeTitle: 'SonicVision AI',
+    welcomeTitle: 'Aura',
     welcomeText: 'オーディオを生成的なデジタルアートに変換します。リアルタイムのスペクトル分析とAI認識による没入型体験。',
     hideOptions: '閉じる',
     showOptions: 'オプションを表示',
@@ -338,8 +337,8 @@ export const TRANSLATIONS: Record<Language, any> = {
       [LyricsStyle.MINIMAL]: 'ミニマル'
     },
     helpModal: {
-      title: 'SonicVision AI ガイド',
-      intro: 'SonicVision AIは、デバイスのマイクを使用して音楽と同期したリアルタイムのアートを生成する没入型の視聴覚体験です。',
+      title: 'Aura ガイド',
+      intro: 'Auraは、デバイスのマイクを使用して音楽と同期したリアルタイムのアートを生成する没入型の視聴覚体験です。',
       shortcutsTitle: 'ショートカットキー',
       shortcutItems: {
         toggleMic: 'マイク開始 / 停止',
