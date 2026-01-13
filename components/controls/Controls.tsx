@@ -197,7 +197,7 @@ const Controls: React.FC<ControlsProps> = ({
 
              <button onClick={toggleFullscreen} className="text-white/40 hover:text-white transition-colors" title={t.hints.fullscreen}>
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M20 8V4m0 0h-4M4 16v4m0 0h4M20 16v4m0 0h-4" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
                 </svg>
              </button>
 
@@ -210,8 +210,9 @@ const Controls: React.FC<ControlsProps> = ({
       )}
 
       {isExpanded && (
+        // Increased opacity from #050505 to bg-neutral-950/95 for a solid feel
         <div 
-          className={`fixed bottom-0 left-0 w-full z-40 bg-[#050505] border-t border-white/10 transition-all duration-700 shadow-[0_-25px_100px_rgba(0,0,0,0.9)] opacity-100`}
+          className={`fixed bottom-0 left-0 w-full z-40 bg-neutral-950/95 border-t border-white/10 transition-all duration-700 shadow-[0_-25px_100px_rgba(0,0,0,0.9)] opacity-100 backdrop-blur-xl`}
         >
           <div className="max-h-[70vh] overflow-y-auto custom-scrollbar p-4 md:p-6">
             <div className="max-w-5xl mx-auto space-y-4">
@@ -238,6 +239,7 @@ const Controls: React.FC<ControlsProps> = ({
                 </div>
               </div>
 
+              {/* Increased opacity for inner container as well */}
               <div className="bg-[#0f0f11] border border-white/5 rounded-2xl overflow-hidden shadow-inner min-h-[280px]">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 items-stretch">
                   {activeTab === 'visual' && (

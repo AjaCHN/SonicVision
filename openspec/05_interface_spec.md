@@ -25,9 +25,17 @@
 - `Arrow Keys`: 切换预设与主题。
 
 ## 4. 组件一致性 (UI Consistency)
+- **控制面板布局 (Visual Panel Layout):**
+  - **Column 1:** 模式选择列表 (2列布局 `grid-cols-2`)。
+  - **Column 2:** 视觉主题 (Colors) + 核心滑块 (Speed/Sensitivity)。
+  - **Column 3:** 高级选项 (Toggles, Quality) + 重置按钮。
 - **控制面板卡片 (Settings Cards):**
   - 所有设置卡片应使用 `h-full` 填满网格行高。
-  - 内部列表容器（如模式列表、主题列表）必须使用 `flex-1` 配合 `min-h-0`，移除固定 `max-h`，以适应不同分辨率。
+  - 内部容器需添加唯一 `id` 便于调试 (如 `container-visual-modes`)。
+  - 背景色应尽量减少透明度 (`bg-white/10` 或更深) 以提高文字对比度。
+- **排版 (Typography):**
+  - 设置选项标签统一使用 `text-[11px]` 或 `text-xs`，确保可读性。
+  - 按钮文字大小不低于 `10px`。
 - **按钮与输入框对齐:**
   - 主操作按钮（如“开启 AI 识别”）高度必须与标准 `CustomSelect` 输入框保持一致。
   - 标准内边距统一为 `py-3.5` (约 52px 总高度)。

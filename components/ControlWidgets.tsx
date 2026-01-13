@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -96,30 +97,31 @@ export const CustomSelect = ({ label, value, options, onChange, hintText }: { la
 
   return (
     <div 
-      className={`space-y-1 relative transition-all duration-200 ${isOpen ? 'z-[60]' : 'z-10'}`} 
+      className={`space-y-1.5 relative transition-all duration-200 ${isOpen ? 'z-[60]' : 'z-10'}`} 
       ref={dropdownRef} 
       onMouseEnter={() => setIsHovered(true)} 
       onMouseLeave={() => setIsHovered(false)}
     >
       {hintText && <FloatingTooltip text={hintText} visible={isHovered && !isOpen} anchorRef={dropdownRef} />}
-      <span className="text-[10px] font-bold uppercase text-white/50 tracking-[0.18em] block ml-1">{label}</span>
+      <span className="text-[11px] font-bold uppercase text-white/50 tracking-[0.18em] block ml-1">{label}</span>
       <button 
         onClick={() => setIsOpen(!isOpen)}
-        className={`w-full flex items-center justify-between bg-white/[0.04] border ${isOpen ? 'border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'border-transparent hover:bg-white/[0.08]'} rounded-xl px-3 py-2.5 text-xs text-white/90 transition-all duration-300`}
+        // Less transparent background (bg-white/10 instead of 0.04)
+        className={`w-full flex items-center justify-between bg-white/10 border ${isOpen ? 'border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.15)]' : 'border-transparent hover:bg-white/15'} rounded-xl px-4 py-3 text-xs text-white/90 transition-all duration-300`}
       >
-        <span className="truncate font-semibold tracking-tight">{currentLabel}</span>
+        <span className="truncate font-bold tracking-tight">{currentLabel}</span>
         <svg xmlns="http://www.w3.org/2000/svg" className={`h-3.5 w-3.5 text-white/40 transition-transform duration-500 ${isOpen ? 'rotate-180 text-blue-400' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
         </svg>
       </button>
 
       {isOpen && (
-        <div className="absolute top-full left-0 w-full mt-1 z-50 bg-[#0c0c0e] border border-white/10 rounded-xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up py-1">
+        <div className="absolute top-full left-0 w-full mt-1 z-50 bg-[#151518] border border-white/10 rounded-xl shadow-[0_25px_60px_rgba(0,0,0,0.9)] max-h-48 overflow-y-auto custom-scrollbar animate-fade-in-up py-1">
           {options.map((opt) => (
             <button
               key={opt.value}
               onClick={() => { onChange(opt.value); setIsOpen(false); }}
-              className={`w-full px-3 py-2.5 text-left text-xs transition-all flex items-center justify-between ${value === opt.value ? 'bg-blue-500/20 text-blue-300' : 'text-white/60 hover:bg-white/10 hover:text-white'}`}
+              className={`w-full px-4 py-3 text-left text-xs transition-all flex items-center justify-between ${value === opt.value ? 'bg-blue-600/20 text-blue-300' : 'text-white/70 hover:bg-white/10 hover:text-white'}`}
             >
               <span className={value === opt.value ? 'font-bold' : 'font-medium'}>{opt.label}</span>
               {value === opt.value && <div className="w-1.5 h-1.5 bg-blue-400 rounded-full shadow-[0_0_10px_rgba(59,130,246,0.9)]" />}
@@ -151,7 +153,8 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
   }
 
   return (
-    <div className="bg-black/20 rounded-xl p-3 space-y-3 border border-white/5 hover:border-white/10 transition-colors">
+    // Less transparent container (bg-black/40)
+    <div className="bg-black/40 rounded-xl p-3 space-y-3 border border-white/5 hover:border-white/10 transition-colors">
       <div 
         ref={containerRef}
         className="flex items-center justify-between relative group cursor-pointer"
@@ -161,8 +164,9 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
       >
          {hintText && <FloatingTooltip text={hintText} visible={isHovered} anchorRef={containerRef} />}
          <div className="flex flex-col">
-           <span className="text-[10px] font-black uppercase text-white/60 tracking-widest">{label}</span>
-           <span className={`text-[9px] font-bold mt-0.5 transition-colors ${value ? 'text-white' : 'text-white/30'}`}>{statusText}</span>
+           {/* Increased font size */}
+           <span className="text-[11px] font-black uppercase text-white/70 tracking-widest">{label}</span>
+           <span className={`text-[10px] font-bold mt-0.5 transition-colors ${value ? 'text-white' : 'text-white/30'}`}>{statusText}</span>
          </div>
          <button onClick={(e) => { e.stopPropagation(); onChange(); }} className={`w-10 h-5 rounded-full relative transition-all duration-500 ${bgClass}`}>
            <div className={`absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow-lg transition-all duration-500 ${value ? 'translate-x-[20px]' : 'translate-x-0'}`} />
@@ -189,11 +193,11 @@ export const Slider = ({ label, value, min, max, step, onChange, icon, hintText,
         onMouseLeave={() => setIsHovered(false)}
       >
         <FloatingTooltip text={hintText} visible={isHovered} anchorRef={containerRef} />
-        <div className="flex justify-between items-end text-[10px] text-white/40 uppercase font-black tracking-widest group-hover:text-white/70 transition-colors">
+        <div className="flex justify-between items-end text-[11px] text-white/50 uppercase font-black tracking-widest group-hover:text-white/80 transition-colors">
           <span className="flex items-center gap-2">
             {icon} <span className="font-bold">{label}</span>
           </span>
-          <span className="text-white font-mono text-[10px] bg-white/10 px-1.5 py-0.5 rounded-md leading-none transition-all group-hover:text-blue-300 group-hover:bg-blue-500/20">
+          <span className="text-white font-mono text-[11px] bg-white/10 px-2 py-0.5 rounded-md leading-none transition-all group-hover:text-blue-300 group-hover:bg-blue-500/20">
             {value.toFixed(step >= 1 ? 0 : 2)}{unit}
           </span>
         </div>
@@ -201,7 +205,6 @@ export const Slider = ({ label, value, min, max, step, onChange, icon, hintText,
           <input 
             type="range" min={min} max={max} step={step} value={value} 
             onPointerDown={(e) => e.stopPropagation()} 
-            // 阻止键盘事件冒泡，确保左右箭头仅控制滑块，不触发全局快捷键
             onKeyDown={(e) => e.stopPropagation()} 
             onChange={(e) => onChange(parseFloat(e.target.value))} 
             className="w-full h-1 bg-transparent cursor-pointer appearance-none relative z-10" 
