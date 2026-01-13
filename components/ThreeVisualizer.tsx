@@ -1,6 +1,5 @@
-
 import React, { useRef, useMemo } from 'react';
-import { Canvas, useFrame, extend } from '@react-three/fiber';
+import { Canvas, useFrame, extend, ThreeElements } from '@react-three/fiber';
 import { EffectComposer, Bloom, ChromaticAberration, TiltShift } from '@react-three/postprocessing';
 import { AfterimagePass } from 'three/examples/jsm/postprocessing/AfterimagePass.js';
 import * as THREE from 'three';
@@ -8,6 +7,26 @@ import { VisualizerMode, VisualizerSettings } from '../types';
 
 // Register standard Three.js shader pass if not available in R3F postprocessing automatically
 extend({ AfterimagePass });
+
+// Add global JSX augmentation to ensure Three.js intrinsic elements are recognized by the TypeScript compiler.
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      mesh: any;
+      pointLight: any;
+      spotLight: any;
+      ambientLight: any;
+      primitive: any;
+      meshPhysicalMaterial: any;
+      color: any;
+      directionalLight: any;
+      fog: any;
+      circleGeometry: any;
+      meshBasicMaterial: any;
+      meshStandardMaterial: any;
+    }
+  }
+}
 
 interface ThreeVisualizerProps {
   analyser: AnalyserNode | null;
