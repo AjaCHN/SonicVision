@@ -4,6 +4,8 @@ import { VISUALIZER_PRESETS, COLOR_THEMES, REGION_NAMES, APP_VERSION } from '../
 import { TRANSLATIONS } from '../translations';
 import HelpModal from './HelpModal';
 
+export const SYSTEM_AUDIO_ID = 'system-audio';
+
 interface ControlsProps {
   currentMode: VisualizerMode;
   setMode: (mode: VisualizerMode) => void;
@@ -337,6 +339,7 @@ const Controls: React.FC<ControlsProps> = ({
                         hint={t.hints.device} 
                         options={[
                           { value: '', label: 'Default Microphone' }, 
+                          { value: SYSTEM_AUDIO_ID, label: t.systemAudio },
                           ...audioDevices.map(d => ({ value: d.deviceId, label: d.label }))
                         ]} 
                         onChange={onDeviceChange} 
