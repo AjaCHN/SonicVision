@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice } from '../../types';
 import { VISUALIZER_PRESETS, COLOR_THEMES } from '../../constants';
-import { TRANSLATIONS } from '../../translations';
+import { TRANSLATIONS } from '../../i18n';
 import HelpModal from '../ui/HelpModal';
 import { ActionButton } from './ControlWidgets';
 

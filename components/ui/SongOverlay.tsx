@@ -1,7 +1,7 @@
 
 import React, { useEffect, useRef, useMemo } from 'react';
 import { SongInfo, LyricsStyle, Language } from '../../types';
-import { TRANSLATIONS } from '../../translations';
+import { TRANSLATIONS } from '../../i18n';
 
 interface SongOverlayProps {
   song: SongInfo | null;

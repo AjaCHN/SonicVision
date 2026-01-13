@@ -14,7 +14,7 @@
 
 ## 2. 目录结构 (Directory Structure)
 ```
-src/
+/
 ├── components/
 │   ├── controls/          # UI 控制层
 │   │   ├── panels/        # 设置面板子组件
@@ -27,13 +27,19 @@ src/
 │   │   └── ThreeScenes.tsx
 │   ├── ui/                # 界面覆盖层
 │   │   ├── SongOverlay.tsx
+│   │   ├── LyricsOverlay.tsx
 │   │   ├── CustomTextOverlay.tsx
 │   │   └── HelpModal.tsx
 ├── services/              # 业务逻辑服务
 ├── hooks/                 # React Hooks
-├── types.ts               # 全局类型定义
-├── constants.ts           # 常量配置
-└── translations.ts        # 国际化字典
+├── types/                 # 全局类型定义
+│   └── index.ts
+├── constants/             # 常量配置
+│   └── index.ts
+├── i18n/                  # 国际化字典
+│   └── index.ts
+├── locales/               # 语言文件
+└── App.tsx                # 应用入口
 ```
 
 ## 3. 应用生命周期

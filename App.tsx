@@ -9,7 +9,7 @@ import LyricsOverlay from './components/ui/LyricsOverlay';
 import { VisualizerMode, SongInfo, LyricsStyle, Language, VisualizerSettings, Region } from './types';
 import { COLOR_THEMES } from './constants';
 import { identifySongFromAudio } from './services/geminiService';
-import { TRANSLATIONS } from './translations';
+import { TRANSLATIONS } from './i18n';
 import { useAudio } from './hooks/useAudio';
 
 const STORAGE_PREFIX = 'av_v1_'; 

@@ -1,7 +1,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { AudioDevice, VisualizerSettings, Language } from '../types';
-import { TRANSLATIONS } from '../translations';
+import { TRANSLATIONS } from '../i18n';
 
 interface UseAudioProps {
   settings: VisualizerSettings;

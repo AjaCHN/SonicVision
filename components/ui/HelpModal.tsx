@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Language } from '../../types';
-import { TRANSLATIONS } from '../../translations';
+import { TRANSLATIONS } from '../../i18n';
 import { APP_VERSION } from '../../constants';
 
 interface HelpModalProps {
