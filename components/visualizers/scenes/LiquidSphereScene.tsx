@@ -108,24 +108,25 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
     <>
       <color attach="background" args={['#050505']} />
       
+      {/* Environment can suspend, but we are now wrapped in Suspense in parent */}
       <Environment preset="city" />
       
-      <ambientLight intensity={0.2} />
-      <pointLight ref={light1Ref} position={[15, 15, 15]} intensity={2} />
-      <pointLight ref={light2Ref} position={[-15, -15, -5]} intensity={2} />
-      <spotLight ref={light3Ref} position={[0, 10, 0]} intensity={1} angle={0.5} penumbra={1} />
+      <ambientLight intensity={0.3} />
+      <pointLight ref={light1Ref} position={[15, 15, 15]} intensity={3} />
+      <pointLight ref={light2Ref} position={[-15, -15, -5]} intensity={3} />
+      <spotLight ref={light3Ref} position={[0, 10, 0]} intensity={2} angle={0.5} penumbra={1} />
       
       <mesh ref={meshRef}>
          <primitive object={geometry} attach="geometry" />
          <meshPhysicalMaterial 
             ref={materialRef}
             emissiveIntensity={0.2}
-            metalness={0.95}    
-            roughness={0.08}    
+            metalness={0.9} // Reduced from 0.95 to reduce dependency on Env map
+            roughness={0.15} // Increased from 0.08 to catch more point lights
             clearcoat={1.0}     
             clearcoatRoughness={0.1}
             reflectivity={1.0}
-            envMapIntensity={1.2}
+            envMapIntensity={1.0}
             side={THREE.DoubleSide}
             flatShading={settings.quality === 'low'}
          />

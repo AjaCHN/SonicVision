@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Bloom, ChromaticAberration, TiltShift } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -55,7 +55,10 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
             powerPreference: "high-performance"
         }}
       >
-        {renderScene()}
+        <Suspense fallback={null}>
+            {renderScene()}
+        </Suspense>
+        
         {settings.glow && (
             <EffectComposer enableNormalPass={false} multisampling={0}>
                 {/* Optimized Bloom: Threshold raised to 0.5 to process fewer pixels. */}

@@ -45,7 +45,7 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
               {t.reset}
             </button>
             <div className="text-center">
-                <span className="text-[10px] text-white/20 font-mono">v{APP_VERSION}</span>
+                <span className="text-xs text-white/20 font-mono">v{APP_VERSION}</span>
             </div>
         </div>
       </div>
@@ -53,18 +53,18 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
       <div className="p-4 flex flex-col h-full overflow-y-auto custom-scrollbar space-y-4 col-span-2">
           {/* Project Info Section */}
           <div className="bg-white/[0.04] p-3 rounded-xl border border-white/5">
-             <h4 className="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
+             <h4 className="text-xs font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-1.5">
                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                {h.projectInfoTitle}
              </h4>
-             <p className="text-[10px] text-white/60 leading-relaxed font-medium">
+             <p className="text-xs text-white/60 leading-relaxed font-medium">
                {h.projectInfoText}
              </p>
           </div>
 
           {/* Shortcuts Expanded List */}
           <div className="space-y-2">
-             <h4 className="text-[9px] font-black text-purple-400 uppercase tracking-widest ml-1">{h.shortcutsTitle}</h4>
+             <h4 className="text-xs font-black text-purple-400 uppercase tracking-widest ml-1">{h.shortcutsTitle}</h4>
              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                 <ShortcutItem label={s.toggleMic} k="Space" />
                 <ShortcutItem label={s.fullscreen} k="F" />
@@ -85,7 +85,7 @@ export const SystemSettingsPanel: React.FC<SystemSettingsPanelProps> = ({
 // Helper component for uniform shortcut items
 const ShortcutItem = ({ label, k }: { label: string, k: string }) => (
   <div className="bg-white/[0.02] p-2 rounded-lg border border-white/5 flex justify-between items-center group hover:bg-white/5 transition-colors">
-     <span className="text-[9px] text-white/50 group-hover:text-white/80 transition-colors truncate pr-2" title={label}>{label}</span>
-     <kbd className="text-[9px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/80 border border-white/5 shadow-sm min-w-[20px] text-center">{k}</kbd>
+     <span className="text-[10px] text-white/50 group-hover:text-white/80 transition-colors truncate pr-2" title={label}>{label}</span>
+     <kbd className="text-[10px] font-mono bg-white/10 px-1.5 py-0.5 rounded text-white/80 border border-white/5 shadow-sm min-w-[20px] text-center">{k}</kbd>
   </div>
 );

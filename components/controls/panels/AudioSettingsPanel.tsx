@@ -48,17 +48,17 @@ export const AudioSettingsPanel: React.FC<AudioSettingsPanelProps> = ({
         <Slider label={t.sensitivity} hintText={t.hints.sensitivity} value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v:any) => setSettings({...settings, sensitivity: v})} />
         <Slider label={t.smoothing} hintText={t.hints.smoothing} value={settings.smoothing} min={0} max={0.95} step={0.01} onChange={(v:any) => setSettings({...settings, smoothing: v})} />
         
-        <button onClick={resetAudioSettings} className="w-full py-2.5 mt-2 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
+        <button onClick={resetAudioSettings} className="w-full py-2.5 mt-2 bg-white/[0.04] rounded-lg text-xs font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {t.resetAudio}
         </button>
       </div>
       <TooltipArea text={t.hints.fftSize}>
         <div className="p-4 space-y-4 h-full">
-          <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.fftSize}</span>
+          <span className="text-xs font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.fftSize}</span>
           <div className="grid grid-cols-2 gap-2">
             {[512, 1024, 2048, 4096].map(size => (
-              <button key={size} onClick={() => setSettings({...settings, fftSize: size})} className={`py-3 rounded-lg border text-[11px] font-mono font-bold transition-all duration-300 ${settings.fftSize === size ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
+              <button key={size} onClick={() => setSettings({...settings, fftSize: size})} className={`py-3 rounded-lg border text-xs font-mono font-bold transition-all duration-300 ${settings.fftSize === size ? 'bg-white/20 border-white/40 text-white shadow-[inset_0_2px_10px_rgba(255,255,255,0.05)]' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white hover:bg-white/[0.08]'}`}>
                 {size}
               </button>
             ))}
