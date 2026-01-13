@@ -38,8 +38,8 @@
 
 1.  **克隆并安装**
     ```bash
-    git clone https://github.com/yourusername/aura-vision.git
-    cd aura-vision && npm install
+    git clone https://github.com/AjaCHN/AuraVision.git
+    cd AuraVision && npm install
     ```
 
 2.  **配置 API 密钥**
