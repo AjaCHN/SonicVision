@@ -59,6 +59,7 @@ export interface VisualizerSettings {
   customTextSize: number; // Scale factor 1 to 100
   customTextFont: string;
   customTextOpacity: number;
+  customTextColor: string; // New: Custom text color
   // AI & Lyrics Settings
   lyricsPosition: 'top' | 'center' | 'bottom';
   recognitionProvider: 'GEMINI' | 'MOCK';

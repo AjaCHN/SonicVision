@@ -50,7 +50,7 @@ export const en = {
   speed: 'Animation Speed',
   glow: 'Neon Glow',
   trails: 'Motion Trails',
-  autoRotate: 'Auto-Cycle Modes',
+  autoRotate: 'Visualizer Mode Cycle',
   rotateInterval: 'Interval (s)',
   cycleColors: 'Auto-Cycle Colors',
   colorInterval: 'Interval (s)',

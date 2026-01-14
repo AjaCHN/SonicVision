@@ -50,7 +50,7 @@ export const tw = {
   speed: '演化速度',
   glow: '霓虹光暈',
   trails: '動態殘影',
-  autoRotate: '自動循環',
+  autoRotate: '視覺化模式循環',
   rotateInterval: '切換間隔 (秒)',
   cycleColors: '自動循環配色',
   colorInterval: '切換間隔 (秒)',

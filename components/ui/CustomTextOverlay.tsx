@@ -72,10 +72,10 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
     >
       <div 
         ref={textRef} 
-        className="text-white font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center"
+        className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center"
         style={{ 
+            color: settings.customTextColor || '#ffffff',
             fontSize: `min(${sizeVw}vw, ${sizePx}px)`, 
-            // Removed WebkitTextStroke for cleaner look
             whiteSpace: 'pre-wrap',
             lineHeight: 1.1,
             fontFamily: settings.customTextFont || 'Inter, sans-serif'

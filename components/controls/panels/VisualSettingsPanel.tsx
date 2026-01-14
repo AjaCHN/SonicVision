@@ -33,9 +33,9 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
 
         {/* Quality Segmented Control moved to bottom of col 1 */}
         <div className="mt-auto pt-4 border-t border-white/5">
-            <div className="flex items-center gap-3">
-                <span className="text-xs font-bold uppercase text-white/40 tracking-wider w-12 flex-shrink-0">{t.quality}</span>
-                <div className="flex-1 flex bg-white/[0.04] rounded-lg p-0.5 border border-white/5">
+            <div className="flex items-center gap-2 justify-between">
+                <span className="text-xs font-bold uppercase text-white/40 tracking-wider whitespace-nowrap">{t.quality}</span>
+                <div className="flex-1 flex bg-white/[0.04] rounded-lg p-0.5 border border-white/5 max-w-[180px]">
                 {(['low', 'med', 'high'] as const).map(q => (
                     <button 
                     key={q} 
@@ -55,7 +55,12 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
         <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-3 flex-shrink-0">{t.styleTheme}</span>
         <div className="flex flex-wrap gap-3 p-1 flex-1 overflow-y-auto custom-scrollbar content-start">
           {COLOR_THEMES.map((theme, i) => (
-            <button key={i} onClick={() => setColorTheme(theme)} className={`w-9 h-9 rounded-full border-2 flex-shrink-0 transition-all duration-300 hover:scale-110 overflow-hidden ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'border-white/80 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'border-transparent opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
+            <button 
+                key={i} 
+                onClick={() => setColorTheme(theme)} 
+                className={`w-9 h-9 rounded-full flex-shrink-0 transition-all duration-300 hover:scale-110 overflow-hidden ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'ring-2 ring-white/80 ring-offset-2 ring-offset-black/50 scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'opacity-60 hover:opacity-100'}`} 
+                style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} 
+            />
           ))}
         </div>
         
@@ -84,12 +89,7 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
                     hintText={t.hints.trails}
                 />
             </div>
-            <SettingsToggle 
-                label={t.hideCursor} 
-                value={settings.hideCursor} 
-                onChange={() => setSettings({...settings, hideCursor: !settings.hideCursor})} 
-                hintText={t.hints.hideCursor}
-            />
+            
             <SettingsToggle 
                 label={t.autoRotate} 
                 value={settings.autoRotate} 
@@ -116,6 +116,13 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
                     onChange={(v: number) => setSettings({...settings, colorInterval: v})} 
                 />
             </SettingsToggle>
+
+            <SettingsToggle 
+                label={t.hideCursor} 
+                value={settings.hideCursor} 
+                onChange={() => setSettings({...settings, hideCursor: !settings.hideCursor})} 
+                hintText={t.hints.hideCursor}
+            />
         </div>
 
         <button onClick={resetVisualSettings} className="w-full py-3 mt-auto bg-white/[0.04] rounded-xl text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 border border-transparent hover:border-white/10">

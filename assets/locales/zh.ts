@@ -50,7 +50,7 @@ export const zh = {
   speed: '演化速度',
   glow: '霓虹光晕',
   trails: '动态拖尾',
-  autoRotate: '自动循环',
+  autoRotate: '可视化模式循环',
   rotateInterval: '切换间隔 (秒)',
   cycleColors: '自动循环配色',
   colorInterval: '切换间隔 (秒)',

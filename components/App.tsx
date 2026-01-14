@@ -36,6 +36,7 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   customTextSize: 12,
   customTextFont: 'Inter, sans-serif',
   customTextOpacity: 0.35,
+  customTextColor: '#ffffff', // Default white
   lyricsPosition: 'center',
   recognitionProvider: 'GEMINI'
 };
@@ -166,7 +167,8 @@ const App: React.FC = () => {
       customTextRotation: DEFAULT_SETTINGS.customTextRotation,
       customTextSize: DEFAULT_SETTINGS.customTextSize,
       customTextFont: DEFAULT_SETTINGS.customTextFont,
-      customTextOpacity: DEFAULT_SETTINGS.customTextOpacity
+      customTextOpacity: DEFAULT_SETTINGS.customTextOpacity,
+      customTextColor: DEFAULT_SETTINGS.customTextColor
     }));
   }, []);
 

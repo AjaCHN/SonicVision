@@ -92,7 +92,34 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
       </div>
       
       <div className="p-4 h-full flex flex-col pt-6">
-         <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2 mt-auto">
+         {/* Color Picker Section */}
+         <div className="space-y-2 mb-4 mt-auto">
+            <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1">{t.customColor || 'TEXT COLOR'}</span>
+            <div className="flex gap-2 items-center bg-white/5 p-2 rounded-xl">
+                <div className="relative overflow-hidden w-8 h-8 rounded-full border border-white/20 shadow-sm shrink-0">
+                    <input 
+                        type="color" 
+                        value={settings.customTextColor || '#ffffff'}
+                        onChange={(e) => setSettings({...settings, customTextColor: e.target.value})}
+                        className="absolute inset-[-50%] w-[200%] h-[200%] cursor-pointer border-none p-0 m-0"
+                    />
+                </div>
+                {/* Presets */}
+                <div className="flex gap-2 overflow-x-auto scrollbar-hide py-1 px-1">
+                    {['#ffffff', '#ff3b30', '#34c759', '#007aff', '#ffcc00', '#ff9500', '#af52de'].map(c => (
+                        <button 
+                            key={c}
+                            onClick={() => setSettings({...settings, customTextColor: c})}
+                            className={`w-6 h-6 rounded-full border transition-all hover:scale-110 ${settings.customTextColor === c ? 'border-white scale-110' : 'border-white/10 hover:border-white/50'}`}
+                            style={{backgroundColor: c}}
+                            title={c}
+                        />
+                    ))}
+                </div>
+            </div>
+         </div>
+
+         <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white hover:bg-white/[0.08] transition-all flex items-center justify-center gap-2">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
             {t.resetText}
          </button>
