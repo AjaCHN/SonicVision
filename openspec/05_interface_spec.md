@@ -19,7 +19,7 @@
 
 ### 3.1 自定义文字面板 (Custom Text Panel)
 1. **第一列 (Content):** 文字内容输入、字体选择、显示开关。
-2. **第二列 (Style):** 颜色选择器与预设色块。
+2. **第二列 (Style):** 颜色选择器与预设色块。*色块尺寸已与“视觉”面板统一，以增强 UI 一致性。*
 3. **第三列 (Layout):** 缩放、旋转、不透明度及位置九宫格。
 
 ### 3.2 AI 识别面板 (AI Panel)
@@ -41,4 +41,4 @@
 - 滑块 (Sliders): 支持连续拖拽且在移动端禁用页面回弹。
 
 ---
-*Aura Vision Interface - Version 0.5.1*
+*Aura Vision Interface - Version 0.5.2*

@@ -49,8 +49,8 @@ export const CustomTextSettingsPanel: React.FC = () => {
                     </div>
                     <span className="text-[10px] font-mono text-white/40 uppercase tracking-widest">{settings.customTextColor}</span>
                 </div>
-                <div className="grid grid-cols-7 gap-1.5 py-1">
-                    {colorPresets.map(c => ( <button key={c} onClick={() => setSettings({...settings, customTextColor: c})} className={`w-6 h-6 rounded-full border transition-all ${settings.customTextColor === c ? 'border-white scale-125 z-10' : 'border-white/10 hover:scale-110'}`} style={{backgroundColor: c}} aria-label={`Color ${c}`} /> ))}
+                <div className="grid grid-cols-6 gap-3 p-1">
+                    {colorPresets.map(c => ( <button key={c} onClick={() => setSettings({...settings, customTextColor: c})} className={`w-9 h-9 rounded-full transition-all duration-300 ${settings.customTextColor === c ? 'ring-2 ring-white/80 scale-110 shadow-lg' : 'opacity-60 hover:opacity-100'}`} style={{backgroundColor: c}} aria-label={`Color ${c}`} /> ))}
                 </div>
             </div>
         </div>
