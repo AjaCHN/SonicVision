@@ -2,7 +2,7 @@
 
 ### AI-Powered 3D Music Visualizer & Identifier (v0.4.1)
 
-[中文文档](README_ZH.md) | [Live Demo](https://aura-vision.vercel.app/)
+[中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/)
 
 <p align="center">
   <img src="./assets/images/preview_main.png" alt="Aura Vision Banner" width="100%" />
