@@ -6,7 +6,7 @@
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/)
 
 <p align="center">
-  <img src="./assets/images/banner.jpg" alt="Aura Vision Banner" width="100%" />
+  <img src="./images/aura-banner.jpg" alt="Aura Vision Banner" width="100%" />
 </p>
 
 <p align="center">
