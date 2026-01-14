@@ -41,7 +41,9 @@ export const tw = {
     help: '查看快捷鍵操作指南與專案詳細文件。',
     mic: '啟動或靜音系統麥克風訊號。',
     device: '選擇當前活動的音訊輸入硬體。',
-    monitor: '透過揚聲器監聽輸入訊號（警告：可能產生回音）。'
+    monitor: '透過揚聲器監聽輸入訊號（警告：可能產生回音）。',
+    hideCursor: '自動隱藏滑鼠游標以獲得純淨視覺。',
+    wakeLock: '啟用後，只要視覺化處於活動狀態，螢幕將保持常亮。'
   },
   visualizerMode: '視覺化模式',
   styleTheme: '視覺風格',
@@ -81,18 +83,18 @@ export const tw = {
   betaDisclaimer: 'Beta 功能：辨識準確度正在持續優化中。',
   wrongSong: '辨識有誤？點擊重試',
   hideCursor: '隱藏滑鼠游標',
-  customColor: '自定義顏色',
+  customColor: '文字顏色',
   randomizeTooltip: '隨機視覺設定 (快捷鍵: R)',
   smoothing: '動態平滑度',
   fftSize: '頻域解析度 (FFT)',
   appInfo: '關於應用',
   appDescription: '一個基於即時頻域分析與 Gemini AI 語意辨識的沉浸式音樂視覺化套件。',
   version: '版本號',
-  defaultMic: '系統預設麥克風',
+  defaultMic: '系統預設麥크風',
   customText: '自訂文字內容',
   textProperties: '排版與佈局',
   customTextPlaceholder: '輸入文字',
-  showText: '顯示圖層',
+  showText: '顯示文字圖層',
   pulseBeat: '隨節奏律動',
   textSize: '字體大小',
   textRotation: '旋轉角度',
@@ -104,6 +106,15 @@ export const tw = {
     med: '中',
     high: '高'
   },
+  recognitionSource: 'AI 辨識源',
+  lyricsPosition: '歌詞顯示位置',
+  simulatedDemo: '模擬演示 (Demo)',
+  positions: {
+      top: '頂部',
+      center: '居中',
+      bottom: '底部'
+  },
+  wakeLock: '禁止螢幕休眠',
   system: {
     shortcuts: {
       mic: '麥克風',
@@ -180,12 +191,39 @@ export const tw = {
       glow: '基於螢幕空間的後期泛光強度。',
       trails: '控制像素在畫面上的停留時間，產生殘影。',
       smoothing: '音訊資料的阻尼係數，越高則過渡越圓滑。',
-      fftSize: '決定了頻譜分析的顆粒度，即頻段數量。'
+      fftSize: '決定了頻譜分析的顆粒度，即評段數量。'
     },
     projectInfoTitle: '專案簡介',
-    projectInfoText: '由 Google Gemini 3 Flash 模型、React 19 以及硬體加速的 WebGL 技術棧強力驅動。',
+    projectInfoText: '由 Google Gemini 3 Flash 專案、React 19 以及硬體加速的 WebGL 技術棧強力驅動。',
     privacyTitle: '隱私與安全',
     privacyText: '音訊分析完全在本地完成。僅在辨識歌曲時，會將加密的頻率特徵臨時發送至雲端，絕不儲存任何原始錄音。',
     version: '發布版本'
+  },
+  onboarding: {
+    welcome: '歡迎使用 Aura Vision',
+    subtitle: '下一代 AI 音樂視覺化引擎',
+    selectLanguage: '選擇語言',
+    next: '下一步',
+    skip: '跳過',
+    finish: '開始體驗',
+    features: {
+      title: '核心特性',
+      visuals: {
+        title: '沉浸式視覺',
+        desc: '8+ 種基於 Three.js 開發的 WebGL 物理渲染引擎。'
+      },
+      ai: {
+        title: 'Gemini AI 智慧',
+        desc: '由 Google Gemini 3 驅動的即時曲目辨識與情緒分析。'
+      },
+      privacy: {
+        title: '隱私優先',
+        desc: '本地頻譜分析。音訊資料絕不傳送至任何伺服器。'
+      }
+    },
+    shortcuts: {
+      title: '快捷操作',
+      desc: '使用以下按鍵快速掌控全域體驗。'
+    }
   }
 };

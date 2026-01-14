@@ -3,7 +3,7 @@ import React, { useRef, Suspense } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Bloom, ChromaticAberration, TiltShift } from '@react-three/postprocessing';
 import * as THREE from 'three';
-import { VisualizerMode, VisualizerSettings } from '../../types';
+import { VisualizerMode, VisualizerSettings } from '../../core/types';
 import { SilkWavesScene, LiquidSphereScene, LowPolyTerrainScene } from './ThreeScenes';
 
 interface ThreeVisualizerProps {
@@ -30,17 +30,14 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
   };
 
   const getBloomIntensity = () => {
-      if (mode === VisualizerMode.SILK) return 1.5; // Reduced slightly
+      if (mode === VisualizerMode.SILK) return 1.5;
       if (mode === VisualizerMode.LIQUID) return 2.0;
       return 2.0;
   };
 
-  // Performance Optimization: Cap DPR to prevent overheating on high-res mobile screens
   const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.2 : Math.min(window.devicePixelRatio, 2);
-
-  // Performance Optimization: Selective Post-Processing
   const enableTiltShift = settings.quality === 'high' && (mode === VisualizerMode.LIQUID || mode === VisualizerMode.SILK);
-  const enableChromatic = settings.quality !== 'low'; // Disable chromatic aberration on low end
+  const enableChromatic = settings.quality !== 'low';
 
   return (
     <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`}>
@@ -61,12 +58,11 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
         
         {settings.glow && (
             <EffectComposer enableNormalPass={false} multisampling={0}>
-                {/* Optimized Bloom: Threshold raised to 0.5 to process fewer pixels. */}
                 <Bloom 
                     luminanceThreshold={0.5} 
                     luminanceSmoothing={0.8} 
                     intensity={getBloomIntensity()} 
-                    mipmapBlur={settings.quality !== 'low'} // Disable mipmap blur on low for speed
+                    mipmapBlur={settings.quality !== 'low'}
                 />
                 {enableChromatic && (
                     <ChromaticAberration 

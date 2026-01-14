@@ -41,7 +41,8 @@ export const fr = {
     help: 'Voir les raccourcis clavier et la documentation.',
     mic: 'Active ou coupe l\'entrée microphone.',
     device: 'Sélectionnez la source d\'entrée audio matérielle.',
-    monitor: 'Dirige l\'entrée audio vers les haut-parleurs (Attention : risque de larsen).'
+    monitor: 'Dirige l\'entrée audio vers les haut-parleurs (Attention : risque de larsen).',
+    wakeLock: 'Empêche l\'écran de s\'éteindre ou de s\'assombrir pendant que le visualiseur est actif.'
   },
   visualizerMode: 'Mode Visualiseur',
   styleTheme: 'Thème Visuel',
@@ -112,6 +113,7 @@ export const fr = {
       center: 'Centre',
       bottom: 'Bas'
   },
+  wakeLock: 'Rester éveillé',
   system: {
     shortcuts: {
       mic: 'Micro',
@@ -195,5 +197,32 @@ export const fr = {
     privacyTitle: 'Politique de Confidentialité',
     privacyText: 'L\'audio est analysé localmente. Des instantanés temporaires sont envoyés à Gemini uniquement pour l\'identification.',
     version: 'Version'
+  },
+  onboarding: {
+    welcome: 'Bienvenue sur Aura Vision',
+    subtitle: 'Visualisation Musicale IA Nouvelle Génération',
+    selectLanguage: 'Choisir la langue',
+    next: 'Suivant',
+    skip: 'Passer',
+    finish: 'Commencer',
+    features: {
+      title: 'Fonctionnalités Clés',
+      visuals: {
+        title: 'Visuels Immersifs',
+        desc: '8+ moteurs physiques WebGL basés sur Three.js.'
+      },
+      ai: {
+        title: 'Intelligence Gemini IA',
+        desc: 'Identification de chansons en temps réel et détection d\'humeur propulsées par Google Gemini 3.'
+      },
+      privacy: {
+        title: 'Confidentialité Avant Tout',
+        desc: 'Analyse spectrale locale. Les données audio ne sont jamais stockées sur des serveurs.'
+      }
+    },
+    shortcuts: {
+      title: 'Contrôles Rapides',
+      desc: 'Maîtrisez l\'expérience avec ces touches.'
+    }
   }
 };

@@ -41,7 +41,9 @@ export const zh = {
     help: '查看快捷键操作指南与项目详细文档。',
     mic: '启动或静音系统麦克风信号。',
     device: '选择当前活动的音频输入硬件。',
-    monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。'
+    monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。',
+    hideCursor: '自动隐藏鼠标指针以获得纯净视觉。',
+    wakeLock: '启用后，只要可视化处于活动状态，屏幕将保持常亮。'
   },
   visualizerMode: '可视化模式',
   styleTheme: '视觉风格',
@@ -81,7 +83,7 @@ export const zh = {
   betaDisclaimer: 'Beta 功能：识别准确度正在持续优化中。',
   wrongSong: '识别有误？点击重试',
   hideCursor: '隐藏鼠标指针',
-  customColor: '自定义颜色',
+  customColor: '文字颜色',
   randomizeTooltip: '随机视觉设置 (快捷鍵: R)',
   smoothing: '动态平滑度',
   fftSize: '频域分辨率 (FFT)',
@@ -112,6 +114,7 @@ export const zh = {
       center: '居中',
       bottom: '底部'
   },
+  wakeLock: '禁止屏幕休眠',
   system: {
     shortcuts: {
       mic: '麦克风',
@@ -195,5 +198,32 @@ export const zh = {
     privacyTitle: '隐私与安全',
     privacyText: '音频分析完全在本地完成。仅在识别歌曲时，会将加密的频率特征临时发送至云端，绝不存储任何原始录音。',
     version: '发布版本'
+  },
+  onboarding: {
+    welcome: '欢迎使用 Aura Vision',
+    subtitle: '下一代 AI 音乐可视化引擎',
+    selectLanguage: '选择语言',
+    next: '下一步',
+    skip: '跳过',
+    finish: '开始体验',
+    features: {
+      title: '核心特性',
+      visuals: {
+        title: '沉浸式视觉',
+        desc: '8+ 种基于 Three.js 开发的 WebGL 物理渲染引擎。'
+      },
+      ai: {
+        title: 'Gemini AI 智能',
+        desc: '由 Google Gemini 3 驱动的实时曲目识别与情绪分析。'
+      },
+      privacy: {
+        title: '隐私优先',
+        desc: '本地频谱分析。音频数据绝不上传至任何服务器。'
+      }
+    },
+    shortcuts: {
+      title: '快捷操作',
+      desc: '使用以下按键快速掌控全局体验。'
+    }
   }
 };

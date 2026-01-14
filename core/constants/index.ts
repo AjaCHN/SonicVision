@@ -1,0 +1,71 @@
+
+import { VisualizerMode, Region } from '../types';
+
+export const APP_VERSION = '0.3.0';
+export const GEMINI_MODEL = 'gemini-3-flash-preview';
+
+export const VISUALIZER_PRESETS = {
+  [VisualizerMode.PLASMA]: { name: 'Plasma Flow', description: 'Fluid liquid color gradients' },
+  [VisualizerMode.BARS]: { name: 'Frequency Bars', description: 'Classic spectrum analyzer' },
+  [VisualizerMode.PARTICLES]: { name: 'Starfield', description: 'Particles accelerated by treble' },
+  [VisualizerMode.TUNNEL]: { name: 'Geometric Tunnel', description: '3D deep space tunnel' },
+  [VisualizerMode.SHAPES]: { name: 'Abstract Shapes', description: 'Dancing geometric primitives' },
+  [VisualizerMode.RINGS]: { name: 'Neon Rings', description: 'Concentric circles reactive to mids' },
+  [VisualizerMode.NEBULA]: { name: 'Deep Nebula', description: 'Dense, swirling clouds of color' },
+  [VisualizerMode.KALEIDOSCOPE]: { name: 'Kaleidoscope', description: 'Psychedelic mandala patterns' },
+  [VisualizerMode.LASERS]: { name: 'Concert Lasers', description: 'Converging sweeping light beams' },
+  [VisualizerMode.SILK]: { name: 'Silk Waves', description: 'Iridescent flowing fabric (WebGL)' },
+  [VisualizerMode.LIQUID]: { name: 'Liquid Sphere', description: 'Ferrofluid-like reactive matter (WebGL)' },
+  [VisualizerMode.TERRAIN]: { name: 'Low-Poly Terrain', description: 'Flying over reactive mountains (WebGL)' }
+};
+
+export const AVAILABLE_FONTS = [
+  { value: 'Inter, sans-serif', label: 'Inter (Default)' },
+  { value: 'Arial, sans-serif', label: 'Arial' },
+  { value: 'Courier New, monospace', label: 'Courier New' },
+  { value: 'Times New Roman, serif', label: 'Times New Roman' },
+  { value: 'Impact, sans-serif', label: 'Impact' },
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: 'Verdana, sans-serif', label: 'Verdana' }
+];
+
+export const COLOR_THEMES = [
+  ['#3b82f6', '#8b5cf6', '#ec4899'],
+  ['#ff00ff', '#00ffff', '#ffff00'],
+  ['#6366f1', '#a855f7', '#ec4899'],
+  ['#f7ff00', '#db36a4', '#000000'],
+  ['#ff4d00', '#ff00ff', '#00ff4d'],
+  ['#f472b6', '#d946ef', '#8b5cf6'],
+  ['#2e1065', '#6b21a8', '#d8b4fe'],
+  ['#ef4444', '#f59e0b', '#fbbf24'],
+  ['#fcd34d', '#f97316', '#ea580c'],
+  ['#f87171', '#dc2626', '#991b1b'],
+  ['#fa709a', '#fee140', '#ffffff'],
+  ['#450a0a', '#991b1b', '#f87171'],
+  ['#7f1d1d', '#b91c1c', '#f87171'],
+  ['#eab308', '#facc15', '#fef08a'],
+  ['#10b981', '#34d399', '#6ee7b7'],
+  ['#0ea5e9', '#22d3ee', '#67e8f9'],
+  ['#064e3b', '#059669', '#34d399'],
+  ['#001219', '#005f73', '#0a9396'],
+  ['#082f49', '#075985', '#0ea5e9'],
+  ['#a3e635', '#22c55e', '#14532d'],
+  ['#1a2a6c', '#b21f1f', '#fdbb2d'],
+  ['#4c1d95', '#8b5cf6', '#ddd6fe'],
+  ['#ee9ca7', '#ffdde1', '#ffffff'],
+  ['#94a3b8', '#e2e8f0', '#f8fafc'],
+  ['#000000', '#ffffff', '#cccccc'],
+  ['#312e81', '#1e1b4b', '#4c1d95'],
+  ['#111827', '#374151', '#9ca3af'],
+  ['#00ffff', '#3b82f6', '#1d4ed8'],
+];
+
+export const REGION_NAMES: Record<Region, string> = {
+  global: 'Global',
+  US: 'USA / West',
+  CN: 'China',
+  JP: 'Japan',
+  KR: 'Korea',
+  EU: 'Europe',
+  LATAM: 'Latin America'
+};

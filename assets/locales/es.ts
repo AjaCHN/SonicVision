@@ -41,7 +41,8 @@ export const es = {
     help: 'Ver atajos de teclado y documentación.',
     mic: 'Activa o silencia la entrada del micrófono.',
     device: 'Selecciona la fuente de entrada de audio de hardware.',
-    monitor: 'Envía la entrada de audio a los altavoces (Precaución: puede causar retroalimentación).'
+    monitor: 'Envía la entrada de audio a los altavoces (Precaución: puede causar retroalimentación).',
+    wakeLock: 'Evita que la pantalla se apague o se atenúe mientras el visualizador está activo.'
   },
   visualizerMode: 'Modo Visualizador',
   styleTheme: 'Tema Visual',
@@ -112,6 +113,7 @@ export const es = {
       center: 'Centro',
       bottom: 'Abajo'
   },
+  wakeLock: 'No dormir',
   system: {
     shortcuts: {
       mic: 'Mic',
@@ -162,7 +164,7 @@ export const es = {
   helpModal: {
     title: 'Guía de Aura Vision',
     intro: 'Aura Vision transforma la entrada de tu micrófono en arte digital generativo altamente receptivo utilizando análisis espectral avanzado.',
-    shortcutsTitle: 'Interacción con Teclado',
+    shortcutsTitle: 'Atajos de Teclado',
     shortcutItems: {
       toggleMic: 'Alternar Entrada de Audio',
       fullscreen: 'Pantalla Completa',
@@ -195,5 +197,32 @@ export const es = {
     privacyTitle: 'Política de Privacidad',
     privacyText: 'El audio se analiza localmente. Se envían instantáneas temporales a Gemini únicamente para identificación.',
     version: 'Lanzamiento'
+  },
+  onboarding: {
+    welcome: 'Bienvenido a Aura Vision',
+    subtitle: 'Visualización de Música con IA de Nueva Generación',
+    selectLanguage: 'Seleccionar Idioma',
+    next: 'Siguiente',
+    skip: 'Omitir',
+    finish: 'Comenzar',
+    features: {
+      title: 'Características Principales',
+      visuals: {
+        title: 'Visuales Inmersivos',
+        desc: 'Más de 8 motores de física WebGL impulsados por Three.js.'
+      },
+      ai: {
+        title: 'Inteligencia Gemini AI',
+        desc: 'Identificación de canciones en tiempo real y detección de estado de ánimo con Google Gemini 3.'
+      },
+      privacy: {
+        title: 'Privacidad Primero',
+        desc: 'Análisis espectral local. El audio nunca se almacena en servidores.'
+      }
+    },
+    shortcuts: {
+      title: 'Controles Rápidos',
+      desc: 'Domina la experiencia con estas teclas.'
+    }
   }
 };

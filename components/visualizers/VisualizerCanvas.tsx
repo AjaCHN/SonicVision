@@ -4,13 +4,13 @@ import {
   VisualizerMode, 
   VisualizerSettings, 
   IVisualizerRenderer 
-} from '../../types';
+} from '../../core/types';
 import { 
   BarsRenderer, RingsRenderer, ParticlesRenderer, TunnelRenderer, 
   PlasmaRenderer, ShapesRenderer, NebulaRenderer, 
   KaleidoscopeRenderer, LasersRenderer
-} from '../../services/visualizerStrategies';
-import { lerpHex } from '../../services/colorUtils';
+} from '../../core/services/visualizerStrategies';
+import { lerpHex } from '../../core/services/colorUtils';
 
 interface VisualizerCanvasProps {
   analyser: AnalyserNode | null;
@@ -25,8 +25,6 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
   const rotationRef = useRef<number>(0);
-  
-  // Store current display colors for smooth transition
   const currentColorsRef = useRef<string[]>(colors);
   
   const renderersRef = useRef<Partial<Record<VisualizerMode, IVisualizerRenderer>>>({
@@ -53,9 +51,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Smoothly interpolate colors towards target props.colors
-    // Extremely smooth transition (0.0005 factor)
-    const lerpFactor = 0.0005; 
+    const lerpFactor = 0.005; 
     const smoothedColors = currentColorsRef.current.map((curr, i) => {
         const target = colors[i] || colors[0] || '#ffffff';
         return lerpHex(curr, target, lerpFactor);
@@ -68,7 +64,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
 
     let alpha = 0.2;
     if (mode === VisualizerMode.PLASMA) alpha = 0.15;
-    if (mode === VisualizerMode.PARTICLES) alpha = 0.06; // 锁定长拖尾
+    if (mode === VisualizerMode.PARTICLES) alpha = 0.06;
     if (mode === VisualizerMode.NEBULA) alpha = 0.08;
     
     if (settings.trails) {
@@ -92,7 +88,6 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     if (renderer) {
       renderer.draw(ctx, dataArray, width, height, smoothedColors, settings, rotationRef.current);
     }
-
     requestRef.current = requestAnimationFrame(draw);
   };
 

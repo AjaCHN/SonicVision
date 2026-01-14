@@ -2,7 +2,7 @@
 import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
-import { VisualizerSettings } from '../../../types';
+import { VisualizerSettings } from '../../../core/types';
 
 interface SceneProps {
   analyser: AnalyserNode;
@@ -19,13 +19,11 @@ export const SilkWavesScene: React.FC<SceneProps> = ({ analyser, colors, setting
 
   const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
   
-  // Use refs for colors to lerp smoothly
   const c0 = useRef(new THREE.Color(colors[0]));
   const c1 = useRef(new THREE.Color(colors[1]));
   const c2 = useRef(new THREE.Color(colors[2] || '#ffffff'));
   const targetColor = useRef(new THREE.Color());
 
-  // Optimized: Adjust segments based on quality setting
   const geometry = useMemo(() => {
     let segs = 24;
     if (settings.quality === 'med') segs = 35;
@@ -34,8 +32,7 @@ export const SilkWavesScene: React.FC<SceneProps> = ({ analyser, colors, setting
   }, [settings.quality]);
 
   useFrame((state) => {
-    // 1. Color Lerping - Slower factor (0.0005) for smoother transitions
-    const lerpSpeed = 0.0005;
+    const lerpSpeed = 0.005;
     c0.current.lerp(targetColor.current.set(colors[0]), lerpSpeed);
     c1.current.lerp(targetColor.current.set(colors[1]), lerpSpeed);
     c2.current.lerp(targetColor.current.set(colors[2] || '#ffffff'), lerpSpeed);
@@ -49,44 +46,30 @@ export const SilkWavesScene: React.FC<SceneProps> = ({ analyser, colors, setting
     if (light2Ref.current) light2Ref.current.color = c1.current;
     if (light3Ref.current) light3Ref.current.color = c2.current;
 
-    // 2. Geometry Animation
     if (!meshRef.current) return;
     analyser.getByteFrequencyData(dataArray);
 
     let bass = 0;
     let treble = 0;
-
     for(let i=0; i<10; i++) bass += dataArray[i];
     bass = (bass / 10) * settings.sensitivity;
-
     for(let i=100; i<140; i++) treble += dataArray[i];
     treble = (treble / 40) * settings.sensitivity;
 
     const positions = meshRef.current.geometry.attributes.position as THREE.BufferAttribute;
     const time = state.clock.getElapsedTime() * settings.speed * 0.2;
-
     const bassNorm = bass / 255;
     const trebleNorm = treble / 255;
 
     for (let i = 0; i < positions.count; i++) {
         const x = positions.getX(i);
         const y = positions.getY(i);
-        
         const z1 = Math.sin(x * 0.15 + time) * Math.cos(y * 0.12 + time * 0.7) * 4.0;
         const z2 = Math.sin(x * 0.4 - time * 1.2) * Math.sin(y * 0.35 + time * 0.9) * 2.0;
-        
-        const distSq = x*x + y*y; 
-        const dist = Math.sqrt(distSq); 
+        const dist = Math.sqrt(x*x + y*y); 
         const bassRipple = Math.sin(dist * 0.8 - time * 4.0) * bassNorm * 4.0;
-        
-        let trebleDetail = 0;
-        if (settings.quality !== 'low') {
-            trebleDetail = Math.cos(x * 2.0 + time * 3.0) * Math.sin(y * 2.0 + time * 3.0) * trebleNorm * 1.2;
-        }
-        
-        const combinedZ = z1 + z2 + bassRipple + trebleDetail;
-        
-        positions.setZ(i, combinedZ);
+        let trebleDetail = settings.quality !== 'low' ? Math.cos(x * 2.0 + time * 3.0) * Math.sin(y * 2.0 + time * 3.0) * trebleNorm * 1.2 : 0;
+        positions.setZ(i, z1 + z2 + bassRipple + trebleDetail);
     }
     positions.needsUpdate = true;
     meshRef.current.geometry.computeVertexNormals();

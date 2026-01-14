@@ -34,7 +34,7 @@ export interface SongInfo {
   mood?: string;
   identified: boolean;
   searchUrl?: string;
-  matchSource?: 'AI' | 'LOCAL' | 'MOCK';
+  matchSource?: 'AI' | 'LOCAL' | 'MOCK' | 'GEMINI' | 'OPENAI' | 'CLAUDE' | 'GROK';
 }
 
 export interface VisualizerSettings {
@@ -51,18 +51,17 @@ export interface VisualizerSettings {
   fftSize: number;
   quality: 'low' | 'med' | 'high';
   monitor: boolean;
-  // Custom Text Settings
+  wakeLock: boolean;
   customText: string;
   showCustomText: boolean;
   textPulse: boolean;
-  customTextRotation: number; // degrees -180 to 180
-  customTextSize: number; // Scale factor 1 to 100
+  customTextRotation: number;
+  customTextSize: number;
   customTextFont: string;
   customTextOpacity: number;
-  customTextColor: string; // New: Custom text color
-  // AI & Lyrics Settings
+  customTextColor: string;
   lyricsPosition: 'top' | 'center' | 'bottom';
-  recognitionProvider: 'GEMINI' | 'MOCK';
+  recognitionProvider: 'GEMINI' | 'MOCK' | 'OPENAI' | 'CLAUDE' | 'GROK';
   lyricsStyle?: LyricsStyle;
   region?: Region;
 }
@@ -92,29 +91,6 @@ export interface AudioDevice {
   label: string;
 }
 
-// React 18+ / React-JSX Module Augmentation
-declare module 'react' {
-  namespace JSX {
-    interface IntrinsicElements {
-      mesh: any;
-      group: any;
-      pointLight: any;
-      spotLight: any;
-      ambientLight: any;
-      primitive: any;
-      color: any;
-      fog: any;
-      circleGeometry: any;
-      meshBasicMaterial: any;
-      meshStandardMaterial: any;
-      meshPhysicalMaterial: any;
-      planeGeometry: any;
-      icosahedronGeometry: any;
-    }
-  }
-}
-
-// Global JSX IntrinsicElements augmentation for backwards compatibility or global usage
 declare global {
   namespace JSX {
     interface IntrinsicElements {

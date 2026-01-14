@@ -28,7 +28,7 @@ export const ko = {
     smoothing: '시간적 감쇠. 높은 값은 액체 같은 움직임, 낮은 값은 날카로운 반응을 보입니다.',
     fftSize: '스펙트럼 해상도. 4096은 정밀한 디테일을 제공하지만 CPU를 더 많이 사용합니다.',
     lyrics: 'AI 기반 노래 식별 및 가사 가져오기 기능을 토글합니다.',
-    lyricsStyle: '동기화된 가사의 시각적 표현 방식을 사용자 정의합니다.',
+    lyricsStyle: '사용자 정의 가사의 시각적 표현 방식을 사용자 정의합니다.',
     region: 'AI 검색 엔진이 특정 시장의 음악에 중점을 두도록 설정합니다.',
     autoRotate: '다양한 시각 엔진을 자동으로 순환합니다.',
     rotateInterval: '다음 시각 엔진으로 전환하기 전까지의 시간(초)입니다.',
@@ -41,7 +41,8 @@ export const ko = {
     help: '키보드 단축키 및 문서를 확인합니다.',
     mic: '마이크 입력을 활성화하거나 음소거합니다.',
     device: '하드웨어 오디오 입력 소스를 선택합니다.',
-    monitor: '오디오 입력을 스피커로 출력합니다 (주의: 하울링 발생 가능). '
+    monitor: '오디오 입력을 스피커로 출력합니다 (주의: 하울링 발생 가능). ',
+    wakeLock: '비주얼라이저가 활성화된 동안 화면이 꺼지거나 어두워지는 것을 방지합니다.'
   },
   visualizerMode: '비주얼라이저 모드',
   styleTheme: '비주얼 테마',
@@ -112,6 +113,7 @@ export const ko = {
       center: '중앙',
       bottom: '하단'
   },
+  wakeLock: '화면 꺼짐 방지',
   system: {
     shortcuts: {
       mic: '마이크',
@@ -162,7 +164,7 @@ export const ko = {
   helpModal: {
     title: 'Aura Vision 가이드',
     intro: 'Aura Vision는 고급 스펙트럼 분석을 사용하여 마이크 입력을 반응성 높은 제너레이티브 디지털 아트로 변환합니다.',
-    shortcutsTitle: '키보드 상호 작용',
+    shortcutsTitle: '키보드 단축키',
     shortcutItems: {
       toggleMic: '오디오 입력 토글',
       fullscreen: '전체 화면',
@@ -195,5 +197,32 @@ export const ko = {
     privacyTitle: '개인정보 보호정책',
     privacyText: '오디오는 로컬에서 분석됩니다. 임시 고주파 스냅샷은 식별 목적으로만 Gemini로 전송됩니다.',
     version: '릴리스'
+  },
+  onboarding: {
+    welcome: 'Aura Vision에 오신 것을 환영합니다',
+    subtitle: '차세대 AI 음악 시각화 엔진',
+    selectLanguage: '언어 선택',
+    next: '다음',
+    skip: '건너뛰기',
+    finish: '시작하기',
+    features: {
+      title: '핵심 기능',
+      visuals: {
+        title: '몰입형 비주얼',
+        desc: 'Three.js 기반의 8가지 이상의 WebGL 물리 렌더링 엔진.'
+      },
+      ai: {
+        title: 'Gemini AI 지능',
+        desc: 'Google Gemini 3로 구동되는 실시간 노래 식별 및 무드 감지.'
+      },
+      privacy: {
+        title: '개인정보 보호 최우선',
+        desc: '로컬 스펙트럼 분석. 오디오 데이터는 서버에 저장되지 않습니다.'
+      }
+    },
+    shortcuts: {
+      title: '빠른 제어',
+      desc: '다음 키로 경험을 마스터하세요.'
+    }
   }
 };

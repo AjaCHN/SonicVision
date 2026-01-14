@@ -5,16 +5,18 @@ import { createPortal } from 'react-dom';
 // --- Tooltips ---
 
 interface TooltipProps {
-  text: string;
+  text: string | undefined | null;
   visible: boolean;
   anchorRef: React.RefObject<HTMLElement>;
 }
 
 export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+  const [isAutoHidden, setIsAutoHidden] = useState(false);
 
+  // Handle position updates
   useEffect(() => {
-    if (visible && anchorRef.current) {
+    if (visible && anchorRef.current && text) {
       const updatePosition = () => {
         if (anchorRef.current) {
           const rect = anchorRef.current.getBoundingClientRect();
@@ -26,7 +28,6 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
       };
       
       updatePosition();
-      // Listen to global scroll and resize to update tooltip position
       window.addEventListener('scroll', updatePosition, true);
       window.addEventListener('resize', updatePosition);
       
@@ -35,9 +36,29 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
         window.removeEventListener('resize', updatePosition);
       };
     }
-  }, [visible, anchorRef]);
+  }, [visible, anchorRef, text]);
 
-  if (!visible || !coords) return null;
+  // Handle 5-second auto-hide logic
+  useEffect(() => {
+    if (visible) {
+      setIsAutoHidden(false);
+      const timer = setTimeout(() => {
+        setIsAutoHidden(true);
+      }, 5000); // 5 seconds timeout
+      return () => clearTimeout(timer);
+    } else {
+      setIsAutoHidden(false);
+    }
+  }, [visible]);
+
+  // CRITICAL FIX: Prevent "reading properties of undefined (reading 'match')"
+  // ALSO: Support auto-hide state
+  if (!visible || !coords || !text || isAutoHidden) return null;
+
+  // Safe parse: text is guaranteed to exist here
+  const match = typeof text === 'string' ? text.match(/^(.*)\s?\[(.+)\]$/) : null;
+  const displayContent = match ? match[1] : text;
+  const shortcutKey = match ? match[2] : null;
 
   return createPortal(
     <div 
@@ -49,8 +70,13 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
       }}
     >
       <div className="animate-fade-in-up">
-        <div className="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-2xl whitespace-normal w-max max-w-[240px] text-center relative">
-          {text}
+        <div className="px-3 py-2 bg-blue-600 text-white text-xs font-bold rounded-lg shadow-2xl whitespace-nowrap flex items-center gap-2 relative border border-white/10">
+          <span>{displayContent}</span>
+          {shortcutKey && (
+            <span className="px-1.5 py-0.5 bg-black/20 rounded border border-white/10 text-[10px] font-mono shadow-sm tracking-wider">
+              {shortcutKey}
+            </span>
+          )}
           <div className="absolute top-full left-1/2 -translate-x-1/2 border-8 border-transparent border-t-blue-600" />
         </div>
       </div>
@@ -59,7 +85,7 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
   );
 };
 
-export const TooltipArea = ({ children, text }: { children?: React.ReactNode, text: string }) => {
+export const TooltipArea = ({ children, text }: { children?: React.ReactNode, text: string | undefined | null }) => {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -202,7 +228,6 @@ export const Slider = ({ label, value, min, max, step, onChange, icon, hintText,
           <input 
             type="range" min={min} max={max} step={step} value={value} 
             onPointerDown={(e) => e.stopPropagation()} 
-            // 阻止键盘事件冒泡，确保左右箭头仅控制滑块，不触发全局快捷键
             onKeyDown={(e) => e.stopPropagation()} 
             onChange={(e) => onChange(parseFloat(e.target.value))} 
             className="w-full h-1 bg-transparent cursor-pointer appearance-none relative z-10" 
@@ -214,7 +239,7 @@ export const Slider = ({ label, value, min, max, step, onChange, icon, hintText,
 
 // --- Buttons ---
 
-export const ActionButton = ({ onClick, icon, hintText, className = "" }: { onClick: () => void, icon: React.ReactNode, hintText: string, className?: string }) => {
+export const ActionButton = ({ onClick, icon, hintText, className = "" }: { onClick: () => void, icon: React.ReactNode, hintText: string | undefined | null, className?: string }) => {
     const [isHovered, setIsHovered] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
     return (
