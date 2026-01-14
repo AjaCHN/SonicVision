@@ -41,7 +41,8 @@ export const zh = {
     help: '查看快捷键操作指南与项目详细文档。',
     mic: '启动或静音系统麦克风信号。',
     device: '选择当前活动的音频输入硬件。',
-    monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。'
+    monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。',
+    hideCursor: '自动隐藏鼠标指针以获得纯净视觉。'
   },
   visualizerMode: '可视化模式',
   styleTheme: '视觉风格',
@@ -81,7 +82,7 @@ export const zh = {
   betaDisclaimer: 'Beta 功能：识别准确度正在持续优化中。',
   wrongSong: '识别有误？点击重试',
   hideCursor: '隐藏鼠标指针',
-  customColor: '自定义颜色',
+  customColor: '文字颜色',
   randomizeTooltip: '随机视觉设置 (快捷鍵: R)',
   smoothing: '动态平滑度',
   fftSize: '频域分辨率 (FFT)',
