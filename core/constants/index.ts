@@ -1,4 +1,4 @@
-import { VisualizerMode, Region, Position } from '../types';
+import { VisualizerMode, Region, Position, SmartPreset } from '../types';
 
 export const APP_VERSION = '0.5.2';
 export const GEMINI_MODEL = 'gemini-3-flash-preview';
@@ -64,6 +64,57 @@ export const COLOR_THEMES = [
   // Prismatic Flare (Highly saturated multi-color)
   ['#FF3F00', '#FFD700', '#00FF41', '#00D8FF', '#FF00A0'],
 ];
+
+export const SMART_PRESETS: Record<string, SmartPreset> = {
+  calm: {
+    nameKey: 'calm',
+    settings: {
+      mode: VisualizerMode.SILK,
+      colorTheme: COLOR_THEMES[22],
+      speed: 0.5,
+      sensitivity: 1.2,
+      glow: true,
+      trails: true,
+      smoothing: 0.9,
+    }
+  },
+  party: {
+    nameKey: 'party',
+    settings: {
+      mode: VisualizerMode.LASERS,
+      colorTheme: COLOR_THEMES[28],
+      speed: 1.8,
+      sensitivity: 2.5,
+      glow: true,
+      trails: false,
+      smoothing: 0.6,
+    }
+  },
+  psychedelic: {
+    nameKey: 'psychedelic',
+    settings: {
+      mode: VisualizerMode.KALEIDOSCOPE,
+      colorTheme: COLOR_THEMES[29],
+      speed: 1.2,
+      sensitivity: 1.8,
+      glow: true,
+      trails: true,
+      smoothing: 0.8,
+    }
+  },
+  ambient: {
+    nameKey: 'ambient',
+    settings: {
+      mode: VisualizerMode.NEBULA,
+      colorTheme: COLOR_THEMES[18],
+      speed: 0.3,
+      sensitivity: 1.5,
+      glow: true,
+      trails: true,
+      smoothing: 0.85,
+    }
+  }
+};
 
 export const REGION_NAMES: Record<Region, string> = {
   global: 'Global',

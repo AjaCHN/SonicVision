@@ -1,24 +1,50 @@
 import React from 'react';
 import { VisualizerMode } from '../../../core/types';
-import { VISUALIZER_PRESETS, COLOR_THEMES } from '../../../core/constants';
-import { SettingsToggle, Slider } from '../ControlWidgets';
+import { VISUALIZER_PRESETS, COLOR_THEMES, SMART_PRESETS } from '../../../core/constants';
+import { SettingsToggle, Slider, CustomSelect } from '../ControlWidgets';
+import { VisualizerPreview } from './VisualizerPreview';
 import { useAppContext } from '../../AppContext';
 
 export const VisualSettingsPanel: React.FC = () => {
-  const { mode: currentMode, setMode, colorTheme, setColorTheme, settings, setSettings, resetVisualSettings, t } = useAppContext();
+  const { mode: currentMode, setMode, colorTheme, setColorTheme, settings, setSettings, resetVisualSettings, applyPreset, t } = useAppContext();
   const hints = t?.hints || {};
   const modes = t?.modes || {};
   const qualities = t?.qualities || {};
+  const presets = t?.presets || {};
 
   return (
     <>
       <div id="container-visual-modes" className="flex flex-col p-4 h-full overflow-hidden border-b lg:border-b-0 lg:border-r border-white/5">
+        <div className="mb-4">
+          <CustomSelect 
+            label={presets.title || 'Smart Presets'}
+            value={''}
+            hintText={presets.hint || 'Apply a curated aesthetic'}
+            options={[
+              { value: '', label: presets.select || 'Select a mood...' },
+              ...Object.keys(SMART_PRESETS).map(key => ({
+                value: key,
+                label: presets[key] || SMART_PRESETS[key].nameKey,
+              }))
+            ]}
+            onChange={(val) => {
+              if (val && SMART_PRESETS[val]) {
+                applyPreset(SMART_PRESETS[val]);
+              }
+            }}
+          />
+        </div>
+
         <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-3 flex-shrink-0">{t?.visualizerMode || "Visualizer Mode"}</span>
         <div className="grid grid-cols-2 gap-2 flex-1 overflow-y-auto custom-scrollbar p-1 pr-2 content-start">
            {Object.keys(VISUALIZER_PRESETS).map(m => (
-             <button key={m} onClick={() => setMode(m as VisualizerMode)} aria-pressed={currentMode === m} className={`px-3 py-3 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all duration-300 ${currentMode === m ? 'bg-white/20 border-white/40 text-white' : 'bg-white/[0.04] border-transparent text-white/40 hover:text-white'}`}>
-               {modes[m as VisualizerMode] || m}
-             </button>
+             <VisualizerPreview
+                key={m}
+                mode={m as VisualizerMode}
+                name={modes[m as VisualizerMode] || m}
+                isActive={currentMode === m}
+                onClick={() => setMode(m as VisualizerMode)}
+              />
            ))}
         </div>
         <div className="mt-auto pt-4 border-t border-white/5">

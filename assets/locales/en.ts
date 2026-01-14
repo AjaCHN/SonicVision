@@ -1,4 +1,3 @@
-
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
@@ -35,6 +34,7 @@ export const en = {
     cycleColors: 'Transita automatically between color themes over time.',
     colorInterval: 'Time in seconds before smoothly blending to the next color palette.',
     reset: 'Restore all application settings to factory defaults.',
+    confirmReset: 'Confirm Reset? This action cannot be undone.',
     resetVisual: 'Reset only aesthetics (Speed, Glow, Trails) to defaults.',
     randomize: 'Generate a serendipitous combination of visual mode and colors.',
     fullscreen: 'Toggle immersive full-screen mode.',
@@ -108,6 +108,15 @@ export const en = {
     med: 'Medium',
     high: 'High'
   },
+  presets: {
+    title: 'Smart Presets',
+    hint: 'Apply a professionally curated aesthetic combination with one click.',
+    select: 'Select a mood...',
+    calm: 'Hypnotic & Calm',
+    party: 'Energetic Party',
+    psychedelic: 'Psychedelic Trip',
+    ambient: 'Ambient Focus'
+  },
   recognitionSource: 'AI Provider',
   lyricsPosition: 'Lyrics Position',
   lyricsFont: 'Font Family',
@@ -180,6 +189,11 @@ export const en = {
   },
   helpModal: {
     title: 'Aura Vision Guide',
+    tabs: {
+        guide: 'Guide',
+        shortcuts: 'Shortcuts',
+        about: 'About'
+    },
     intro: 'Aura Vision transforms your microphone input into highly responsive, generative digital art using advanced spectral analysis.',
     shortcutsTitle: 'Keyboard Interaction',
     shortcutItems: {

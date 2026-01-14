@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Position } from '../../core/types';
@@ -166,32 +165,61 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
   );
 };
 
-export const Slider = ({ label, value, min, max, step, onChange, icon, hintText, unit = "" }: { 
-  label: string; value: number; min: number; max: number; step: number; 
-  onChange: (value: number) => void; icon?: React.ReactNode; hintText?: string; unit?: string;
+export const SteppedSlider = ({ label, options, value, onChange, hintText, min, max, step, unit="" }: {
+    label: string; value: number; hintText?: string; unit?: string;
+    options?: { value: number; label: string }[];
+    min?: number; max?: number; step?: number;
+    onChange: (value: number) => void;
 }) => {
     const [isHovered, setIsHovered] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    const isStepped = !!options && options.length > 1;
+    const currentIndex = isStepped ? options.findIndex(opt => opt.value === value) : -1;
+    
+    const handleSliderChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const val = parseFloat(e.target.value);
+        if (isStepped && options) {
+            if (options[val]) onChange(options[val].value);
+        } else {
+            onChange(val);
+        }
+    };
+
+    const displayValue = isStepped && options ? (options[currentIndex]?.label || value) : value.toFixed(step && step < 1 ? 2 : 0);
 
     return (
       <div ref={containerRef} className="space-y-2 relative group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
         <FloatingTooltip text={hintText} visible={isHovered} anchorRef={containerRef} />
         <div className="flex justify-between items-end text-xs text-white/40 uppercase font-black tracking-widest group-hover:text-white/70 transition-colors">
-          <span className="flex items-center gap-2">
-            {icon} <span className="font-bold">{label}</span>
-          </span>
+          <span className="font-bold">{label}</span>
           <span className="text-white font-mono text-xs bg-white/10 px-2 py-0.5 rounded-md leading-none transition-all group-hover:text-blue-300 group-hover:bg-blue-500/20">
-            {value.toFixed(step >= 1 ? 0 : 2)}{unit}
+            {displayValue}{unit}
           </span>
         </div>
-        <div className="relative h-4 flex items-center">
-          <input type="range" min={min} max={max} step={step} value={value} aria-label={label} aria-valuemin={min} aria-valuemax={max} aria-valuenow={value}
-            onPointerDown={(e) => e.stopPropagation()} onKeyDown={(e) => e.stopPropagation()} onChange={(e) => onChange(parseFloat(e.target.value))} 
-            className="w-full h-1 bg-transparent cursor-pointer appearance-none relative z-10" />
+        <div className="relative pt-2">
+            <input
+                type="range"
+                min={isStepped ? 0 : min}
+                max={isStepped ? (options?.length ?? 1) - 1 : max}
+                step={isStepped ? 1 : step}
+                value={isStepped ? currentIndex : value}
+                onChange={handleSliderChange}
+                className="w-full h-1 bg-transparent cursor-pointer appearance-none relative z-10"
+            />
+            {isStepped && options && (
+                <div className="absolute top-[13px] left-1 right-1 flex justify-between items-center pointer-events-none">
+                    {options.map((opt, index) => (
+                        <div key={opt.value} className={`w-1 h-1 rounded-full ${index <= currentIndex ? 'bg-blue-500' : 'bg-white/20'}`} />
+                    ))}
+                </div>
+            )}
         </div>
       </div>
     );
 };
+
+export const Slider = (props: any) => <SteppedSlider {...props} />;
 
 // --- Buttons ---
 

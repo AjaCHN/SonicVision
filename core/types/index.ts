@@ -79,6 +79,19 @@ export interface VisualizerConfig {
   colorTheme: string[];
 }
 
+export interface SmartPreset {
+  nameKey: string;
+  settings: {
+    mode: VisualizerMode;
+    colorTheme: string[];
+    speed: number;
+    sensitivity: number;
+    glow: boolean;
+    trails: boolean;
+    smoothing: number;
+  };
+}
+
 export interface IVisualizerRenderer {
   init(canvas: HTMLCanvasElement): void;
   draw(

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo } from 'react';
-import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice, SongInfo } from '../core/types';
+import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice, SongInfo, SmartPreset } from '../core/types';
 import { useAudio } from '../core/hooks/useAudio';
 import { useLocalStorage } from '../core/hooks/useLocalStorage';
 import { useAppState } from '../core/hooks/useAppState';
@@ -38,6 +38,7 @@ interface AppContextType {
   resetTextSettings: () => void;
   resetAudioSettings: () => void;
   resetAiSettings: () => void;
+  applyPreset: (preset: SmartPreset) => void;
   handleOnboardingComplete: () => void;
   t: any;
 }
@@ -79,7 +80,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
   
   const { 
     mode, setMode, colorTheme, setColorTheme, settings, setSettings, 
-    randomizeSettings, resetVisualSettings 
+    randomizeSettings, resetVisualSettings, applyPreset
   } = useVisualsState(hasStarted, initialSettings);
 
   const [selectedDeviceId, setSelectedDeviceId] = useState<string>(() => getStorage('deviceId', ''));
@@ -123,7 +124,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     language, setLanguage, region, setRegion, selectedDeviceId, onDeviceChange: setSelectedDeviceId, isListening,
     isSimulating, isIdentifying, analyser, mediaStream, audioDevices, currentSong, setCurrentSong, errorMessage, setErrorMessage,
     startMicrophone, toggleMicrophone, startDemoMode, performIdentification, randomizeSettings, resetSettings,
-    resetVisualSettings, resetTextSettings, resetAudioSettings, resetAiSettings, t,
+    resetVisualSettings, resetTextSettings, resetAudioSettings, resetAiSettings, applyPreset, t,
     hasStarted, setHasStarted, isUnsupported, showOnboarding, isThreeMode, handleOnboardingComplete
   };
 

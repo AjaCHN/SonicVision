@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useLocalStorage } from './useLocalStorage';
-import { VisualizerMode, VisualizerSettings } from '../types';
+import { VisualizerMode, VisualizerSettings, SmartPreset } from '../types';
 import { COLOR_THEMES } from '../constants';
 
 const DEFAULT_MODE = VisualizerMode.PLASMA;
@@ -61,6 +61,19 @@ export const useVisualsState = (hasStarted: boolean, initialSettings: Visualizer
     setSettings(p => ({ ...p, speed: 0.8 + Math.random() * 0.8, sensitivity: 1.2 + Math.random() * 1.0, glow: Math.random() > 0.15, trails: Math.random() > 0.2, smoothing: 0.7 + Math.random() * 0.2 }));
   }, [setSettings]);
 
+  const applyPreset = useCallback((preset: SmartPreset) => {
+    setMode(preset.settings.mode);
+    setColorTheme(preset.settings.colorTheme);
+    setSettings(p => ({
+      ...p,
+      speed: preset.settings.speed,
+      sensitivity: preset.settings.sensitivity,
+      glow: preset.settings.glow,
+      trails: preset.settings.trails,
+      smoothing: preset.settings.smoothing,
+    }));
+  }, [setSettings, setMode, setColorTheme]);
+
   const resetVisualSettings = useCallback(() => {
     setMode(DEFAULT_MODE);
     setColorTheme(COLOR_THEMES[DEFAULT_THEME_INDEX]);
@@ -83,6 +96,7 @@ export const useVisualsState = (hasStarted: boolean, initialSettings: Visualizer
     colorTheme, setColorTheme,
     settings, setSettings,
     randomizeSettings,
-    resetVisualSettings
+    resetVisualSettings,
+    applyPreset
   };
 };
