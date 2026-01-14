@@ -1,4 +1,5 @@
 import * as React from 'react';
+import type { ThreeElements } from '@react-three/fiber';
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
@@ -95,24 +96,8 @@ export interface AudioDevice {
 
 declare global {
   namespace JSX {
-    // FIX: Restored `extends React.JSX.IntrinsicElements` to correctly augment JSX types
-    // for react-three-fiber components instead of overwriting them. This resolves errors
-    // where TypeScript could not find definitions for custom JSX tags like <mesh />.
-    interface IntrinsicElements extends React.JSX.IntrinsicElements {
-      mesh: any;
-      group: any;
-      pointLight: any;
-      spotLight: any;
-      ambientLight: any;
-      primitive: any;
-      color: any;
-      fog: any;
-      circleGeometry: any;
-      meshBasicMaterial: any;
-      meshStandardMaterial: any;
-      meshPhysicalMaterial: any;
-      planeGeometry: any;
-      icosahedronGeometry: any;
-    }
+    // FIX: Augmented IntrinsicElements with ThreeElements to provide types for R3F components,
+    // while also extending React's standard JSX elements to avoid breaking HTML tags.
+    interface IntrinsicElements extends React.JSX.IntrinsicElements, ThreeElements {}
   }
 }

@@ -58,7 +58,12 @@ export class RingsRenderer implements IVisualizerRenderer {
  * Inspired by Image 1: Fluid, flowing gradients with smooth curves.
  */
 export class FluidCurvesRenderer implements IVisualizerRenderer {
-  init() {}
+  private layerOffsets: { phase: number; freq1: number; freq2: number; vert: number; }[] = [];
+  
+  init() {
+    this.layerOffsets = [];
+  }
+
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
     const bass = getAverage(data, 0, 10) * settings.sensitivity / 255;
@@ -69,25 +74,39 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
     const layerCount = settings.quality === 'high' ? 5 : 3;
     const time = rotation * settings.speed;
 
+    // Generate unique, persistent random properties for each layer if they don't exist
+    if (this.layerOffsets.length !== layerCount) {
+      this.layerOffsets = [];
+      for (let i = 0; i < layerCount; i++) {
+        this.layerOffsets.push({
+          phase: Math.random() * Math.PI * 2,       // Random phase shift
+          freq1: 0.003 + Math.random() * 0.004, // Random frequency for base wave
+          freq2: 0.008 + Math.random() * 0.005, // Random frequency for audio bumps
+          vert: (Math.random() - 0.5) * 0.15   // Random vertical offset
+        });
+      }
+    }
+
     for (let i = 0; i < layerCount; i++) {
       const color = colors[i % colors.length];
+      const offsets = this.layerOffsets[i];
+
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.2 + bass * 0.3;
       
-      const segments = 20; // Increased segments for smoothness
+      const segments = 20;
       const step = w / segments;
       const points = [];
 
-      // 1. Calculate all points for the curve
       for (let s = 0; s <= segments; s++) {
         const x = s * step;
-        const offset = Math.sin(x * 0.005 + time + i * 0.5) * (h * 0.15);
-        const audioBump = Math.cos(x * 0.01 + time * 1.5 + i) * (bass * 120);
-        const y = h * (0.4 + i * 0.1) + offset + audioBump;
+        // Apply randomized properties to make each wave unique and less uniform
+        const offset = Math.sin(x * offsets.freq1 + time + offsets.phase) * (h * 0.15);
+        const audioBump = Math.cos(x * offsets.freq2 + time * 1.5 + offsets.phase) * (bass * 120);
+        const y = h * (0.4 + i * 0.08 + offsets.vert) + offset + audioBump;
         points.push({ x, y });
       }
 
-      // 2. Draw the smooth, filled curve
       ctx.beginPath();
       ctx.moveTo(0, h);
       ctx.lineTo(points[0].x, points[0].y);
@@ -98,7 +117,6 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
         ctx.quadraticCurveTo(points[j].x, points[j].y, xc, yc);
       }
       
-      // Curve to the last point to ensure it's included
       ctx.quadraticCurveTo(
         points[points.length - 1].x,
         points[points.length - 1].y,
