@@ -33,14 +33,32 @@ export class RingsRenderer implements IVisualizerRenderer {
     const centerX = w / 2;
     const centerY = h / 2;
     const maxRings = 15;
+    
+    // Calculate scale factor based on viewport size (relative to 800px baseline)
+    // Ensures rings look substantial on 4K screens while staying fitting on mobile
+    const minDimension = Math.min(w, h);
+    const scale = Math.max(0.6, minDimension / 800); 
+
     if (colors.length === 0) return;
     for(let i = 0; i < maxRings; i++) {
         const freqIndex = i * 8; 
         const val = data[freqIndex] * settings.sensitivity;
-        const radius = 30 + (i * 20) + Math.min(val, 100);
+        
+        // Base radius scales with screen
+        // Previous fixed logic: 30 + (i * 20)
+        // New scalable logic:
+        const baseR = (40 + (i * 25)) * scale;
+        
+        // Cap audio expansion scaling slightly on huge screens to prevent overlapping explosions
+        const audioR = Math.min(val, 150) * Math.min(scale, 1.5); 
+        const radius = baseR + audioR;
+
         ctx.beginPath();
         ctx.strokeStyle = colors[i % colors.length];
-        ctx.lineWidth = (2 + (val / 40)) * settings.sensitivity;
+        
+        // Scale line width too so they don't look hairline thin on high-res
+        ctx.lineWidth = ((2 + (val / 40)) * settings.sensitivity) * scale;
+        
         const startAngle = rotation * (i % 2 === 0 ? 1 : -1) + i; 
         const endAngle = startAngle + (Math.PI * 1.5) + (val / 255); 
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);
