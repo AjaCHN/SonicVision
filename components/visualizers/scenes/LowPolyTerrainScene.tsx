@@ -18,7 +18,10 @@ export const LowPolyTerrainScene: React.FC<SceneProps> = ({ analyser, colors, se
   const fogRef = useRef<THREE.Fog>(null);
 
   const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
-  const geometry = useMemo(() => new THREE.PlaneGeometry(60, 60, 40, 40), []);
+  const geometry = useMemo(() => {
+    const segments = settings.quality === 'high' ? 40 : settings.quality === 'med' ? 30 : 20;
+    return new THREE.PlaneGeometry(60, 60, segments, segments);
+  }, [settings.quality]);
 
   const c0 = useRef(new THREE.Color(colors[0]));
   const c1 = useRef(new THREE.Color(colors[1] || colors[0]));

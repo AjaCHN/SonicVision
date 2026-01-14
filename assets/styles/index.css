@@ -90,3 +90,11 @@ input[type=range]::-moz-range-track {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2px;
 }
+
+/*
+ * NOTE on Browser Compatibility:
+ * Features like `backdrop-blur` are used for aesthetic enhancement.
+ * They are designed to gracefully degrade on older browsers (e.g., Android 8)
+ * by falling back to semi-transparent backgrounds, ensuring functionality
+ * is not compromised.
+ */
