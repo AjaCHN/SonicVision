@@ -1,4 +1,5 @@
-import { useState, useEffect, useCallback } from 'react';
+// FIX: Import React to provide types for React.Dispatch and React.SetStateAction.
+import React, { useState, useEffect, useCallback } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 import { useIdentification } from './useIdentification';
 import { LyricsStyle, Language, Region, VisualizerSettings } from '../types';

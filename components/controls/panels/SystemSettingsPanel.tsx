@@ -58,7 +58,7 @@ export const SystemSettingsPanel: React.FC = () => {
              <h4 className="text-[10px] font-black text-purple-400 uppercase tracking-[0.2em] ml-1">{h?.howItWorksTitle || "User Guide"}</h4>
              <div className="flex flex-col gap-2">
                 {guideSteps.map((step: string, idx: number) => (
-                  <div key={idx} className="flex gap-3 items-start bg-white/[0.02] p-3 rounded-xl border border-white/5">
+                  <div key={idx} className="flex gap-3 items-start bg-white/[0.02] p-3 rounded-xl">
                      <span className="shrink-0 w-5 h-5 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center text-[10px] font-black">{idx + 1}</span>
                      <p className="text-[11px] text-white/60 leading-snug">{step}</p>
                   </div>
@@ -66,7 +66,7 @@ export const SystemSettingsPanel: React.FC = () => {
              </div>
           </div>
           <div className="space-y-2 pt-4 border-t border-white/5">
-            <div className="bg-white/[0.03] p-4 rounded-xl border border-white/5">
+            <div className="bg-white/[0.03] p-4 rounded-xl">
                <h4 className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -79,7 +79,7 @@ export const SystemSettingsPanel: React.FC = () => {
                    : 'Immersive AI visualizer for Streamers, VJs, Ambient decor, and Focus sessions.'}
                </p>
             </div>
-            <div className="bg-white/[0.03] p-4 rounded-xl border border-white/5">
+            <div className="bg-white/[0.03] p-4 rounded-xl">
                <h4 className="text-[10px] font-black text-green-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                  <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />

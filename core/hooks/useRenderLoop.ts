@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+// FIX: Import React to provide the type for React.RefObject.
+import React, { useRef, useEffect } from 'react';
 import { VisualizerMode, VisualizerSettings, IVisualizerRenderer } from '../types';
 import { hexToRgb, rgbToHex } from '../services/colorUtils';
 

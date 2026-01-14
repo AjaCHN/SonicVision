@@ -1,4 +1,5 @@
-import { useRef, useEffect } from 'react';
+// FIX: Import React to provide the type for React.RefObject.
+import React, { useRef, useEffect } from 'react';
 import { VisualizerSettings } from '../types';
 
 interface UseAudioPulseProps {

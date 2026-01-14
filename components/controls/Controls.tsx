@@ -101,7 +101,7 @@ const Controls: React.FC = () => {
                 </div>
               </div>
               <div 
-                className="bg-[#0f0f11] border border-white/5 rounded-2xl overflow-hidden min-h-[280px]"
+                className="bg-[#0f0f11] border border-white/5 rounded-2xl overflow-hidden min-h-[240px]"
                 role="tabpanel"
                 id={`panel-${activeTab}`}
                 aria-labelledby={`tab-${activeTab}`}
