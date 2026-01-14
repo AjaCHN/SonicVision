@@ -6,7 +6,7 @@
 [English](README.md) | [在线演示](https://aura.tanox.net/)
 
 <p align="center">
-  <img src="https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=1200" alt="Aura Vision 横幅" width="100%" />
+  <img src="./assets/images/banner.jpg" alt="Aura Vision 横幅" width="100%" />
 </p>
 
 <p align="center">
