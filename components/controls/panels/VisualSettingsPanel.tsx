@@ -38,7 +38,7 @@ export const VisualSettingsPanel: React.FC<VisualSettingsPanelProps> = ({
                 <span className="text-xs font-bold uppercase text-white/40 tracking-wider whitespace-nowrap">{t?.quality || "Quality"}</span>
                 <div className="flex-1 flex bg-white/[0.04] rounded-lg p-0.5 border border-white/5 max-w-[180px]">
                 {(['low', 'med', 'high'] as const).map(q => (
-                    <button key={q} onClick={() => setSettings({...settings, quality: q})} className={`flex-1 py-1.5 rounded text-xs font-bold uppercase tracking-wider transition-all ${settings.quality === q ? 'bg-white/20 text-white' : 'text-white/30 hover:text-white/70'}`}>{qualities[q] || q}</button>
+                    <button key={q} onClick={() => setSettings({...settings, quality: q})} className={`flex-1 py-1.5 rounded text-xs font-bold uppercase tracking-widest transition-all ${settings.quality === q ? 'bg-white/20 text-white' : 'text-white/30 hover:text-white/70'}`}>{qualities[q] || q}</button>
                 ))}
                 </div>
             </div>

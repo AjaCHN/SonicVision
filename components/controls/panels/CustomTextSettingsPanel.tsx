@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { VisualizerSettings } from '../../../core/types';
 import { AVAILABLE_FONTS } from '../../../core/constants';
@@ -86,7 +87,7 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
       {/* 第三列：排版与布局 + 重置按钮 (调换到此处) */}
       <div className="p-4 h-full flex flex-col pt-6 space-y-5">
          <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.25em] block ml-1 -mb-2">{t?.textProperties || "Layout"}</span>
-         <div className="grid grid-cols-3 gap-1 bg-white/[0.02] p-2 rounded-xl border border-white/5">
+         <div className="grid grid-cols-3 gap-1 bg-white/[0.02] p-2 rounded-xl border border-white/5 max-w-[160px]">
             {positionOptions.map(pos => (
               <button 
                 key={pos.value} 
@@ -103,7 +104,7 @@ export const CustomTextSettingsPanel: React.FC<CustomTextSettingsPanelProps> = (
          <Slider label={t?.textOpacity || "Opacity"} value={settings.customTextOpacity ?? 1.0} min={0} max={1} step={0.05} onChange={(v: number) => setSettings({...settings, customTextOpacity: v})} />
          
          <div className="mt-auto pt-4">
-            <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-[10px] font-black uppercase tracking-widest text-white/50 hover:text-white flex items-center justify-center gap-2 transition-colors border border-transparent hover:border-white/10">
+            <button onClick={resetTextSettings} className="w-full py-2.5 bg-white/[0.04] rounded-lg text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white flex items-center justify-center gap-2 transition-colors border border-transparent hover:border-white/10">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 opacity-60" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
               {t?.resetText || "Reset Text"}
             </button>

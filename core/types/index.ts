@@ -93,12 +93,12 @@ export interface AudioDevice {
   label: string;
 }
 
-// FIX: The `extends React.JSX.IntrinsicElements` clause was removed as it created a circular
-// reference, which caused TypeScript to discard the base definitions. Augmentation
-// is now correctly handled by TypeScript's declaration merging, resolving all JSX type errors.
 declare global {
   namespace JSX {
-    interface IntrinsicElements {
+    // FIX: Restored `extends React.JSX.IntrinsicElements` to correctly augment JSX types
+    // for react-three-fiber components instead of overwriting them. This resolves errors
+    // where TypeScript could not find definitions for custom JSX tags like <mesh />.
+    interface IntrinsicElements extends React.JSX.IntrinsicElements {
       mesh: any;
       group: any;
       pointLight: any;
