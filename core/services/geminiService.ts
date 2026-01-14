@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { GEMINI_MODEL, REGION_NAMES } from '../constants';
 import { SongInfo, Language, Region } from '../types';
@@ -29,10 +28,8 @@ export const identifySongFromAudio = async (
     try {
         const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
         const regionName = region === 'global' ? 'Global' : (REGION_NAMES[region] || region);
-        // FIX: Updated system instruction to be more descriptive and removed JSON-specific instructions, as responseSchema handles that.
-        const systemInstruction = `You are a Music Expert. Identify the song from the provided audio clip, considering the target music market is '${regionName}'. Provide the song title, artist, a short snippet of lyrics, and the overall mood. If you cannot identify it, set 'identified' to false.`;
+        const systemInstruction = `You are an expert music identification service. Your task is to analyze the provided audio clip and identify the song. The target music market is '${regionName}'. You must return the song's title, artist, a brief and relevant snippet of the lyrics, and a single-word descriptor for the mood (e.g., 'Energetic', 'Melancholy'). If you are unable to identify the song with high confidence, you MUST set the 'identified' field to false and return null or empty strings for the other fields.`;
 
-        // FIX: Updated generateContent call to use responseSchema for reliable JSON output.
         const response = await ai.models.generateContent({
           model: GEMINI_MODEL,
           contents: { parts: [{ inlineData: { mimeType: mimeType, data: base64Audio } }, { text: "Identify this song." }] },
@@ -57,7 +54,6 @@ export const identifySongFromAudio = async (
         const text = response.text;
         if (!text) return null;
 
-        // FIX: The response text is now guaranteed to be a JSON string, so we can parse it directly.
         const songInfo: SongInfo = JSON.parse(text.trim());
         
         if (!songInfo.identified) {

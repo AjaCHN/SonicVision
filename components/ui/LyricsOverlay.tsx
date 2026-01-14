@@ -1,5 +1,6 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef } from 'react';
 import { VisualizerSettings, SongInfo, LyricsStyle } from '../../core/types';
+import { useAudioPulse } from '../../core/hooks/useAudioPulse';
 
 interface LyricsOverlayProps {
   settings: VisualizerSettings;
@@ -11,28 +12,20 @@ interface LyricsOverlayProps {
 
 const LyricsOverlay: React.FC<LyricsOverlayProps> = ({ settings, song, showLyrics, lyricsStyle, analyser }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>(0);
 
-  useEffect(() => {
-    if (!showLyrics || !song || (!song.lyricsSnippet && !song.identified)) return;
-    const animate = () => {
-      if (containerRef.current && analyser) {
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(dataArray);
-        let bass = 0;
-        for (let i = 0; i < 12; i++) bass += dataArray[i];
-        const bassNormalized = (bass / 12) / 255;
-        const pulseStrength = lyricsStyle === LyricsStyle.KARAOKE ? 0.45 : 0.2;
-        containerRef.current.style.transform = `scale(${1.0 + bassNormalized * pulseStrength * settings.sensitivity})`;
-        containerRef.current.style.opacity = lyricsStyle === LyricsStyle.MINIMAL ? `${0.7 + bassNormalized * 0.3}` : '1';
-      }
-      requestRef.current = requestAnimationFrame(animate);
-    };
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [showLyrics, song, lyricsStyle, settings.sensitivity, analyser]);
+  const isEnabled = showLyrics && !!song && (!!song.lyricsSnippet || song.identified);
+  
+  useAudioPulse({
+    elementRef: containerRef,
+    analyser,
+    settings,
+    isEnabled: !!isEnabled,
+    pulseStrength: lyricsStyle === LyricsStyle.KARAOKE ? 0.45 : 0.2,
+    opacityStrength: lyricsStyle === LyricsStyle.MINIMAL ? 0.3 : 0,
+    baseOpacity: lyricsStyle === LyricsStyle.MINIMAL ? 0.7 : 1.0,
+  });
 
-  if (!showLyrics || !song || (!song.lyricsSnippet && !song.identified)) return null;
+  if (!isEnabled) return null;
   const text = (song.lyricsSnippet || "").replace(/\[\d{2}:\d{2}(\.\d{1,3})?\]/g, '').trim();
   if (!text) return null;
   const lines = text.split('\n').slice(0, 6);
@@ -75,5 +68,4 @@ const LyricsOverlay: React.FC<LyricsOverlayProps> = ({ settings, song, showLyric
   );
 };
 
-// Added missing default export
 export default LyricsOverlay;

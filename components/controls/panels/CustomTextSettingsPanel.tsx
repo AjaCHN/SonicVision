@@ -1,25 +1,13 @@
-
 import React from 'react';
-import { AVAILABLE_FONTS } from '../../../core/constants';
+import { AVAILABLE_FONTS, getPositionOptions } from '../../../core/constants';
 import { SettingsToggle, Slider, CustomSelect, PositionSelector } from '../ControlWidgets';
-import { useAppContext } from '../../App';
+import { useAppContext } from '../../AppContext';
 import { Position } from '../../../core/types';
 
 export const CustomTextSettingsPanel: React.FC = () => {
   const { settings, setSettings, resetTextSettings, t } = useAppContext();
-  const positions = t?.positions || {};
   
-  const positionOptions = [
-    { value: 'tl', label: positions?.tl || "Top Left" },
-    { value: 'tc', label: positions?.tc || "Top Center" },
-    { value: 'tr', label: positions?.tr || "Top Right" },
-    { value: 'ml', label: positions?.ml || "Mid Left" },
-    { value: 'mc', label: positions?.mc || "Center" },
-    { value: 'mr', label: positions?.mr || "Mid Right" },
-    { value: 'bl', label: positions?.bl || "Bottom Left" },
-    { value: 'bc', label: positions?.bc || "Bottom Center" },
-    { value: 'br', label: positions?.br || "Bottom Right" },
-  ];
+  const positionOptions = getPositionOptions(t);
 
   const handleTextPositionChange = (value: Position) => {
     setSettings({ ...settings, customTextPosition: value });

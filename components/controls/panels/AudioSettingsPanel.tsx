@@ -1,7 +1,6 @@
-
 import React from 'react';
 import { SettingsToggle, Slider, TooltipArea, CustomSelect } from '../ControlWidgets';
-import { useAppContext } from '../../App';
+import { useAppContext } from '../../AppContext';
 
 export const AudioSettingsPanel: React.FC = () => {
   const { 

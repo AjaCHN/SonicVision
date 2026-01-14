@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { Language } from '../../../core/types';
 import { APP_VERSION } from '../../../core/constants';
 import { CustomSelect, SettingsToggle } from '../ControlWidgets';
-import { useAppContext } from '../../App';
+import { useAppContext } from '../../AppContext';
 
 export const SystemSettingsPanel: React.FC = () => {
   const { language, setLanguage, settings, setSettings, resetSettings, t } = useAppContext();

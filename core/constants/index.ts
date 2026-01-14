@@ -1,5 +1,4 @@
-
-import { VisualizerMode, Region } from '../types';
+import { VisualizerMode, Region, Position } from '../types';
 
 export const APP_VERSION = '0.4.2';
 export const GEMINI_MODEL = 'gemini-3-flash-preview';
@@ -74,4 +73,13 @@ export const REGION_NAMES: Record<Region, string> = {
   KR: 'Korea',
   EU: 'Europe',
   LATAM: 'Latin America'
+};
+
+export const getPositionOptions = (t: any) => {
+  const p = t?.positions || {};
+  return [
+    { value: 'tl', label: p.tl || "Top Left" }, { value: 'tc', label: p.tc || "Top Center" }, { value: 'tr', label: p.tr || "Top Right" },
+    { value: 'ml', label: p.ml || "Mid Left" }, { value: 'mc', label: p.mc || "Center" }, { value: 'mr', label: p.mr || "Mid Right" },
+    { value: 'bl', label: p.bl || "Bottom Left" }, { value: 'bc', label: p.bc || "Bottom Center" }, { value: 'br', label: p.br || "Bottom Right" },
+  ];
 };

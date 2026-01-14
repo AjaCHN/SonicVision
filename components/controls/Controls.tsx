@@ -1,7 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
 import { VisualizerMode } from '../../core/types';
-import HelpModal from '../ui/HelpModal';
 import { ActionButton, TooltipArea } from './ControlWidgets';
 
 import { VisualSettingsPanel } from './panels/VisualSettingsPanel';
@@ -10,7 +8,7 @@ import { AiSettingsPanel } from './panels/AiSettingsPanel';
 import { SystemSettingsPanel } from './panels/SystemSettingsPanel';
 import { CustomTextSettingsPanel } from './panels/CustomTextSettingsPanel';
 import { useIdleTimer } from '../../core/hooks/useIdleTimer';
-import { useAppContext } from '../App';
+import { useAppContext } from '../AppContext';
 
 type TabType = 'visual' | 'text' | 'audio' | 'ai' | 'system';
 
@@ -22,7 +20,6 @@ const Controls: React.FC = () => {
 
   const [isExpanded, setIsExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('visual');
-  const [showHelp, setShowHelp] = useState(false);
   
   const { isIdle } = useIdleTimer(isExpanded);
   
@@ -78,7 +75,6 @@ const Controls: React.FC = () => {
 
   return (
     <>
-      <HelpModal isOpen={showHelp} onClose={() => setShowHelp(false)} language={language} />
       <MiniControls isExpanded={isExpanded} isIdle={isIdle} setIsExpanded={setIsExpanded} toggleFullscreen={toggleFullscreen} />
       {isExpanded && (
         <div className="fixed bottom-0 left-0 w-full z-[120] bg-[#050505] border-t border-white/10 transition-all duration-700 shadow-[0_-25px_100px_rgba(0,0,0,0.9)] opacity-100">

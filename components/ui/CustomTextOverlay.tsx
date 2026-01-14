@@ -1,6 +1,6 @@
-
 import React, { useRef, useEffect } from 'react';
 import { VisualizerSettings } from '../../core/types';
+import { useAudioPulse } from '../../core/hooks/useAudioPulse';
 
 interface CustomTextOverlayProps {
   settings: VisualizerSettings;
@@ -9,41 +9,31 @@ interface CustomTextOverlayProps {
 
 const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyser }) => {
   const textRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>(0);
   const sizeVw = settings.customTextSize || 12;
-  const sizePx = sizeVw * 13;
+  const sizePx = sizeVw * 13; // Approximate conversion for max size
 
+  useAudioPulse({
+    elementRef: textRef,
+    analyser,
+    settings,
+    isEnabled: settings.showCustomText && !!settings.customText && settings.textPulse,
+    baseOpacity: settings.customTextOpacity,
+  });
+  
+  // Effect to handle non-pulsing transformations (rotation and base opacity)
   useEffect(() => {
-    if (!settings.showCustomText || !settings.customText) {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      return;
-    }
-    const animate = () => {
-      const baseOpacity = settings.customTextOpacity !== undefined ? settings.customTextOpacity : 1.0;
-      if (textRef.current && analyser && settings.textPulse) {
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(dataArray);
-        let bass = 0;
-        for (let i = 0; i < 10; i++) bass += dataArray[i];
-        bass = (bass / 10) / 255;
-        const scale = 1 + (bass * 0.5 * settings.sensitivity);
-        const rotation = settings.customTextRotation || 0;
-        textRef.current.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-        textRef.current.style.opacity = `${(0.6 + bass * 0.4) * baseOpacity}`;
-      } else if (textRef.current) {
-        const rotation = settings.customTextRotation || 0;
-        textRef.current.style.transform = `rotate(${rotation}deg) scale(1)`;
-        textRef.current.style.opacity = `${0.9 * baseOpacity}`;
+    if (textRef.current && settings.showCustomText && settings.customText) {
+      const rotation = settings.customTextRotation || 0;
+      textRef.current.style.transform = `rotate(${rotation}deg)`;
+      if (!settings.textPulse) {
+         textRef.current.style.opacity = `${0.9 * (settings.customTextOpacity || 1.0)}`;
       }
-      requestRef.current = requestAnimationFrame(animate);
-    };
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [settings.showCustomText, settings.customText, settings.textPulse, settings.sensitivity, settings.customTextRotation, settings.customTextOpacity, analyser]);
+    }
+  }, [settings.showCustomText, settings.customText, settings.customTextRotation, settings.customTextOpacity, settings.textPulse]);
+
 
   if (!settings.showCustomText || !settings.customText) return null;
 
-  // Position mapping
   const getPositionClasses = () => {
       const pos = settings.customTextPosition || 'mc';
       const map: Record<string, string> = {

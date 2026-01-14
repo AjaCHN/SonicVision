@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { VisualizerMode } from '../../../core/types';
 import { VISUALIZER_PRESETS, COLOR_THEMES } from '../../../core/constants';
 import { SettingsToggle, Slider } from '../ControlWidgets';
-import { useAppContext } from '../../App';
+import { useAppContext } from '../../AppContext';
 
 export const VisualSettingsPanel: React.FC = () => {
   const { mode: currentMode, setMode, colorTheme, setColorTheme, settings, setSettings, resetVisualSettings, t } = useAppContext();
