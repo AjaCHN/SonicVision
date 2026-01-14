@@ -1,5 +1,5 @@
 
-import { VisualizerMode, LyricsStyle } from '../../types';
+import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const fr = {
   common: {
@@ -98,7 +98,7 @@ export const fr = {
   textSize: 'Taille de la police',
   textRotation: 'Rotation',
   textFont: 'Police',
-  textOpacity: 'Opacité',
+  textOpacity: 'Opacity',
   quality: 'Qualité',
   qualities: {
     low: 'Basse',

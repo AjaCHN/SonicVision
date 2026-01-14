@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { Language } from '../../core/types';
 import { TRANSLATIONS } from '../../core/i18n';
+import { APP_VERSION } from '../../core/constants';
 
 interface OnboardingOverlayProps {
   language: Language;
@@ -25,7 +26,7 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ language, 
       <div className="w-full max-w-2xl bg-[#0a0a0c] border border-white/10 rounded-3xl overflow-hidden shadow-2xl relative flex flex-col min-h-[500px] animate-fade-in-up">
         <div className="p-8 pb-4 text-center z-10">
           <h1 className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-purple-400 mb-2">{step === 0 ? 'Aura Vision' : t.welcome}</h1>
-          <p className="text-white/40 text-sm font-medium tracking-wide uppercase">{step === 0 ? 'v0.3.0' : t.subtitle}</p>
+          <p className="text-white/40 text-sm font-medium tracking-wide uppercase">{step === 0 ? `v${APP_VERSION}` : t.subtitle}</p>
         </div>
         <div className="flex-1 px-8 py-4 relative z-10 overflow-y-auto custom-scrollbar">
           {step === 0 && (

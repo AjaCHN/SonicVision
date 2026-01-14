@@ -8,14 +8,8 @@
   - 逻辑：通过 `Math.sin/cos` 混合生成多层径向渐变，速度受 `settings.speed` 线性缩放。
 - **Starfield:** 
   - 逻辑：3D 透视投影粒子系统，采用线性轨迹（Linear Trajectory）。
-  - 优化：粒子上限根据画质分级 (High: 200, Med: 120, Low: 60)。低画质下放大粒子尺寸以补偿数量减少。
 - **Nebula:** 
   - 逻辑：Sprite 贴图混合。使用离屏 Canvas 预烘焙高斯模糊粒子。
-  - 混合：`screen` 模式。
-  - 优化：高画质 60 粒子，低画质 25 粒子。低画质禁用额外的高频闪烁层。
-- **Ethereal Smoke:**
-  - 逻辑：双流发射系统。
-  - 优化：粒子生命周期在低画质下缩短 40%，最大粒子数限制为 60（高画质 200）。
 
 ## 2. 3D WebGL 渲染
 - **通用优化:**
@@ -23,25 +17,16 @@
   - **Flat Shading:** 低画质下启用平面着色，减少光照计算开销。
 
 - **Silk Waves (Vertex Displacement):** 
-  - 几何体精度分级：
-    - High: 50x50 segments (2500 vertices)
-    - Med: 35x35 segments (1225 vertices)
-    - Low: 24x24 segments (576 vertices)
-  - 位移函数：`z = sin(x * freq + time) * cos(y * freq + time) * amplitude`。低画质下跳过高频细节计算。
-
-- **Liquid Sphere (Dynamic Distortion):** 
-  - 几何体精度分级：
-    - High: Icosahedron Detail 3
-    - Med: Icosahedron Detail 2
-    - Low: Icosahedron Detail 1 (Low Poly 风格)
-  - 响应：基于法线方向的位移。低画质下禁用第二层噪声计算。
+  - 位移函数：`z = sin(x * freq + time) * cos(y * freq + time) * amplitude`。
 
 ## 3. 后期处理管道 (Post-Processing)
 根据 `settings.quality` 动态挂载 Pass：
-- **High:** Bloom + Chromatic Aberration + TiltShift (仅 Silk/Liquid)。
-- **Med:** Bloom + Chromatic Aberration。
+- **High:** Bloom + Chromatic Aberration + TiltShift。
 - **Low:** 仅 Bloom (禁用 Mipmap Blur 以加速)。
-- **Motion Blur:** 通过 `globalAlpha` 控制 2D Canvas 的清除强度实现视觉持久。
 
-## 4. 动态演化 (Dynamic Evolution)
-- **色彩过渡:** 采用线性插值 (Lerp) 算法，系数设定为 `0.005`，消除颜色循环时的突变跳动，实现呼吸般的平滑过渡。
+## 4. 动态演化与稳定性 (Evolution & Stability)
+- **色彩平滑过渡:** 采用线性插值 (Lerp) 算法，插值系数设定为 `0.05`（针对 60FPS 深度优化），确保 0.5-1 秒内完成主题变换。
+- **颜色数组对齐 (Array Sync):** 为了防止在主题颜色数量变化（如从 3 色变为 2 色）时产生 `undefined` 导致的黑屏，渲染器在执行插值前必须：
+  1. 检查 `currentColors` 与 `targetColors` 长度。
+  2. 若长度不一，使用当前数组的末位颜色填充或裁剪 `currentColors` 至目标长度。
+  3. 确保所有渲染逻辑引用合法的颜色索引。

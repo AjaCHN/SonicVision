@@ -37,9 +37,19 @@ export const identifySongFromAudio = async (
           config: { tools: [{ googleSearch: {} }], systemInstruction: systemInstruction }
         });
 
-        if (!response.text) return null;
         const text = response.text;
-        const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+        if (!text) return null;
+
+        // More robust JSON extraction
+        const jsonStart = text.indexOf('{');
+        const jsonEnd = text.lastIndexOf('}') + 1;
+        
+        if (jsonStart === -1 || jsonEnd <= jsonStart) {
+            console.error("[AI] No valid JSON found in response:", text);
+            return null;
+        }
+
+        const jsonStr = text.substring(jsonStart, jsonEnd);
         const songInfo: SongInfo = JSON.parse(jsonStr);
 
         const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
@@ -51,6 +61,7 @@ export const identifySongFromAudio = async (
         songInfo.matchSource = 'AI';
         return songInfo;
     } catch (error: any) {
+        console.error("[AI] Error identifying song:", error);
         if (retryCount < 1) return callGemini(retryCount + 1);
         return null;
     }

@@ -31,7 +31,7 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   fftSize: 512, 
   quality: 'high',
   monitor: false,
-  wakeLock: true,
+  wakeLock: false, // Updated to false by default
   customText: 'AURA',
   showCustomText: false,
   textPulse: true,

@@ -123,7 +123,7 @@ const Controls: React.FC<ControlsProps> = ({
       )}
       {!isExpanded && (
         <div className="fixed bottom-8 left-0 w-full z-[110] flex justify-center pointer-events-none px-4">
-          <div className={`flex items-center bg-black/60 backdrop-blur-3xl border border-white/10 rounded-full p-2 pr-6 transition-all duration-700 pointer-events-auto ${isIdle ? 'opacity-[0.05] translate-y-4 scale-95 blur-[1px]' : 'opacity-100 translate-y-0 scale-100'}`}>
+          <div className={`flex items-center border border-white/10 rounded-full p-2 pr-6 transition-all duration-700 pointer-events-auto ${isIdle ? 'bg-black/20 backdrop-blur-none opacity-[0.12] translate-y-2 scale-95 shadow-none' : 'bg-black/60 backdrop-blur-3xl opacity-100 translate-y-0 scale-100 shadow-2xl shadow-black/50'}`}>
              <TooltipArea text={`${isListening ? t?.stopMic : t?.startMic} [Space]`}>
                 <button onClick={toggleMicrophone} className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-500 ${isListening ? 'bg-indigo-600/80 text-white shadow-lg shadow-indigo-600/30' : 'bg-white/10 text-white/40 hover:text-white'}`}>
                     {isListening ? <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" d="M6 7.5A1.5 1.5 0 017.5 6h9A1.5 1.5 0 0118 7.5v9a1.5 1.5 0 01-1.5 1.5h-9A1.5 1.5 0 016 16.5v-9z" clipRule="evenodd" /></svg> : <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>}

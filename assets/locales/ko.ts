@@ -1,5 +1,5 @@
 
-import { VisualizerMode, LyricsStyle } from '../../types';
+import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const ko = {
   common: {

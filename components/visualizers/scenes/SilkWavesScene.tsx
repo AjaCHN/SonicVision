@@ -20,8 +20,8 @@ export const SilkWavesScene: React.FC<SceneProps> = ({ analyser, colors, setting
   const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
   
   const c0 = useRef(new THREE.Color(colors[0]));
-  const c1 = useRef(new THREE.Color(colors[1]));
-  const c2 = useRef(new THREE.Color(colors[2] || '#ffffff'));
+  const c1 = useRef(new THREE.Color(colors[1] || colors[0]));
+  const c2 = useRef(new THREE.Color(colors[2] || colors[0]));
   const targetColor = useRef(new THREE.Color());
 
   const geometry = useMemo(() => {
@@ -32,10 +32,10 @@ export const SilkWavesScene: React.FC<SceneProps> = ({ analyser, colors, setting
   }, [settings.quality]);
 
   useFrame((state) => {
-    const lerpSpeed = 0.005;
-    c0.current.lerp(targetColor.current.set(colors[0]), lerpSpeed);
-    c1.current.lerp(targetColor.current.set(colors[1]), lerpSpeed);
-    c2.current.lerp(targetColor.current.set(colors[2] || '#ffffff'), lerpSpeed);
+    const lerpSpeed = 0.05; // Standard Three.js lerp factor
+    c0.current.lerp(targetColor.current.set(colors[0] || '#ffffff'), lerpSpeed);
+    c1.current.lerp(targetColor.current.set(colors[1] || colors[0] || '#ffffff'), lerpSpeed);
+    c2.current.lerp(targetColor.current.set(colors[2] || colors[0] || '#ffffff'), lerpSpeed);
 
     if (materialRef.current) {
         materialRef.current.color = c0.current;

@@ -25,7 +25,8 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const requestRef = useRef<number>(0);
   const rotationRef = useRef<number>(0);
-  const currentColorsRef = useRef<string[]>(colors);
+  // Initial current colors should match the initial target colors length
+  const currentColorsRef = useRef<string[]>([]);
   
   const renderersRef = useRef<Partial<Record<VisualizerMode, IVisualizerRenderer>>>({
     [VisualizerMode.BARS]: new BarsRenderer(),
@@ -43,6 +44,8 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     (Object.values(renderersRef.current) as (IVisualizerRenderer | undefined)[]).forEach(r => {
       if (r && canvasRef.current) r.init(canvasRef.current);
     });
+    // Sync initial colors
+    currentColorsRef.current = [...colors];
   }, []);
 
   const draw = () => {
@@ -51,17 +54,27 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const lerpFactor = 0.005; 
+    // 1. Smooth Color Transition Logic
+    const lerpFactor = 0.05; // Balanced for 60fps
+    const targetColors = colors.length > 0 ? colors : ['#ffffff'];
+    
+    // Ensure current colors array matches target length to prevent undefined index errors
+    if (currentColorsRef.current.length !== targetColors.length) {
+        const lastValid = currentColorsRef.current[0] || targetColors[0];
+        const newArr = new Array(targetColors.length).fill(lastValid);
+        currentColorsRef.current.forEach((c, i) => { if(i < newArr.length) newArr[i] = c; });
+        currentColorsRef.current = newArr;
+    }
+
     const smoothedColors = currentColorsRef.current.map((curr, i) => {
-        const target = colors[i] || colors[0] || '#ffffff';
+        const target = targetColors[i] || targetColors[0];
         return lerpHex(curr, target, lerpFactor);
     });
     currentColorsRef.current = smoothedColors;
 
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
+    // 2. Clear / Trails Logic
     const width = canvas.width;
     const height = canvas.height;
-
     let alpha = 0.2;
     if (mode === VisualizerMode.PLASMA) alpha = 0.15;
     if (mode === VisualizerMode.PARTICLES) alpha = 0.06;
@@ -74,16 +87,20 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
         ctx.clearRect(0, 0, width, height);
     }
     
+    // 3. Glow Logic
     if (settings.glow) {
         ctx.shadowBlur = mode === VisualizerMode.PLASMA ? 30 : 15;
-        ctx.shadowColor = smoothedColors[0];
+        ctx.shadowColor = smoothedColors[0] || '#ffffff';
     } else {
         ctx.shadowBlur = 0;
     }
 
+    // 4. Data Processing
+    const dataArray = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(dataArray);
     rotationRef.current += 0.005 * settings.speed;
 
+    // 5. Strategy Render
     const renderer = renderersRef.current[mode];
     if (renderer) {
       renderer.draw(ctx, dataArray, width, height, smoothedColors, settings, rotationRef.current);

@@ -1,5 +1,5 @@
 
-import { VisualizerMode, LyricsStyle } from '../../types';
+import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const ja = {
   common: {
@@ -190,7 +190,7 @@ export const ja = {
       glow: 'ネオングローの効果強度。',
       trails: '滑らかな動きのための残像量。',
       smoothing: '反応の滑らかさの調整。',
-      fftSize: 'スペクトラムの解像度。'
+      fftSize: '解像度 (FFT)。'
     },
     projectInfoTitle: 'プロジェクト概要',
     projectInfoText: 'Google Gemini 3 Flash、React 19、WebGLを搭載。',

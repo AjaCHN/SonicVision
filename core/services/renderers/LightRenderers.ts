@@ -1,5 +1,5 @@
 
-import { IVisualizerRenderer, VisualizerSettings } from '../../types';
+import { IVisualizerRenderer, VisualizerSettings } from '../../types/index';
 import { getAverage } from '../audioUtils';
 
 export class PlasmaRenderer implements IVisualizerRenderer {

@@ -91,6 +91,8 @@ export interface AudioDevice {
   label: string;
 }
 
+// Augment both global JSX and React.JSX namespaces to ensure Three.js intrinsic elements
+// are recognized by TypeScript in React 18/19 environments using @react-three/fiber.
 declare global {
   namespace JSX {
     interface IntrinsicElements {
@@ -108,6 +110,27 @@ declare global {
       meshPhysicalMaterial: any;
       planeGeometry: any;
       icosahedronGeometry: any;
+    }
+  }
+
+  namespace React {
+    namespace JSX {
+      interface IntrinsicElements {
+        mesh: any;
+        group: any;
+        pointLight: any;
+        spotLight: any;
+        ambientLight: any;
+        primitive: any;
+        color: any;
+        fog: any;
+        circleGeometry: any;
+        meshBasicMaterial: any;
+        meshStandardMaterial: any;
+        meshPhysicalMaterial: any;
+        planeGeometry: any;
+        icosahedronGeometry: any;
+      }
     }
   }
 }

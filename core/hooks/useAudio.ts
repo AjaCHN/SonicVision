@@ -27,8 +27,12 @@ export const useAudio = ({ settings, language }: UseAudioProps) => {
 
   const updateAudioDevices = useCallback(async () => {
     if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
-    const devices = await navigator.mediaDevices.enumerateDevices();
-    setAudioDevices(devices.filter(d => d.kind === 'audioinput').map(d => ({ deviceId: d.deviceId, label: d.label || `Mic ${d.deviceId.slice(0, 5)}` })));
+    try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        setAudioDevices(devices.filter(d => d.kind === 'audioinput').map(d => ({ deviceId: d.deviceId, label: d.label || `Mic ${d.deviceId.slice(0, 5)}` })));
+    } catch (e) {
+        console.warn("Could not enumerate audio devices", e);
+    }
   }, []);
 
   const startMicrophone = useCallback(async (deviceId?: string) => {
@@ -38,10 +42,21 @@ export const useAudio = ({ settings, language }: UseAudioProps) => {
       if (oldContext && oldContext.state !== 'closed') await oldContext.close();
 
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        audio: { deviceId: deviceId ? { exact: deviceId } : undefined, echoCancellation: false, noiseSuppression: false, autoGainControl: false } 
+        audio: { 
+            deviceId: deviceId ? { exact: deviceId } : undefined, 
+            echoCancellation: false, 
+            noiseSuppression: false, 
+            autoGainControl: false 
+        } 
       });
       
       const context = new (window.AudioContext || (window as any).webkitAudioContext)();
+      
+      // Ensure the context is running (fixes auto-play policy issues)
+      if (context.state === 'suspended') {
+        await context.resume();
+      }
+
       const node = context.createAnalyser();
       node.fftSize = settings.fftSize;
       node.smoothingTimeConstant = settings.smoothing;
@@ -57,6 +72,7 @@ export const useAudio = ({ settings, language }: UseAudioProps) => {
       const t = TRANSLATIONS[language];
       setErrorMessage(err.name === 'NotAllowedError' ? t.errors.accessDenied : t.errors.general);
       setIsListening(false);
+      console.error("[Audio] Access Error:", err);
     }
   }, [settings.fftSize, settings.smoothing, updateAudioDevices, language]);
 

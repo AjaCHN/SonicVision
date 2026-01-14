@@ -1,5 +1,5 @@
 
-import { IVisualizerRenderer, VisualizerSettings } from '../../types';
+import { IVisualizerRenderer, VisualizerSettings } from '../../types/index';
 
 export class BarsRenderer implements IVisualizerRenderer {
   init() {}

@@ -30,26 +30,28 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
   };
 
   const getBloomIntensity = () => {
-      if (mode === VisualizerMode.SILK) return 1.5;
-      if (mode === VisualizerMode.LIQUID) return 2.0;
-      return 2.0;
+      if (mode === VisualizerMode.SILK) return 1.2;
+      if (mode === VisualizerMode.LIQUID) return 1.8;
+      return 1.5;
   };
 
-  const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.2 : Math.min(window.devicePixelRatio, 2);
+  const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.0 : Math.min(window.devicePixelRatio, 2);
   const enableTiltShift = settings.quality === 'high' && (mode === VisualizerMode.LIQUID || mode === VisualizerMode.SILK);
-  const enableChromatic = settings.quality !== 'low';
-
+  
   return (
     <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`}>
       <Canvas 
-        camera={{ position: [0, 2, 15], fov: 60 }} 
+        camera={{ position: [0, 2, 16], fov: 55 }} 
         dpr={dpr} 
         gl={{ 
-            antialias: false, 
-            toneMapping: THREE.ReinhardToneMapping, 
-            preserveDrawingBuffer: true, 
-            autoClear: true,
+            antialias: settings.quality !== 'low', 
+            alpha: false,
+            stencil: false,
+            depth: true,
             powerPreference: "high-performance"
+        }}
+        onCreated={({ gl }) => {
+          gl.setClearColor('#000000');
         }}
       >
         <Suspense fallback={null}>
@@ -57,16 +59,17 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
         </Suspense>
         
         {settings.glow && (
-            <EffectComposer enableNormalPass={false} multisampling={0}>
+            // Changed disableNormalPass to enableNormalPass={false} to fix the type error
+            <EffectComposer enableNormalPass={false} multisampling={settings.quality === 'high' ? 2 : 0}>
                 <Bloom 
-                    luminanceThreshold={0.5} 
-                    luminanceSmoothing={0.8} 
+                    luminanceThreshold={0.4} 
+                    luminanceSmoothing={0.9} 
                     intensity={getBloomIntensity()} 
                     mipmapBlur={settings.quality !== 'low'}
                 />
-                {enableChromatic && (
+                {settings.quality === 'high' && (
                     <ChromaticAberration 
-                        offset={new THREE.Vector2(0.002 * settings.sensitivity, 0.002)}
+                        offset={new THREE.Vector2(0.0015 * settings.sensitivity, 0.0015)}
                         radialModulation={false}
                         modulationOffset={0}
                     />

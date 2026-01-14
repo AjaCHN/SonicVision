@@ -1,5 +1,5 @@
 
-import { VisualizerMode, LyricsStyle } from '../../types';
+import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
   common: {
@@ -193,7 +193,7 @@ export const en = {
       fftSize: 'Sub-band count for spectral resolution.'
     },
     projectInfoTitle: 'Project Description',
-    projectInfoText: 'Powered by Google Gemini 3 Flash, React 19, and hardware-accelerated WebGL.',
+    projectInfoText: 'Powered by Google Gemini 3 Flash, React 19 and hardware-accelerated WebGL.',
     privacyTitle: 'Privacy Policy',
     privacyText: 'Audio is analyzed locally. Temporary high-frequency snapshots are sent to Gemini solely for identification.',
     version: 'Release'

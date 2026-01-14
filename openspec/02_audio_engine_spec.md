@@ -19,8 +19,8 @@
 ## 2. 路由拓扑 (Routing Topology)
 - **分析链路 (Analysis Path):** `Source -> AnalyserNode`
   - 用途：提取频域数据供可视化引擎渲染。
-- **监听链路 (Monitor Path):** 已移除
-  - 说明：为防止音频回路反馈（Feedback Loop），已移除浏览器内的音频直通功能。
+- **浏览器兼容性 (Compatibility):** 
+  - **Resume 强制机制:** 在初始化及每次切换设备后，必须显式调用 `AudioContext.resume()`，以绕过 Chrome/Safari 的自动播放拦截策略。
 
 ## 3. 频谱分析 (Real-time FFT)
 - **FFT Size:** 默认 512 (256 频段)。
