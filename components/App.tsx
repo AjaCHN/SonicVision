@@ -8,6 +8,7 @@ import LyricsOverlay from './ui/LyricsOverlay';
 import { OnboardingOverlay } from './ui/OnboardingOverlay'; 
 import { VisualizerMode } from '../core/types';
 import { AppProvider, useAppContext } from './AppContext';
+import { APP_VERSION } from '../core/constants';
 
 const AppContent: React.FC = () => {
   const {
@@ -74,6 +75,9 @@ const AppContent: React.FC = () => {
       {/* FIX: Removed unused `lyricsStyle` prop from `SongOverlay` which was causing a TypeScript error. */}
       <SongOverlay song={currentSong} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
       <Controls />
+      <div className="fixed bottom-4 right-4 z-50 pointer-events-none text-white/20 text-[10px] font-mono uppercase tracking-widest">
+        v{APP_VERSION}
+      </div>
     </div>
   );
 };
