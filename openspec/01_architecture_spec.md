@@ -5,7 +5,9 @@
 - **Build System:** Vite 5.2 (Rollup)
 - **Runtime:** React 18.3+
 - **Language:** TypeScript 5.4
-- **Styling:** Tailwind CSS 3.4 (PostCSS)
+- **Styling:** 
+  - Tailwind CSS 3.4 (PostCSS)
+  - **Compatibility Fix:** 预览环境采用 HTML `<link>` 标签引入原生 CSS，并结合 Tailwind Play CDN 进行实时解析，以解决原生 ESM 环境下 JS 导入 CSS 导致的样式丢失问题。
 - **Engine:** 
   - 2D: Canvas 2D API (策略模式封装)
   - 3D: Three.js (r164) / @react-three/fiber
@@ -18,7 +20,7 @@
 ├── assets/                # 静态资源
 │   ├── styles/            # 样式文件 (index.css)
 │   ├── locales/           # 语言文件
-│   └── images/            # 应用截图与图标
+│   └── images/            # 应用截图与预览图 (preview_main.png, preview_ui.png)
 ├── components/            # UI 组件层
 │   ├── App.tsx            # 应用主入口组件
 │   ├── controls/          # UI 控制面板

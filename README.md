@@ -6,11 +6,11 @@
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/)
 
 ![License](https://img.shields.io/badge/License-GPL%20v2-blue.svg)
-![React](https://img.shields.io/badge/React-18-61DAFB?logo=react&logoColor=black)
+![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-white?logo=three.js&logoColor=black)
 ![Gemini AI](https://img.shields.io/badge/AI-Gemini%203.0-8E75B2?logo=google&logoColor=white)
 
-**Aura Vision** is a next-gen audio visualization experiment running entirely in your browser. It combines **WebGL** (Three.js) for stunning 3D generative art with **Google Gemini 3.0** for real-time AI music identification, mood detection, and lyric synchronization.
+**Aura Vision** is a next-gen audio visualization experiment running entirely in your browser. It combines **WebGL** (Three.js) for stunning 3D generative art with **Google Gemini 3.0** for real-time AI music identification and mood-reactive aesthetics.
 
 <p align="center">
   <img src="assets/images/preview_main.png" width="48%" alt="Aura Vision Main Interface" />
@@ -21,19 +21,19 @@
 
 ## ✨ Key Features
 
-*   **🧠 Multimodal AI Intelligence:** Powered by `gemini-3-pro-preview`. Listens to your audio to identify songs, detect mood (e.g., "Energetic", "Melancholic"), and fetch synchronized lyrics.
-*   **🔍 Search Grounding:** Leverages **Google Search** tools to verify track metadata, ensuring high accuracy for global and obscure tracks.
-*   **🎨 8+ Visualization Engines:** Features mathematically generated modes including **Silk Waves** (Vertex Displacement), **Liquid Sphere**, **Neon Rings**, and **Tunnel**, driven by real-time FFT analysis.
-*   **⚡ Reactive Audio:** Smart algorithms detect silence/gaps to trigger immediate AI re-identification upon song changes.
-*   **🌊 Buttery Smooth Transitions:** Advanced color interpolation ensures zero-jump transitions between themes and modes.
-*   **🔒 Privacy First:** Audio analysis is performed locally via Web Audio API. Only temporary short clips are sent to Gemini for identification.
+*   **🧠 Multimodal AI Intelligence:** Powered by `gemini-3-flash-preview`. Listens to your audio to identify songs, detect mood, and synchronize metadata with visual themes.
+*   **🎨 High-Fidelity 3D Engines:** Immersive modes like **Silk Waves** and **Liquid Sphere** featuring PBR (Physically Based Rendering), bloom, and chromatic aberration.
+*   **🔠 Reactive Typography:** Custom text overlay (e.g., "AURA") that pulses and scales dynamically with the bass frequencies.
+*   **⚡ Intelligent Idle State:** Sleek, translucent controls that automatically hide during periods of inactivity to provide a pure cinematic experience.
+*   **🌊 Seamless Transitions:** Advanced color interpolation ensuring butter-smooth blending when switching between curated visual themes.
+*   **🔍 Search Grounding:** Real-time metadata verification via Google Search tools for pinpoint accuracy on global tracks.
 
 ## 🛠️ Tech Stack
 
-*   **Core:** React 18, TypeScript, Vite
-*   **Graphics:** Three.js, @react-three/fiber, Post-processing (Bloom, TiltShift)
+*   **Core:** React 19, TypeScript, Vite
+*   **Graphics:** Three.js, @react-three/fiber, Post-processing (Bloom, Chromatic Aberration, TiltShift)
 *   **AI:** Google GenAI SDK (`@google/genai`)
-*   **Styling:** Tailwind CSS
+*   **Styling:** Tailwind CSS (Runtime Play CDN for preview support)
 
 ## 🚀 Quick Start
 
@@ -44,17 +44,14 @@
     ```
 
 2.  **Setup API Key**
-    Create a `.env` file and add your [Google AI Studio](https://aistudio.google.com/) key (must support Gemini 3.0 & Google Search):
-    ```env
-    API_KEY=your_api_key_here
-    ```
+    Ensure `API_KEY` is set in your environment (Google AI Studio key with Gemini 3 support).
 
 3.  **Run**
     ```bash
     npm run dev
     ```
 
-> **🎧 Critical Tip:** For the best visual response, ensure your OS or browser **Noise Suppression** / **Echo Cancellation** is disabled for your microphone. These features filter out the bass/treble frequencies needed for visualization.
+> **🎧 Pro Tip:** Disable browser noise suppression for your microphone to capture the full frequency spectrum (especially the bass) required for high-reactivity visuals.
 
 ## 📄 License
 

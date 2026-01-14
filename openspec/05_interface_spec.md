@@ -10,6 +10,7 @@
 
 ## 2. 交互状态
 - **Idle Timeout:** 3000ms。
+- **全平台闲置检测:** 为了兼容平板电脑与触摸设备，检测逻辑必须包含 `touchstart` 和 `touchmove` 事件。
 - **Mini Bar 视觉规范:** 
   - **活跃状态:** `opacity-100`, `backdrop-blur-3xl`, `bg-black/60`。
   - **闲置状态 (Idle):** `opacity-[0.12]`, `translate-y-2`, **移除 backdrop-blur 效果**。

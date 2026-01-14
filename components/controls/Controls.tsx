@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice } from '../../core/types';
 import { VISUALIZER_PRESETS, COLOR_THEMES } from '../../core/constants';
 import { TRANSLATIONS } from '../../core/i18n';
@@ -43,6 +43,8 @@ interface ControlsProps {
 
 type TabType = 'visual' | 'text' | 'audio' | 'ai' | 'system';
 
+const IDLE_TIMEOUT = 3000; // 3 seconds per spec
+
 const Controls: React.FC<ControlsProps> = ({
   currentMode, setMode, colorTheme, setColorTheme, toggleMicrophone,
   isListening, isIdentifying, lyricsStyle, setLyricsStyle, showLyrics, setShowLyrics,
@@ -54,6 +56,7 @@ const Controls: React.FC<ControlsProps> = ({
   const [activeTab, setActiveTab] = useState<TabType>('visual');
   const [showHelp, setShowHelp] = useState(false);
   const [isIdle, setIsIdle] = useState(false);
+  const idleTimerRef = useRef<number | null>(null);
   const t = TRANSLATIONS[language] || TRANSLATIONS['en'];
 
   const handleAiSettingsChange = (newSettings: VisualizerSettings) => {
@@ -72,24 +75,39 @@ const Controls: React.FC<ControlsProps> = ({
     }
   };
 
+  const resetIdleTimer = useCallback(() => {
+    setIsIdle(false);
+    if (idleTimerRef.current) {
+      window.clearTimeout(idleTimerRef.current);
+    }
+    // Only start timer if the controls are not expanded
+    if (!isExpanded) {
+      idleTimerRef.current = window.setTimeout(() => {
+        setIsIdle(true);
+      }, IDLE_TIMEOUT);
+    }
+  }, [isExpanded]);
+
   useEffect(() => {
-    const handleWake = () => setIsIdle(false);
+    const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove', 'scroll'];
+    
+    const handleActivity = () => resetIdleTimer();
     const handleSleep = () => setIsIdle(true);
-    window.addEventListener('mousemove', handleWake);
-    window.addEventListener('mousedown', handleWake);
-    window.addEventListener('keydown', handleWake);
+
+    events.forEach(evt => window.addEventListener(evt, handleActivity, { passive: true }));
     window.addEventListener('blur', handleSleep);
-    window.addEventListener('focus', handleWake);
-    document.addEventListener('mouseleave', handleSleep);
+    window.addEventListener('focus', handleActivity);
+    
+    // Initial timer
+    resetIdleTimer();
+
     return () => {
-      window.removeEventListener('mousemove', handleWake);
-      window.removeEventListener('mousedown', handleWake);
-      window.removeEventListener('keydown', handleWake);
+      events.forEach(evt => window.removeEventListener(evt, handleActivity));
       window.removeEventListener('blur', handleSleep);
-      window.removeEventListener('focus', handleWake);
-      document.removeEventListener('mouseleave', handleSleep);
+      window.removeEventListener('focus', handleActivity);
+      if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
     };
-  }, []);
+  }, [resetIdleTimer]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
