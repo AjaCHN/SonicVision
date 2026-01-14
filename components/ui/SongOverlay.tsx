@@ -14,7 +14,22 @@ interface SongOverlayProps {
   sensitivity?: number;
 }
 
-const getMoodStyle = (mood: string) => {
+const getMoodStyle = (mood: string | undefined | null) => {
+  // Defensive check for mood string
+  if (!mood || typeof mood !== 'string') {
+      return {
+          textColor: 'text-purple-300',
+          borderColor: 'border-blue-500',
+          gradient: 'from-purple-500/10 to-blue-500/10',
+          badgeGradient: 'from-purple-500/20 to-blue-500/20',
+          icon: (
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M18 3a1 1 0 00-1.447-.894L8.763 6H5a3 3 0 000 6h.28l1.771 5.316A1 1 0 008 18h1a1 1 0 001-1v-4.382l6.553 3.276A1 1 0 0018 15V3z" clipRule="evenodd" />
+              </svg>
+          )
+      };
+  }
+
   const m = mood.toLowerCase();
   
   // Happy / Upbeat / Energetic -> Yellow/Orange Sun
@@ -164,7 +179,7 @@ const SongOverlay: React.FC<SongOverlayProps> = ({
   // If lyrics are hidden or no song is identified, hide the entire overlay
   if (!showLyrics || !song || !song.identified) return null;
 
-  const t = TRANSLATIONS[language];
+  const t = TRANSLATIONS[language] || TRANSLATIONS['en'];
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20 overflow-hidden">
@@ -221,12 +236,12 @@ const SongOverlay: React.FC<SongOverlayProps> = ({
                 <button 
                     onClick={onRetry}
                     className="flex items-center gap-1 text-[10px] text-white/70 hover:text-orange-400 transition-colors"
-                    title={t.wrongSong}
+                    title={t.wrongSong || "Retry"}
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                     </svg>
-                    <span>{t.wrongSong}</span>
+                    <span>{t.wrongSong || "Retry"}</span>
                 </button>
             </div>
         </div>
