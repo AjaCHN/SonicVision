@@ -1,6 +1,6 @@
-import * as React from 'react';
-// FIX: Changed to a regular import to ensure build tools correctly handle the type for global JSX augmentation.
-import { ThreeElements } from '@react-three/fiber';
+// FIX: Removed unnecessary React import and changed ThreeElements to a type-only import
+// to correctly augment the global JSX namespace for React Three Fiber.
+import type { ThreeElements } from '@react-three/fiber';
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
@@ -99,7 +99,7 @@ export interface AudioDevice {
 
 declare global {
   namespace JSX {
-    // FIX: Augmented IntrinsicElements with ThreeElements to provide types for R3F components.
+    // Augmented IntrinsicElements with ThreeElements to provide types for R3F components.
     // TypeScript's declaration merging will handle combining these with standard HTML element types,
     // resolving the circular reference issue from extending React.JSX.IntrinsicElements.
     interface IntrinsicElements extends ThreeElements {}

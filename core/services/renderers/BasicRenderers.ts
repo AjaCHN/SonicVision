@@ -4,25 +4,62 @@ import { getAverage } from '../audioUtils';
 
 export class BarsRenderer implements IVisualizerRenderer {
   init() {}
+
+  // Helper for rounded rectangles, which might not be supported on older browsers
+  private drawRoundedRect(ctx: CanvasRenderingContext2D, x: number, y: number, width: number, height: number, radius: number) {
+    if (height < 0) height = 0;
+    if (width < 0) width = 0;
+    // Ensure radius is not larger than half the smallest dimension
+    if (height < 2 * radius) radius = height / 2;
+    if (width < 2 * radius) radius = width / 2;
+    
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.arcTo(x + width, y, x + width, y + height, radius);
+    ctx.arcTo(x + width, y + height, x, y + height, radius);
+    ctx.arcTo(x, y + height, x, y, radius);
+    ctx.arcTo(x, y, x + width, y, radius);
+    ctx.closePath();
+    ctx.fill();
+  }
+
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings) {
-    const barCount = 64; 
-    const step = Math.floor(data.length / barCount); 
-    const barWidth = (w / barCount) / 2; 
+    const barCount = 56;
+    const step = Math.floor(data.length / (barCount * 1.5));
+    const barWidth = (w / barCount) * 0.6;
+    const barSpacing = (w / barCount) * 0.4;
     const centerX = w / 2;
     const c0 = colors[0] || '#ffffff';
     const c1 = colors[1] || c0;
 
-    for (let i = 0; i < barCount; i++) {
-      const value = data[i * step] * settings.sensitivity;
-      const barHeight = Math.min((value / 255) * h * 0.8, h * 0.9);
-      const gradient = ctx.createLinearGradient(0, h/2 + barHeight/2, 0, h/2 - barHeight/2);
-      gradient.addColorStop(0, c1);
-      gradient.addColorStop(0.5, c0);
-      gradient.addColorStop(1, c1);
-      ctx.fillStyle = gradient;
-      const safeBarWidth = Math.max(1, barWidth - 2);
-      ctx.fillRect(centerX + (i * barWidth), (h - barHeight) / 2, safeBarWidth, barHeight);
-      ctx.fillRect(centerX - ((i + 1) * barWidth), (h - barHeight) / 2, safeBarWidth, barHeight);
+    for (let i = 0; i < barCount / 2; i++) {
+        const value = data[i * step] * settings.sensitivity * 1.2;
+        const barHeight = Math.min(Math.max((value / 255) * h * 0.7, 0), h * 0.85);
+        
+        const capHeight = 4;
+        const cornerRadius = barWidth * 0.3;
+
+        if (barHeight <= capHeight) continue;
+
+        const gradient = ctx.createLinearGradient(0, h, 0, 0);
+        gradient.addColorStop(0, c1);
+        gradient.addColorStop(0.8, c0);
+        gradient.addColorStop(1, c0);
+
+        const totalBarWidth = barWidth + barSpacing;
+        const x_right = centerX + i * totalBarWidth + barSpacing / 2;
+        const y = (h - barHeight) / 2;
+        const x_left = centerX - (i * totalBarWidth) - barWidth - barSpacing / 2;
+        
+        // Draw main bar body
+        ctx.fillStyle = gradient;
+        this.drawRoundedRect(ctx, x_right, y + capHeight, barWidth, barHeight - capHeight, cornerRadius);
+        this.drawRoundedRect(ctx, x_left, y + capHeight, barWidth, barHeight - capHeight, cornerRadius);
+
+        // Draw cap
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        this.drawRoundedRect(ctx, x_right, y, barWidth, capHeight, 2);
+        this.drawRoundedRect(ctx, x_left, y, barWidth, capHeight, 2);
     }
   }
 }
@@ -137,7 +174,7 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
  * Inspired by Image 2: Macro photography of liquid bubbles with highlights.
  */
 export class MacroBubblesRenderer implements IVisualizerRenderer {
-  private bubbles: Array<{ x: number, y: number, r: number, vx: number, vy: number, colorIdx: number }> = [];
+  private bubbles: Array<{ x: number, y: number, r: number, vx: number, vy: number, colorIdx: number, noiseOffset: number }> = [];
   
   init() {
     this.bubbles = [];
@@ -148,61 +185,81 @@ export class MacroBubblesRenderer implements IVisualizerRenderer {
     
     const bass = getAverage(data, 0, 10) * settings.sensitivity / 255;
     const highs = getAverage(data, 120, 200) * settings.sensitivity / 255;
-    const count = settings.quality === 'high' ? 40 : 20;
+    const count = settings.quality === 'high' ? 30 : 15;
 
     if (this.bubbles.length === 0) {
       for (let i = 0; i < count; i++) {
         this.bubbles.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          r: 20 + Math.random() * 80,
-          vx: (Math.random() - 0.5) * 2,
-          vy: (Math.random() - 0.5) * 2,
-          colorIdx: Math.floor(Math.random() * colors.length)
+          r: 30 + Math.random() * 100,
+          vx: (Math.random() - 0.5) * 0.2,
+          vy: (Math.random() - 0.5) * 0.2,
+          colorIdx: Math.floor(Math.random() * colors.length),
+          noiseOffset: Math.random() * 1000
+        });
+      }
+    } else if (this.bubbles.length > count) {
+      this.bubbles = this.bubbles.slice(0, count);
+    } else if (this.bubbles.length < count) {
+      for (let i = this.bubbles.length; i < count; i++) {
+         this.bubbles.push({
+          x: Math.random() * w, y: Math.random() * h, r: 30 + Math.random() * 100,
+          vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
+          colorIdx: Math.floor(Math.random() * colors.length), noiseOffset: Math.random() * 1000
         });
       }
     }
 
     ctx.save();
     
-    this.bubbles.forEach((b, i) => {
-      // Movement
-      b.x += b.vx * settings.speed * (1 + bass * 2);
-      b.y += b.vy * settings.speed * (1 + bass * 2);
-      
-      // Wrap around
-      if (b.x < -b.r) b.x = w + b.r;
-      if (b.x > w + b.r) b.x = -b.r;
-      if (b.y < -b.r) b.y = h + b.r;
-      if (b.y > h + b.r) b.y = -b.r;
+    this.bubbles.forEach((p) => {
+      // Fluidic Movement
+      const time = rotation * settings.speed * 0.2;
+      const noiseX = Math.sin(p.y * 0.004 + time + p.noiseOffset) * 0.5;
+      const noiseY = Math.cos(p.x * 0.004 + time + p.noiseOffset) * 0.5;
 
-      const dynamicR = b.r * (1 + bass * 0.5);
-      const color = colors[b.colorIdx % colors.length];
+      p.vx = p.vx * 0.96 + noiseX * 0.15;
+      p.vy = p.vy * 0.96 + noiseY * 0.15;
+      p.x += p.vx * settings.speed * (1 + bass);
+      p.y += p.vy * settings.speed * (1 + bass);
       
-      // Main bubble body
-      const gradient = ctx.createRadialGradient(b.x, b.y, dynamicR * 0.2, b.x, b.y, dynamicR);
-      gradient.addColorStop(0, color);
-      gradient.addColorStop(0.8, color);
-      gradient.addColorStop(1, 'rgba(0,0,0,0)');
+      // Wrap around screen
+      if (p.x < -p.r) p.x = w + p.r;
+      if (p.x > w + p.r) p.x = -p.r;
+      if (p.y < -p.r) p.y = h + p.r;
+      if (p.y > h + p.r) p.y = -p.r;
+
+      const dynamicR = p.r * (1 + bass * 0.2);
+      const color = colors[p.colorIdx % colors.length];
       
-      ctx.globalAlpha = 0.6 + highs * 0.4;
-      ctx.fillStyle = gradient;
+      // Volumetric body
+      const bodyGradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, dynamicR);
+      bodyGradient.addColorStop(0, `${color}10`);
+      bodyGradient.addColorStop(0.5, `${color}40`);
+      bodyGradient.addColorStop(0.9, `${color}88`);
+      bodyGradient.addColorStop(1, `${color}00`);
+      
+      ctx.fillStyle = bodyGradient;
       ctx.beginPath();
-      ctx.arc(b.x, b.y, dynamicR, 0, Math.PI * 2);
+      ctx.arc(p.x, p.y, dynamicR, 0, Math.PI * 2);
       ctx.fill();
 
-      // Highlights (Sparkle from Image 2)
-      ctx.globalAlpha = 0.8;
-      ctx.strokeStyle = 'white';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      ctx.arc(b.x - dynamicR * 0.3, b.y - dynamicR * 0.3, dynamicR * 0.4, -Math.PI * 0.75, -Math.PI * 0.25);
-      ctx.stroke();
-      
-      if (highs > 0.4) {
-          ctx.fillStyle = 'white';
+      // Soft highlight, reactive to treble
+      const highlightStrength = Math.min(0.8, highs * 2.5);
+      if (highlightStrength > 0.05) {
+          const highlightX = p.x - dynamicR * 0.3;
+          const highlightY = p.y - dynamicR * 0.3;
+          const highlightR = dynamicR * 0.5;
+          const highlightGradient = ctx.createRadialGradient(highlightX, highlightY, 0, highlightX, highlightY, highlightR);
+          highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${highlightStrength * 0.5})`);
+          highlightGradient.addColorStop(0.3, `rgba(255, 255, 255, ${highlightStrength * 0.2})`);
+          highlightGradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
+          
+          ctx.fillStyle = highlightGradient;
           ctx.beginPath();
-          ctx.arc(b.x + dynamicR * 0.4, b.y - dynamicR * 0.2, 3 * highs * settings.sensitivity, 0, Math.PI * 2);
+          // Use a clipping path to ensure the highlight stays within the bubble's bounds
+          ctx.arc(p.x, p.y, dynamicR, 0, Math.PI * 2);
           ctx.fill();
       }
     });
