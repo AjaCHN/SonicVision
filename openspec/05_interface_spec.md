@@ -41,4 +41,4 @@
 - 滑块 (Sliders): 支持连续拖拽且在移动端禁用页面回弹。
 
 ---
-*Aura Vision Interface - Version 0.4.3*
+*Aura Vision Interface - Version 0.5.1*

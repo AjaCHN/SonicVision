@@ -20,4 +20,4 @@
     *   LocalStorage Schema、多语言字典结构与区域偏好。
 
 ---
-*Aura Vision Project Specification - Version 0.4.3*
+*Aura Vision Project Specification - Version 0.5.1*

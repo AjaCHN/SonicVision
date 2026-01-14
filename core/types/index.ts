@@ -1,5 +1,5 @@
 import * as React from 'react';
-import type { ThreeElements } from '@react-three-fiber';
+import type { ThreeElements } from '@react-three/fiber';
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
@@ -97,7 +97,9 @@ export interface AudioDevice {
 }
 
 declare global {
-  namespace JSX {
+  // FIX: Switched from `JSX` to `React.JSX` namespace to correctly augment intrinsic elements
+  // for the modern JSX transform used by Vite's React plugin by default.
+  namespace React.JSX {
     /**
      * @zh
      * 此处通过“声明合并” (declaration merging) 对全局的 JSX 命名空间进行扩展。

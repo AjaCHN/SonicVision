@@ -52,7 +52,7 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
 
   return (
     <div className={`pointer-events-none fixed z-[100] flex flex-col ${getPositionClasses()}`}>
-      <div ref={textRef} className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center"
+      <div ref={textRef} className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center break-words"
         style={{ 
             color: settings.customTextColor || '#ffffff',
             fontSize: `min(${sizeVw}vw, ${sizePx}px)`, 

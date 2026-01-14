@@ -54,7 +54,13 @@ export const identifySongFromAudio = async (
         const text = response.text;
         if (!text) return null;
 
-        const songInfo: SongInfo = JSON.parse(text.trim());
+        let songInfo: SongInfo;
+        try {
+          songInfo = JSON.parse(text.trim());
+        } catch (parseError) {
+          console.error("[AI] Failed to parse JSON response:", text, parseError);
+          return null; // Return null if JSON is malformed, preventing a crash.
+        }
         
         if (!songInfo.identified) {
           return null;

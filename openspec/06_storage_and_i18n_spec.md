@@ -14,7 +14,12 @@
 - **语言支持:** 
   - `en`: 默认 fallback。
   - `zh`: 适配中文语义与排版。
+  - `tw`: 适配繁体中文。
   - `ja`: 适配日文渲染。
+  - `es`: 适配西班牙文。
+  - `ko`: 适配韩文。
+  - `de`: 适配德文。
+  - `fr`: 适配法文。
 - **数据结构:** 嵌套对象字典，支持带参数的 Hint 提示。
 
 ## 3. 区域感知 (Region Awareness)
@@ -22,4 +27,4 @@
 - **作用域:** 影响 Gemini 搜索工具的地理偏移，提高本地歌曲识别率。
 
 ---
-*Aura Vision Storage & i18n - Version 0.4.3*
+*Aura Vision Storage & i18n - Version 0.5.1*

@@ -70,8 +70,8 @@ const SongOverlay: React.FC<SongOverlayProps> = ({ song, showLyrics, language, o
           <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div className="relative z-10">
-            <h2 className="text-white font-bold text-xl md:text-2xl truncate tracking-tight pr-6">{song.title}</h2>
-            <p className="text-blue-300 text-sm md:text-base truncate font-medium pr-6">{song.artist}</p>
+            <h2 className="text-white font-bold text-xl md:text-2xl tracking-tight pr-6 break-words">{song.title}</h2>
+            <p className="text-blue-300 text-sm md:text-base font-medium pr-6 break-words">{song.artist}</p>
             {song.mood && (
               <div className="flex items-center gap-2 mt-2">
                 <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r ${moodStyle.badgeGradient} border border-white/10 rounded-full`}>
