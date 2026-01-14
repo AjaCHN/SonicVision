@@ -5,7 +5,7 @@
 [English](README.md) | [在线演示](https://aura-vision.vercel.app/)
 
 <p align="center">
-  <img src="./assets/images/aura-banner.jpg" alt="Aura Vision 横幅" width="100%" />
+  <img src="./assets/images/preview_main.png" alt="Aura Vision 横幅" width="100%" />
 </p>
 
 <p align="center">
