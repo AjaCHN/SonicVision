@@ -59,6 +59,10 @@ export const COLOR_THEMES = [
   ['#312e81', '#1e1b4b', '#4c1d95'],
   ['#111827', '#374151', '#9ca3af'],
   ['#00ffff', '#3b82f6', '#1d4ed8'],
+  // Cyberpunk Spectrum (Multi-color)
+  ['#FF00FF', '#00FF00', '#00FFFF', '#FFFF00'],
+  // Prismatic Flare (Highly saturated multi-color)
+  ['#FF3F00', '#FFD700', '#00FF41', '#00D8FF', '#FF00A0'],
 ];
 
 export const REGION_NAMES: Record<Region, string> = {
