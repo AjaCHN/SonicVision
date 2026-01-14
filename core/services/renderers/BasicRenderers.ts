@@ -19,7 +19,6 @@ export class BarsRenderer implements IVisualizerRenderer {
       gradient.addColorStop(0.5, c0);
       gradient.addColorStop(1, c1);
       ctx.fillStyle = gradient;
-      // Prevent negative width if screen is very narrow
       const safeBarWidth = Math.max(1, barWidth - 2);
       ctx.fillRect(centerX + (i * barWidth), (h - barHeight) / 2, safeBarWidth, barHeight);
       ctx.fillRect(centerX - ((i + 1) * barWidth), (h - barHeight) / 2, safeBarWidth, barHeight);
@@ -33,9 +32,6 @@ export class RingsRenderer implements IVisualizerRenderer {
     const centerX = w / 2;
     const centerY = h / 2;
     const maxRings = 15;
-    
-    // Calculate scale factor based on viewport size (relative to 800px baseline)
-    // Ensures rings look substantial on 4K screens while staying fitting on mobile
     const minDimension = Math.min(w, h);
     const scale = Math.max(0.6, minDimension / 800); 
 
@@ -43,22 +39,12 @@ export class RingsRenderer implements IVisualizerRenderer {
     for(let i = 0; i < maxRings; i++) {
         const freqIndex = i * 8; 
         const val = data[freqIndex] * settings.sensitivity;
-        
-        // Base radius scales with screen
-        // Previous fixed logic: 30 + (i * 20)
-        // New scalable logic:
         const baseR = (40 + (i * 25)) * scale;
-        
-        // Cap audio expansion scaling slightly on huge screens to prevent overlapping explosions
         const audioR = Math.min(val, 150) * Math.min(scale, 1.5); 
         const radius = baseR + audioR;
-
         ctx.beginPath();
         ctx.strokeStyle = colors[i % colors.length];
-        
-        // Scale line width too so they don't look hairline thin on high-res
         ctx.lineWidth = ((2 + (val / 40)) * settings.sensitivity) * scale;
-        
         const startAngle = rotation * (i % 2 === 0 ? 1 : -1) + i; 
         const endAngle = startAngle + (Math.PI * 1.5) + (val / 255); 
         ctx.arc(centerX, centerY, radius, startAngle, endAngle);

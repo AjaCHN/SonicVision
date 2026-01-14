@@ -48,31 +48,21 @@ export class ShapesRenderer implements IVisualizerRenderer {
         const sides = 3 + i;
         const radius = (Math.min(w, h) * 0.05 * (i + 1)) + (bassNorm * 80);
         const angleOffset = rotation * (0.5 + i * 0.1) * (i % 2 === 0 ? 1 : -1);
-        
         const isFlashingLine = i % 2 === 0;
         const pulseEffect = isFlashingLine ? (bassNorm * 2.5) : (bassNorm * 0.4);
         const baseAlpha = isFlashingLine ? (0.05 + pulseEffect) : (0.4 + pulseEffect);
-        
         ctx.globalAlpha = Math.min(Math.max(baseAlpha, 0.05), 1.0);
         ctx.strokeStyle = colors[i % colors.length] || '#ffffff';
         ctx.lineWidth = (2 + (mids / 80)) * settings.sensitivity;
-        
         ctx.beginPath();
         for (let j = 0; j < sides; j++) {
             const a = (j / sides) * Math.PI * 2 + angleOffset;
             const px = Math.cos(a) * radius;
             const py = Math.sin(a) * radius;
-            if (j === 0) ctx.moveTo(px, py); 
-            else ctx.lineTo(px, py);
+            if (j === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
         }
         ctx.closePath();
         ctx.stroke();
-
-        if (isFlashingLine && bassNorm > 0.6) {
-            ctx.globalAlpha = (bassNorm - 0.6) * 1.5;
-            ctx.lineWidth = 1;
-            ctx.stroke();
-        }
     }
     ctx.restore();
   }
