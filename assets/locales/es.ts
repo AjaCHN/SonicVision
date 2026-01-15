@@ -115,6 +115,19 @@ export const es = {
     automation: 'Automatización',
     display: 'Pantalla'
   },
+  audioPanel: {
+    info: 'Ajusta la sensibilidad y el suavizado para personalizar cómo reacciona el visualizador a la dinámica del audio. Tamaños FFT más altos proporcionan más detalle espectral pero consumen más CPU.'
+  },
+  systemPanel: {
+    interface: 'Interfaz',
+    behavior: 'Comportamiento',
+    maintenance: 'Mantenimiento'
+  },
+  showFps: 'Mostrar FPS',
+  showTooltips: 'Mostrar Tooltips',
+  doubleClickFullscreen: 'Doble Clic Pantalla Completa',
+  autoHideUi: 'Ocultar UI Automáticamente',
+  mirrorDisplay: 'Espejar Pantalla',
   presets: {
     title: 'Presets Inteligentes',
     hint: 'Aplica una combinación estética curada profesionalmente con un solo clic.',

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { VisualizerMode } from '../../../core/types';
 import { VISUALIZER_PRESETS, COLOR_THEMES, SMART_PRESETS } from '../../../core/constants';
@@ -56,7 +57,7 @@ export const VisualSettingsPanel: React.FC = () => {
 
             <div>
                 <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2 flex-shrink-0">{t?.styleTheme || "Visual Theme"}</span>
-                <div className="grid grid-cols-6 gap-2 p-1 content-start mb-2 border border-white/5 rounded-xl bg-black/10">
+                <div className="grid grid-cols-6 gap-2 p-1 content-start mb-2">
                   {COLOR_THEMES.map((theme, i) => (
                     <button key={i} onClick={() => setColorTheme(theme)} aria-label={`Theme ${i+1}`} className={`aspect-square rounded-full flex-shrink-0 transition-all duration-300 ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'ring-2 ring-white/80 scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
                   ))}
@@ -64,13 +65,12 @@ export const VisualSettingsPanel: React.FC = () => {
             </div>
 
             <div className="pt-2 border-t border-white/5">
-               <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-3">{visualPanel.display || "Display"}</span>
-               <div className="bg-black/20 rounded-xl p-3 border border-white/5 hover:border-white/10 transition-colors">
+               <div className="py-2">
                  <div className="flex items-center gap-2 justify-between">
-                      <span className="text-xs font-black uppercase text-white/70 tracking-wider whitespace-nowrap">{t?.quality || "Quality"}</span>
-                      <div className="flex bg-white/[0.04] rounded-lg p-0.5 border border-white/5 max-w-[180px]">
+                      <span className="text-xs font-bold uppercase text-white/60 tracking-wider whitespace-nowrap">{t?.quality || "Quality"}</span>
+                      <div className="flex w-full max-w-[200px] bg-white/[0.04] rounded-lg p-0.5">
                       {(['low', 'med', 'high'] as const).map(q => (
-                          <button key={q} onClick={() => setSettings(prev => ({...prev, quality: q}))} aria-pressed={settings.quality === q} className={`flex-1 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${settings.quality === q ? 'bg-white/20 text-white' : 'text-white/30 hover:text-white/70'}`}>{qualities[q] || q}</button>
+                          <button key={q} onClick={() => setSettings(prev => ({...prev, quality: q}))} aria-pressed={settings.quality === q} className={`flex-1 min-w-0 py-1.5 rounded text-[10px] font-bold uppercase tracking-widest transition-all ${settings.quality === q ? 'bg-white/20 text-white' : 'text-white/30 hover:text-white/70'}`}>{qualities[q] || q}</button>
                       ))}
                       </div>
                  </div>
@@ -93,13 +93,18 @@ export const VisualSettingsPanel: React.FC = () => {
                   <SettingsToggle label={t?.trails || "Trails"} value={settings.trails} onChange={() => setSettings(prev => ({...prev, trails: !prev.trails}))} hintText={`${hints?.trails || "Trails"} [T]`} />
               </div>
           </div>
-          <div className="space-y-3 pt-3 border-t border-white/5">
-            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1">{visualPanel.automation || "Automation"}</span>
-            <SettingsToggle label={t?.autoRotate || "Auto Rotate"} value={settings.autoRotate} onChange={() => setSettings(prev => ({...prev, autoRotate: !prev.autoRotate}))} hintText={hints?.autoRotate}><Slider label={t?.rotateInterval || "Interval"} value={settings.rotateInterval} min={10} max={120} step={5} unit="s" onChange={(v: number) => setSettings(prev => ({...prev, rotateInterval: v}))} /></SettingsToggle>
-            <SettingsToggle label={t?.cycleColors || "Cycle Colors"} value={settings.cycleColors} onChange={() => setSettings(prev => ({...prev, cycleColors: !prev.cycleColors}))} hintText={hints?.cycleColors}><Slider label={t?.colorInterval || "Interval"} value={settings.colorInterval} min={5} max={60} step={5} unit="s" onChange={(v: number) => setSettings(prev => ({...prev, colorInterval: v}))} /></SettingsToggle>
-          </div>
-          <div className="space-y-3 pt-3 border-t border-white/5">
-             <SettingsToggle label={t?.hideCursor || "Hide Cursor"} value={settings.hideCursor} onChange={() => setSettings(prev => ({...prev, hideCursor: !prev.hideCursor}))} hintText={hints?.hideCursor} />
+          <div className="space-y-2 pt-3 border-t border-white/5">
+            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2">{visualPanel.automation || "Automation"}</span>
+            <SettingsToggle label={t?.autoRotate || "Auto Rotate"} value={settings.autoRotate} onChange={() => setSettings(prev => ({...prev, autoRotate: !prev.autoRotate}))} hintText={hints?.autoRotate}>
+                <div className="pt-1">
+                    <Slider label={t?.rotateInterval || "Interval"} value={settings.rotateInterval} min={10} max={120} step={5} unit="s" onChange={(v: number) => setSettings(prev => ({...prev, rotateInterval: v}))} />
+                </div>
+            </SettingsToggle>
+            <SettingsToggle label={t?.cycleColors || "Cycle Colors"} value={settings.cycleColors} onChange={() => setSettings(prev => ({...prev, cycleColors: !prev.cycleColors}))} hintText={hints?.cycleColors}>
+                <div className="pt-1">
+                    <Slider label={t?.colorInterval || "Interval"} value={settings.colorInterval} min={5} max={60} step={5} unit="s" onChange={(v: number) => setSettings(prev => ({...prev, colorInterval: v}))} />
+                </div>
+            </SettingsToggle>
           </div>
         </div>
         <div className="mt-auto pt-4">

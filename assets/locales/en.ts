@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
@@ -42,7 +43,12 @@ export const en = {
     mic: 'Activate or mute microphone input.',
     device: 'Select the hardware audio input source.',
     monitor: 'Route audio input to speakers (Caution: may cause feedback loop).',
-    wakeLock: 'Prevent the screen from turning off or dimming while the visualizer is active.'
+    wakeLock: 'Prevent the screen from turning off or dimming while the visualizer is active.',
+    showFps: 'Display a real-time frames-per-second counter.',
+    showTooltips: 'Enable helpful floating hints when hovering over controls.',
+    doubleClickFullscreen: 'Toggle fullscreen mode by double-clicking anywhere on the visualizer.',
+    autoHideUi: 'Automatically hide the control panel after a period of inactivity.',
+    mirrorDisplay: 'Flip the visualizer output horizontally (useful for rear projection or webcam).'
   },
   visualizerMode: 'Visualizer Mode',
   styleTheme: 'Visual Theme',
@@ -70,7 +76,7 @@ export const en = {
   welcomeTitle: 'Aura Vision',
   welcomeText: 'Translate audio into generative art. Experience real-time music identification and immersive visualization.',
   unsupportedTitle: 'Browser Not Supported',
-  unsupportedText: 'Aura Vision requires modern features (like microphone access) not available in your browser. Please update to a recent version of Chrome, Firefox, or Safari.',
+  unsupportedText: 'Aura Vision requires modern features (like microphone access) that are not available. Please update to a recent version of Chrome, Firefox, or Safari.',
   hideOptions: 'Collapse',
   showOptions: 'Expand Options',
   reset: 'Reset System',
@@ -113,6 +119,19 @@ export const en = {
     automation: 'Automation',
     display: 'Display'
   },
+  audioPanel: {
+    info: 'Adjust input sensitivity and smoothing to customize how the visualizer reacts to audio dynamics. Higher FFT sizes provide more spectral detail but consume more CPU.'
+  },
+  systemPanel: {
+    interface: 'Interface',
+    behavior: 'Behavior',
+    maintenance: 'Maintenance'
+  },
+  showFps: 'Show FPS',
+  showTooltips: 'Show Tooltips',
+  doubleClickFullscreen: 'Double-Click Fullscreen',
+  autoHideUi: 'Auto-Hide UI',
+  mirrorDisplay: 'Mirror Display',
   presets: {
     title: 'Smart Presets',
     hint: 'Apply a professionally curated aesthetic combination with one click.',

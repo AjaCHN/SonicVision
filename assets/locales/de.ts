@@ -115,6 +115,19 @@ export const de = {
     automation: 'Automatisierung',
     display: 'Anzeige'
   },
+  audioPanel: {
+    info: 'Passen Sie Empfindlichkeit und Glättung an, um die Reaktion des Visualizers auf die Audiodynamik anzupassen. Höhere FFT-Größen bieten mehr spektrale Details, verbrauchen aber mehr CPU.'
+  },
+  systemPanel: {
+    interface: 'Oberfläche',
+    behavior: 'Verhalten',
+    maintenance: 'Wartung'
+  },
+  showFps: 'FPS anzeigen',
+  showTooltips: 'Tooltips anzeigen',
+  doubleClickFullscreen: 'Doppelklick Vollbild',
+  autoHideUi: 'UI automatisch ausblenden',
+  mirrorDisplay: 'Anzeige spiegeln',
   presets: {
     title: 'Intelligente Presets',
     hint: 'Wenden Sie eine professionell kuratierte ästhetische Kombination mit einem Klick an.',

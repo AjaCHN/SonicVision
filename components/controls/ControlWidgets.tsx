@@ -1,6 +1,8 @@
+
 import React, { useState, useEffect, useRef, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { Position } from '../../core/types';
+import { useAppContext } from '../AppContext';
 
 // --- Tooltips ---
 
@@ -73,10 +75,13 @@ export const FloatingTooltip = memo(FloatingTooltipInternal);
 export const TooltipArea = memo(({ children, text }: { children?: React.ReactNode, text: string | undefined | null }) => {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const { settings } = useAppContext();
+  
+  const shouldShow = settings.showTooltips && isHovered;
   
   return (
     <div ref={containerRef} className="relative" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-      <FloatingTooltip text={text} visible={isHovered} anchorRef={containerRef} />
+      <FloatingTooltip text={text} visible={shouldShow} anchorRef={containerRef} />
       {children}
     </div>
   );
@@ -91,8 +96,8 @@ export const PositionSelector = memo(({ label, value, onChange, options, activeC
   const activeBgClass = activeColor === 'blue' ? 'bg-blue-600' : 'bg-green-600';
   return (
     <div className="space-y-3" role="radiogroup" aria-label={label}>
-      {label && <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.15em] block ml-1">{label}</span>}
-      <div className="grid grid-cols-3 gap-1 bg-white/[0.02] p-2 rounded-xl border border-white/5 max-w-[160px]">
+      {label && <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ml-1">{label}</span>}
+      <div className="grid grid-cols-3 gap-1 bg-white/[0.02] p-2 rounded-xl max-w-[160px]">
         {options.map(pos => (
           <button key={pos.value} onClick={() => onChange(pos.value as Position)} title={pos.label} aria-label={pos.label} role="radio" aria-checked={value === pos.value}
             className={`aspect-[4/3] rounded flex items-center justify-center transition-all ${value === pos.value ? `${activeBgClass} text-white shadow-lg` : 'bg-white/5 text-white/20 hover:text-white/40'}`}>
@@ -104,15 +109,24 @@ export const PositionSelector = memo(({ label, value, onChange, options, activeC
   );
 });
 
-export const SettingsToggle = memo(({ label, value, onChange, activeColor = 'blue', hintText, statusText, children }: {
-  label: string; value: boolean; onChange: () => void; activeColor?: string; hintText?: string; statusText?: string; children?: React.ReactNode
+export const SettingsToggle = memo(({ label, value, onChange, activeColor = 'blue', hintText, statusText, children, variant = 'default' }: {
+  label: string; value: boolean; onChange: () => void; activeColor?: string; hintText?: string; statusText?: string; children?: React.ReactNode; variant?: 'default' | 'clean';
 }) => {
   const activeBg = activeColor === 'green' ? 'bg-green-500' : 'bg-blue-600';
+  
+  const containerClasses = variant === 'clean' 
+    ? 'py-3 flex flex-col group' // FIX: Changed from 'flex items-center justify-between' to 'flex flex-col' to handle children correctly if they exist, or use internal layout
+    : 'bg-white/[0.03] p-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors';
+    
+  const headerClasses = variant === 'clean'
+    ? 'flex items-center justify-between w-full'
+    : 'flex items-center justify-between min-h-[24px] w-full';
+
   return (
-    <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
-      <div className="flex items-center justify-between min-h-[24px]">
+    <div className={containerClasses}>
+      <div className={headerClasses}>
         <TooltipArea text={hintText}>
-          <span className="text-xs font-bold text-white/70 leading-none">{label}</span>
+          <span className={`text-xs font-bold leading-none transition-colors ${variant === 'clean' ? 'text-white/60 group-hover:text-white' : 'text-white/70'}`}>{label}</span>
         </TooltipArea>
         <button 
           onClick={onChange} 
@@ -125,7 +139,7 @@ export const SettingsToggle = memo(({ label, value, onChange, activeColor = 'blu
         </button>
       </div>
       {statusText && <div className="text-[10px] font-mono text-white/30 uppercase tracking-widest text-right mt-1">{statusText}</div>}
-      {value && children && <div className="mt-3 pt-3 border-t border-white/5 animate-fade-in-up">{children}</div>}
+      {value && children && <div className="mt-3 pt-3 border-t border-white/5 animate-fade-in-up w-full">{children}</div>}
     </div>
   );
 });
@@ -136,7 +150,7 @@ export const Slider = memo(({ label, value, min, max, step, onChange, unit = '',
   <div className="space-y-2">
     <div className="flex justify-between items-center">
       <TooltipArea text={hintText}>
-        <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.15em] ml-1">{label}</span>
+        <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] ml-1">{label}</span>
       </TooltipArea>
       <span className="text-[10px] font-mono text-white/80">{value.toFixed(step < 1 ? (step < 0.1 ? 2 : 1) : 0)}{unit}</span>
     </div>
@@ -184,7 +198,7 @@ export const SteppedSlider = memo(({ label, value, min, max, step, onChange, opt
         <div className="space-y-2">
             <div className="flex justify-between items-center">
                 <TooltipArea text={hintText}>
-                    <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.15em] ml-1">{label}</span>
+                    <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] ml-1">{label}</span>
                 </TooltipArea>
                 <span className="text-[10px] font-mono text-white/80">{displayLabel}</span>
             </div>
@@ -218,13 +232,13 @@ export const CustomSelect = memo(({ label, value, options, onChange, hintText }:
 }) => (
   <div className="space-y-2">
     <TooltipArea text={hintText}>
-      <span className="text-[10px] font-black uppercase text-white/50 tracking-[0.15em] block ml-1">{label}</span>
+      <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ml-1">{label}</span>
     </TooltipArea>
     <div className="relative">
       <select 
         value={value} 
         onChange={(e) => onChange(e.target.value)} 
-        className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-4 py-3 text-xs font-bold text-white uppercase tracking-wider appearance-none focus:outline-none focus:border-blue-500/50 transition-colors cursor-pointer"
+        className="w-full bg-white/[0.04] rounded-xl px-4 py-3 text-xs font-bold text-white uppercase tracking-wider appearance-none focus:outline-none focus:ring-1 focus:ring-blue-500/50 transition-colors cursor-pointer"
         aria-label={label}
       >
         {options.map(opt => (

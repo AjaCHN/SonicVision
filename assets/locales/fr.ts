@@ -37,7 +37,7 @@ export const fr = {
     reset: 'Restaure tous les paramètres de l\'application aux valeurs d\'usine.',
     confirmReset: 'Confirmer la réinitialisation ? Cette action est irréversible.',
     resetVisual: 'Réinitialise uniquement l\'esthétique (Vitesse, Lueur, Traînées) par défaut.',
-    randomize: 'Génère une combinaison fortuite de mode visuel et de couleurs.',
+    randomize: 'Génère une combinaison fortuita de mode visuel et de couleurs.',
     fullscreen: 'Active/désactive le mode plein écran immersif.',
     help: 'Voir les raccourcis clavier et la documentation.',
     mic: 'Active ou coupe l\'entrée microphone.',
@@ -115,6 +115,19 @@ export const fr = {
     automation: 'Automatisation',
     display: 'Affichage'
   },
+  audioPanel: {
+    info: 'Ajustez la sensibilité et le lissage pour personnaliser la réaction du visualiseur à la dynamique audio. Des tailles FFT plus élevées offrent plus de détails spectraux mais consomment plus de CPU.'
+  },
+  systemPanel: {
+    interface: 'Interface',
+    behavior: 'Comportement',
+    maintenance: 'Maintenance'
+  },
+  showFps: 'Afficher FPS',
+  showTooltips: 'Afficher info-bulles',
+  doubleClickFullscreen: 'Double-clic Plein écran',
+  autoHideUi: 'Masquer UI auto',
+  mirrorDisplay: 'Miroir',
   presets: {
     title: 'Préréglages Intelligents',
     hint: 'Appliquez une combinaison esthétique professionnelle en un clic.',

@@ -29,7 +29,7 @@ export const VisualizerPreview: React.FC<VisualizerPreviewProps> = memo(({ mode,
     <button
       onClick={onClick}
       aria-pressed={isActive}
-      className={`relative rounded-xl border-2 transition-all duration-300 group overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-blue-500 ${isActive ? 'border-blue-500 shadow-lg' : 'border-white/10 hover:border-white/30'}`}
+      className={`relative rounded-xl transition-all duration-300 group overflow-hidden focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-black focus:ring-blue-500 ${isActive ? 'ring-2 ring-blue-500 shadow-lg' : 'hover:ring-1 hover:ring-white/30'}`}
     >
       <div 
         className="h-16 w-full bg-black transition-transform duration-500 ease-in-out group-hover:scale-110"

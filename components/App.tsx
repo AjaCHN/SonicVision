@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import VisualizerCanvas from './visualizers/VisualizerCanvas';
 import ThreeVisualizer from './visualizers/ThreeVisualizer';
 import Controls from './controls/Controls';
@@ -9,6 +9,32 @@ import { OnboardingOverlay } from './ui/OnboardingOverlay';
 import { AppProvider, useAppContext } from './AppContext';
 import { APP_VERSION } from '../core/constants';
 
+const FPSCounter = () => {
+  const [fps, setFps] = useState(0);
+  useEffect(() => {
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let rafId: number;
+    const loop = () => {
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        setFps(Math.round((frameCount * 1000) / (now - lastTime)));
+        frameCount = 0;
+        lastTime = now;
+      }
+      rafId = requestAnimationFrame(loop);
+    };
+    rafId = requestAnimationFrame(loop);
+    return () => cancelAnimationFrame(rafId);
+  }, []);
+  return (
+    <div className="fixed top-4 left-4 z-[200] text-[9px] font-mono text-green-400 font-bold bg-black/50 px-2 py-1 rounded border border-green-500/30 backdrop-blur-sm shadow-lg pointer-events-none select-none">
+      FPS: {fps}
+    </div>
+  );
+};
+
 const AppContent: React.FC = () => {
   const {
     settings, errorMessage, setErrorMessage, isSimulating, hasStarted, isUnsupported,
@@ -16,8 +42,18 @@ const AppContent: React.FC = () => {
     setHasStarted, startMicrophone, startDemoMode, selectedDeviceId,
     t, isThreeMode, analyser, mode, colorTheme,
     currentSong, showLyrics, lyricsStyle, mediaStream,
-    performIdentification, setCurrentSong
+    performIdentification, setCurrentSong, toggleFullscreen
   } = useAppContext();
+
+  const handleDoubleClick = (e: React.MouseEvent) => {
+    // Prevent fullscreen trigger if clicking on controls (though z-index usually handles this, safety check)
+    const target = e.target as HTMLElement;
+    if (target.tagName === 'BUTTON' || target.tagName === 'INPUT' || target.closest('button')) return;
+    
+    if (settings.doubleClickFullscreen) {
+      toggleFullscreen();
+    }
+  };
 
   if (showOnboarding) {
     return <OnboardingOverlay language={language} setLanguage={setLanguage} onComplete={handleOnboardingComplete} />;
@@ -52,9 +88,11 @@ const AppContent: React.FC = () => {
   }
 
   return (
-    <div className="h-[100dvh] bg-black overflow-hidden relative">
-      {/* 渲染画布层：仅在此层级隐藏鼠标 */}
-      <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`}>
+    <div className="h-[100dvh] bg-black overflow-hidden relative" onDoubleClick={handleDoubleClick}>
+      {settings.showFps && <FPSCounter />}
+
+      {/* 画布层：背景渲染，受 settings.hideCursor 影响 */}
+      <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`} style={settings.mirrorDisplay ? { transform: 'scaleX(-1)' } : undefined}>
         {isThreeMode ? (
           <ThreeVisualizer analyser={analyser} mode={mode} colors={colorTheme} settings={settings} />
         ) : (
@@ -62,37 +100,34 @@ const AppContent: React.FC = () => {
         )}
       </div>
 
-      {/* UI 交互层：始终保持默认指针 */}
-      <div className="relative z-10 w-full h-full pointer-events-none">
-        {errorMessage && (
-          <div className="pointer-events-auto cursor-default fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-red-900/90 text-white px-6 py-4 rounded-xl border border-red-500/50 animate-fade-in-up flex flex-col sm:flex-row items-center gap-4 shadow-2xl max-w-[90vw]">
-              <div className="flex-1 text-xs font-medium">{errorMessage}</div>
-              <div className="flex items-center gap-3">
-                 <button onClick={startDemoMode} className="whitespace-nowrap px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-colors">{t?.errors?.tryDemo || "Demo Mode"}</button>
-                 <button onClick={() => setErrorMessage(null)} className="p-2 hover:bg-white/10 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
-              </div>
-          </div>
-        )}
-        {isSimulating && (
-          <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[140] bg-blue-600/20 backdrop-blur-md border border-blue-500/30 px-4 py-1.5 rounded-full flex items-center gap-2 pointer-events-none">
-              <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"/>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-200">Demo Mode</span>
-          </div>
-        )}
-        
-        {/* Overlays Wrapper: Overlays are pointer-events-none to let interactions fall through to controls */}
-        <div className="absolute inset-0 z-10 pointer-events-none">
-            <CustomTextOverlay settings={settings} analyser={analyser} />
-            <LyricsOverlay settings={settings} song={currentSong} showLyrics={showLyrics} lyricsStyle={lyricsStyle} analyser={analyser} />
-        </div>
+      {/* 覆盖层：歌词和自定义文字，不拦截鼠标事件 */}
+      <div className="absolute inset-0 z-10 pointer-events-none">
+          <CustomTextOverlay settings={settings} analyser={analyser} />
+          <LyricsOverlay settings={settings} song={currentSong} showLyrics={showLyrics} lyricsStyle={lyricsStyle} analyser={analyser} />
+      </div>
 
-        {/* Interactive UI Wrapper: Ensure pointer shows up here */}
-        <div className="absolute inset-0 z-20 pointer-events-none">
-            <div className="pointer-events-auto cursor-default">
-              <SongOverlay song={currentSong} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
-              <Controls />
-            </div>
-        </div>
+      {/* 交互 UI 层：控制面板和歌曲信息，强制显示指针 */}
+      <div className="absolute inset-0 z-20 pointer-events-none">
+          <div className="pointer-events-auto cursor-default h-full w-full relative">
+            {errorMessage && (
+              <div className="fixed top-24 left-1/2 -translate-x-1/2 z-[150] bg-red-900/90 text-white px-6 py-4 rounded-xl border border-red-500/50 animate-fade-in-up flex flex-col sm:flex-row items-center gap-4 shadow-2xl max-w-[90vw]">
+                  <div className="flex-1 text-xs font-medium">{errorMessage}</div>
+                  <div className="flex items-center gap-3">
+                    <button onClick={startDemoMode} className="whitespace-nowrap px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg text-xs font-bold transition-colors">{t?.errors?.tryDemo || "Demo Mode"}</button>
+                    <button onClick={() => setErrorMessage(null)} className="p-2 hover:bg-white/10 rounded-full"><svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg></button>
+                  </div>
+              </div>
+            )}
+            {isSimulating && (
+              <div className="fixed top-8 left-1/2 -translate-x-1/2 z-[140] bg-blue-600/20 backdrop-blur-md border border-blue-500/30 px-4 py-1.5 rounded-full flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse"/>
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-blue-200">Demo Mode</span>
+              </div>
+            )}
+            
+            <SongOverlay song={currentSong} showLyrics={showLyrics} language={language} onRetry={() => mediaStream && performIdentification(mediaStream)} onClose={() => setCurrentSong(null)} analyser={analyser} sensitivity={settings.sensitivity} />
+            <Controls />
+          </div>
       </div>
 
       <div className="fixed bottom-4 right-4 z-50 pointer-events-none text-white/20 text-[10px] font-mono uppercase tracking-widest">

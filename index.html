@@ -3,11 +3,14 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    
-    <!-- Primary Meta Tags -->
     <title>Aura Vision | AI-Powered 3D Music Visualizer</title>
     <meta name="description" content="Transform live audio into stunning, real-time generative art powered by Gemini AI.">
     <meta name="theme-color" content="#000000">
+
+    <!-- Browser Shim for process.env to prevent runtime crashes -->
+    <script>
+      window.process = { env: { NODE_ENV: 'production', API_KEY: '' } };
+    </script>
 
     <!-- Tailwind Play CDN for Instant Preview -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -34,7 +37,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
     
     <style>
-      /* Fallback critical styles in case external CSS fails to load */
       body {
         margin: 0;
         background: #000;
@@ -46,20 +48,17 @@
   <script type="importmap">
 {
   "imports": {
-    "react": "https://esm.sh/react@18.3.1",
-    "react-dom": "https://esm.sh/react-dom@18.3.1",
-    "react-dom/": "https://esm.sh/react-dom@18.3.1/",
-    "react/": "https://esm.sh/react@18.3.1/",
-    "three": "https://esm.sh/three@0.151.3",
-    "three/": "https://esm.sh/three@0.151.3/",
-    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.17.10?external=three",
-    "@react-three/drei": "https://esm.sh/@react-three/drei@9.121.4?external=three",
-    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@2.16.0?external=three,postprocessing",
-    "postprocessing": "https://esm.sh/postprocessing@6.35.0?external=three",
-    "@google/genai": "https://esm.sh/@google/genai@1.36.0",
-    "uuid": "https://esm.sh/uuid@9.0.1",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "react": "https://esm.sh/react@^19.2.3",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@^9.5.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.36.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "three": "https://esm.sh/three@^0.182.0",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@^10.7.7",
+    "react-dom": "https://esm.sh/react-dom@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "@react-three/postprocessing": "https://esm.sh/@react-three/postprocessing@^3.0.4"
   }
 }
 </script>

@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const zh = {
@@ -43,7 +44,12 @@ export const zh = {
     device: '选择当前活动的音频输入硬件。',
     monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。',
     hideCursor: '自动隐藏鼠标指针以获得纯净视觉。',
-    wakeLock: '启用后，只要可视化处于活动状态，屏幕将保持常亮。'
+    wakeLock: '启用后，只要可视化处于活动状态，屏幕将保持常亮。',
+    showFps: '在屏幕左上角显示实时的帧率（FPS）计数器。',
+    showTooltips: '鼠标悬停在控件上时显示帮助提示。',
+    doubleClickFullscreen: '允许通过双击屏幕任意位置切换全屏模式。',
+    autoHideUi: '在无操作时自动隐藏底部控制面板。',
+    mirrorDisplay: '水平翻转画面（适用于背投或摄像头模式）。'
   },
   visualizerMode: '可视化模式',
   styleTheme: '视觉风格',
@@ -115,6 +121,19 @@ export const zh = {
     automation: '自动化',
     display: '显示'
   },
+  audioPanel: {
+    info: '调节“灵敏度”以改变视觉对声音的反应强度，“平滑度”控制动画的流畅性。更高的 FFT 分辨率能提供更精细的细节，但会增加 CPU 负载。'
+  },
+  systemPanel: {
+    interface: '界面交互',
+    behavior: '系统行为',
+    maintenance: '维护与信息'
+  },
+  showFps: '显示帧率',
+  showTooltips: '显示提示',
+  doubleClickFullscreen: '双击全屏',
+  autoHideUi: '自动隐藏 UI',
+  mirrorDisplay: '镜像翻转',
   presets: {
     title: '智能预设',
     hint: '一键应用由专家精心调校的视觉参数组合。',

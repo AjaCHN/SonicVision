@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useCallback, useRef, createContext, useContext, useMemo } from 'react';
 import { VisualizerMode, LyricsStyle, Language, VisualizerSettings, Region, AudioDevice, SongInfo, SmartPreset } from '../core/types';
 import { useAudio } from '../core/hooks/useAudio';
@@ -40,6 +41,7 @@ interface AppContextType {
   resetAiSettings: () => void;
   applyPreset: (preset: SmartPreset) => void;
   handleOnboardingComplete: () => void;
+  toggleFullscreen: () => void;
   t: any;
 }
 
@@ -59,8 +61,10 @@ const DEFAULT_SETTINGS: VisualizerSettings = {
   cycleColors: false, colorInterval: 10, hideCursor: false, smoothing: 0.8, fftSize: 512, 
   quality: 'high', monitor: false, wakeLock: false, customText: 'AURA', showCustomText: false,
   textPulse: true, customTextRotation: 0, customTextSize: 12, customTextFont: 'Inter, sans-serif',
-  customTextOpacity: 0.35, customTextColor: '#ffffff', customTextPosition: 'mc', lyricsPosition: 'mc',
-  recognitionProvider: 'GEMINI', lyricsFont: 'Inter, sans-serif', lyricsFontSize: 4, aiApiKey: ''
+  customTextOpacity: 0.35, customTextColor: '#ffffff', customTextPosition: 'mc', customTextCycleColor: false, customTextCycleInterval: 5,
+  lyricsPosition: 'mc', recognitionProvider: 'GEMINI', lyricsFont: 'Inter, sans-serif', lyricsFontSize: 4, aiApiKey: '',
+  // System Defaults
+  showFps: false, showTooltips: true, doubleClickFullscreen: true, autoHideUi: true, mirrorDisplay: false
 };
 
 // --- Provider Component ---
@@ -107,7 +111,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     setStorage('deviceId', selectedDeviceId);
   }, [settings, selectedDeviceId, setStorage]);
 
-  const resetTextSettings = useCallback(() => setSettings(p => ({ ...p, customText: DEFAULT_SETTINGS.customText, showCustomText: DEFAULT_SETTINGS.showCustomText, textPulse: DEFAULT_SETTINGS.textPulse, customTextRotation: DEFAULT_SETTINGS.customTextRotation, customTextSize: DEFAULT_SETTINGS.customTextSize, customTextFont: DEFAULT_SETTINGS.customTextFont, customTextOpacity: DEFAULT_SETTINGS.customTextOpacity, customTextColor: DEFAULT_SETTINGS.customTextColor, customTextPosition: DEFAULT_SETTINGS.customTextPosition })), []);
+  const resetTextSettings = useCallback(() => setSettings(p => ({ ...p, customText: DEFAULT_SETTINGS.customText, showCustomText: DEFAULT_SETTINGS.showCustomText, textPulse: DEFAULT_SETTINGS.textPulse, customTextRotation: DEFAULT_SETTINGS.customTextRotation, customTextSize: DEFAULT_SETTINGS.customTextSize, customTextFont: DEFAULT_SETTINGS.customTextFont, customTextOpacity: DEFAULT_SETTINGS.customTextOpacity, customTextColor: DEFAULT_SETTINGS.customTextColor, customTextPosition: DEFAULT_SETTINGS.customTextPosition, customTextCycleColor: DEFAULT_SETTINGS.customTextCycleColor, customTextCycleInterval: DEFAULT_SETTINGS.customTextCycleInterval })), []);
   const resetAudioSettings = useCallback(() => setSettings(p => ({ ...p, sensitivity: DEFAULT_SETTINGS.sensitivity, smoothing: DEFAULT_SETTINGS.smoothing, fftSize: DEFAULT_SETTINGS.fftSize })), []);
 
   useEffect(() => {
@@ -117,6 +121,24 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     }
   }, [settings.smoothing, settings.fftSize, analyser]);
 
+  const toggleFullscreen = useCallback(() => {
+    const doc = window.document as any;
+    const elem = doc.documentElement as any;
+    const isFullscreen = doc.fullscreenElement || doc.webkitFullscreenElement || doc.mozFullScreenElement || doc.msFullscreenElement;
+
+    if (!isFullscreen) {
+        if (elem.requestFullscreen) elem.requestFullscreen();
+        else if (elem.webkitRequestFullscreen) elem.webkitRequestFullscreen();
+        else if (elem.mozRequestFullScreen) elem.mozRequestFullScreen();
+        else if (elem.msRequestFullscreen) elem.msRequestFullscreen();
+    } else {
+        if (doc.exitFullscreen) doc.exitFullscreen();
+        else if (doc.webkitExitFullscreen) doc.webkitExitFullscreen();
+        else if (doc.mozCancelFullScreen) doc.mozCancelFullScreen();
+        else if (doc.msExitFullscreen) doc.msExitFullscreen();
+    }
+  }, []);
+
   const isThreeMode = useMemo(() => mode === VisualizerMode.SILK || mode === VisualizerMode.LIQUID || mode === VisualizerMode.TERRAIN, [mode]);
 
   const contextValue: AppContextType = {
@@ -125,7 +147,7 @@ export const AppProvider: React.FC<{ children: React.ReactNode }> = ({ children 
     isSimulating, isIdentifying, analyser, mediaStream, audioDevices, currentSong, setCurrentSong, errorMessage, setErrorMessage,
     startMicrophone, toggleMicrophone, startDemoMode, performIdentification, randomizeSettings, resetSettings,
     resetVisualSettings, resetTextSettings, resetAudioSettings, resetAiSettings, applyPreset, t,
-    hasStarted, setHasStarted, isUnsupported, showOnboarding, isThreeMode, handleOnboardingComplete
+    hasStarted, setHasStarted, isUnsupported, showOnboarding, isThreeMode, handleOnboardingComplete, toggleFullscreen
   };
 
   return (

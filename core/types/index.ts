@@ -1,5 +1,13 @@
+
 import * as React from 'react';
-import type { ThreeElements } from '@react-three/fiber';
+import { ThreeElements } from '@react-three/fiber';
+
+// Explicitly extend JSX.IntrinsicElements with ThreeElements to resolve type errors in scenes
+declare global {
+  namespace JSX {
+    interface IntrinsicElements extends ThreeElements {}
+  }
+}
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
@@ -54,6 +62,13 @@ export interface VisualizerSettings {
   quality: 'low' | 'med' | 'high';
   monitor: boolean;
   wakeLock: boolean;
+  // System Settings
+  showFps: boolean;
+  showTooltips: boolean;
+  doubleClickFullscreen: boolean;
+  autoHideUi: boolean;
+  mirrorDisplay: boolean;
+  
   customText: string;
   showCustomText: boolean;
   textPulse: boolean;
@@ -63,6 +78,8 @@ export interface VisualizerSettings {
   customTextOpacity: number;
   customTextColor: string;
   customTextPosition: Position;
+  customTextCycleColor: boolean;
+  customTextCycleInterval: number; // Controls the speed of the rainbow cycle in seconds
   lyricsPosition: Position;
   recognitionProvider: 'GEMINI' | 'MOCK' | 'OPENAI' | 'CLAUDE' | 'GROK' | 'DEEPSEEK' | 'QWEN';
   aiApiKey?: string;
@@ -108,16 +125,4 @@ export interface IVisualizerRenderer {
 export interface AudioDevice {
   deviceId: string;
   label: string;
-}
-
-// Ensure React Three Fiber intrinsic elements are available in both React and global namespaces
-declare global {
-  namespace React {
-    namespace JSX {
-      interface IntrinsicElements extends ThreeElements {}
-    }
-  }
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
 }

@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { SteppedSlider, CustomSelect } from '../ControlWidgets';
 import { useAppContext } from '../../AppContext';
@@ -61,9 +62,9 @@ export const AudioSettingsPanel: React.FC = () => {
       {/* Col 3: Actions & Advanced Info */}
       <div className="p-4 pt-6 h-full flex flex-col">
           <div className="flex-grow">
-             <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+             <div className="p-4 bg-white/5 rounded-2xl">
                 <span className="text-[10px] font-bold text-white/30 uppercase tracking-widest leading-relaxed">
-                   {t?.language === 'zh' ? '高分辨率 FFT 会增加音频解析的精细度，但可能导致旧设备上的 CPU 占用率上升。' : 'High resolution FFT improves spectral detail but increases CPU load on older devices.'}
+                   {t?.audioPanel?.info || "Adjust input sensitivity and smoothing to customize how the visualizer reacts to audio dynamics. Higher FFT sizes provide more spectral detail but consume more CPU."}
                 </span>
              </div>
           </div>

@@ -44,7 +44,12 @@ export const tw = {
     device: '選擇當前活動的音訊輸入硬體。',
     monitor: '透過揚聲器監聽輸入訊號（警告：可能產生回音）。',
     hideCursor: '自動隱藏滑鼠游標以獲得純淨視覺。',
-    wakeLock: '啟用後，只要視覺化處於活動狀態，螢幕將保持常亮。'
+    wakeLock: '啟用後，只要視覺化處於活動狀態，螢幕將保持常亮。',
+    showFps: '在螢幕左上角顯示即時的幀率（FPS）計數器。',
+    showTooltips: '滑鼠懸停在控制項上時顯示幫助提示。',
+    doubleClickFullscreen: '允許透過雙擊螢幕任意位置切換全螢幕模式。',
+    autoHideUi: '在無操作時自動隱藏底部控制面板。',
+    mirrorDisplay: '水平翻轉畫面（適用於背投或攝影機模式）。'
   },
   visualizerMode: '視覺化模式',
   styleTheme: '視覺風格',
@@ -116,6 +121,19 @@ export const tw = {
     automation: '自動化',
     display: '顯示'
   },
+  audioPanel: {
+    info: '調節「靈敏度」以改變視覺對聲音的反應強度，「平滑度」控制動畫的流暢性。更高的 FFT 解析度能提供更精細的細節，但會增加 CPU 負載。'
+  },
+  systemPanel: {
+    interface: '介面互動',
+    behavior: '系統行為',
+    maintenance: '維護與資訊'
+  },
+  showFps: '顯示幀率',
+  showTooltips: '顯示提示',
+  doubleClickFullscreen: '雙擊全螢幕',
+  autoHideUi: '自動隱藏 UI',
+  mirrorDisplay: '鏡像翻轉',
   presets: {
     title: '智慧預設',
     hint: '一鍵應用由專家精心調校的視覺參數組合。',

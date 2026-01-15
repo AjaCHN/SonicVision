@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { VisualizerMode } from '../../core/types';
 import { ActionButton, TooltipArea } from './ControlWidgets';
@@ -23,7 +24,7 @@ const Controls: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabType>('visual');
   const [showHelpModal, setShowHelpModal] = useState(false);
   
-  const { isIdle } = useIdleTimer(isExpanded);
+  const { isIdle } = useIdleTimer(isExpanded, settings.autoHideUi);
   
   const toggleFullscreen = () => {
     const doc = window.document as any;
@@ -85,7 +86,7 @@ const Controls: React.FC = () => {
               {/* Sticky Header */}
               <div className="sticky top-0 z-50 bg-[#050505] pb-4 pt-1 border-b border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
                 <div className="flex bg-white/[0.04] p-1 rounded-xl overflow-x-auto max-w-full scrollbar-hide gap-1 mask-fade-right" role="tablist" aria-label="Settings Categories">
-                  {(['visual', 'text', 'audio', 'ai', 'system'] as TabType[]).map(tab => (
+                  {(['visual', 'text', 'ai', 'audio', 'system'] as TabType[]).map(tab => (
                     <button 
                       key={tab} 
                       onClick={() => setActiveTab(tab)} 
@@ -111,7 +112,7 @@ const Controls: React.FC = () => {
                 id={`panel-${activeTab}`}
                 aria-labelledby={`tab-${activeTab}`}
               >
-                <div className={`grid grid-cols-1 ${activeTab === 'system' ? '' : 'lg:grid-cols-3'} gap-0 items-stretch`}>
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-0 items-stretch">
                   {activeTab === 'visual' && <VisualSettingsPanel />}
                   {activeTab === 'text' && <CustomTextSettingsPanel />}
                   {activeTab === 'audio' && <AudioSettingsPanel />}

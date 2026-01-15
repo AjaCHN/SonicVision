@@ -115,6 +115,19 @@ export const ja = {
     automation: '自動化',
     display: '表示'
   },
+  audioPanel: {
+    info: '感度とスムージングを調整して、ビジュアライザーのオーディオダイナミクスへの反応をカスタマイズします。FFTサイズが大きいほどスペクトルの詳細は向上しますが、CPU消費量が増加します。'
+  },
+  systemPanel: {
+    interface: 'インターフェース',
+    behavior: '動作',
+    maintenance: 'メンテナンス'
+  },
+  showFps: 'FPSを表示',
+  showTooltips: 'ツールチップを表示',
+  doubleClickFullscreen: 'ダブルクリックで全画面',
+  autoHideUi: 'UI自動非表示',
+  mirrorDisplay: '表示を左右反転',
   presets: {
     title: 'スマートプリセット',
     hint: '専門家が厳選した美的組み合わせをワンクリックで適用します。',

@@ -1,84 +1,115 @@
+
 import { IVisualizerRenderer, VisualizerSettings } from '../../types/index';
 import { getAverage } from '../audioUtils';
 
 export class ParticlesRenderer implements IVisualizerRenderer {
-  private particles: Array<{ x: number; y: number; z: number; px: number; py: number; size: number; vx: number; vy: number; }> = [];
+  private particles: Array<{ 
+    angle: number; 
+    radius: number; 
+    z: number; 
+    speedOffset: number; 
+    prevX: number; 
+    prevY: number; 
+    colorIdx: number; 
+    size: number;
+  }> = [];
+
   init() { this.particles = []; }
 
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
-    const time = rotation * 0.5;
     
-    // Elegant Drift: The vanishing point now drifts slowly in a Lissajous curve pattern.
-    const centerX = w / 2 + Math.sin(time * 0.3) * (w * 0.2);
-    const centerY = h / 2 + Math.cos(time * 0.2) * (h * 0.2);
-    
+    const centerX = w / 2;
+    const centerY = h / 2;
     const bass = getAverage(data, 0, 10) / 255;
-    const highs = getAverage(data, 100, 200) / 255;
-    const maxParticles = settings.quality === 'high' ? 150 : settings.quality === 'med' ? 80 : 40;
-
-    if (this.particles.length === 0) {
-        for (let i = 0; i < maxParticles; i++) this.particles.push(this.createParticle(w, h, Math.random() * w, centerX, centerY));
-    } else if (this.particles.length < maxParticles) {
-        this.particles.push(this.createParticle(w, h, w, centerX, centerY));
-    } else if (this.particles.length > maxParticles) {
-        this.particles = this.particles.slice(0, maxParticles);
-    }
-
-    // Speed is now more reactive to high frequencies
-    const moveSpeed = (1 + (bass * 10) + (highs * 40)) * settings.speed * settings.sensitivity;
+    const treble = getAverage(data, 100, 200) / 255;
     
-    ctx.lineCap = 'round';
-    for (let i = 0; i < this.particles.length; i++) {
-        const p = this.particles[i];
-        p.z -= moveSpeed;
-        
-        // Curving Trajectories: Add a slight perpendicular velocity
-        p.x += p.vx * settings.speed;
-        p.y += p.vy * settings.speed;
+    // Increased particle count for better density
+    const maxParticles = settings.quality === 'high' ? 250 : settings.quality === 'med' ? 150 : 80;
 
-        if (p.z <= 1 || p.x > w || p.y > h) {
-            this.particles[i] = this.createParticle(w, h, w, centerX, centerY);
-            continue; 
+    if (this.particles.length !== maxParticles) {
+        this.particles = [];
+        for (let i = 0; i < maxParticles; i++) {
+            this.particles.push(this.createParticle(w, h, Math.random() * 1000, colors.length));
         }
-
-        const k = 128.0 / p.z;
-        const new_px = (p.x * k) + centerX;
-        const new_py = (p.y * k) + centerY;
-
-        if (new_px > 0 && new_px < w && new_py > 0 && new_py < h) {
-            const size = (1 + p.size) * k * (1 + bass * 1.5);
-            // Star-like Appearance: Brighter head, fainter tail
-            const g = ctx.createLinearGradient(p.px, p.py, new_px, new_py);
-            const color = colors[i % colors.length];
-            g.addColorStop(0, `${color}00`);
-            g.addColorStop(0.7, `${color}ff`);
-            
-            ctx.strokeStyle = g;
-            ctx.lineWidth = size;
-            ctx.beginPath(); 
-            ctx.moveTo(p.px, p.py); 
-            ctx.lineTo(new_px, new_py); 
-            ctx.stroke();
-        }
-        p.px = new_px; 
-        p.py = new_py;
     }
+
+    // Physics
+    const baseSpeed = settings.speed * 20;
+    // Non-linear reactivity: Bass punches speed, Treble adds jitter/energy
+    const speed = baseSpeed * (1 + bass * 3 + treble * 1); 
+    const rotSpeed = 0.001 * settings.speed * (1 + bass);
+
+    ctx.lineCap = 'round';
+
+    for (const p of this.particles) {
+        p.z -= speed * p.speedOffset;
+        p.angle += rotSpeed * p.speedOffset; // Spiral effect
+
+        if (p.z <= 10) {
+            // Respawn at back
+            Object.assign(p, this.createParticle(w, h, 1000 + Math.random() * 200, colors.length));
+            continue;
+        }
+
+        // Perspective Projection
+        const fov = 300;
+        const scale = fov / p.z;
+        const x = centerX + Math.cos(p.angle) * p.radius * scale;
+        const y = centerY + Math.sin(p.angle) * p.radius * scale;
+
+        // Draw coherent trail
+        // Ensure we have a valid previous position that isn't the respawn flag
+        if (p.prevX !== -9999) {
+            const dx = x - p.prevX;
+            const dy = y - p.prevY;
+            const dist = Math.sqrt(dx*dx + dy*dy);
+
+            // Avoid drawing cross-screen artifacts during reset or huge jumps
+            if (dist < w * 0.4) {
+                const color = colors[p.colorIdx % colors.length];
+                // Dynamic size based on proximity (scale) and bass
+                const size = p.size * scale * (1 + bass * 1.5);
+                
+                // Opacity logic: Fade in from distance, solid close up.
+                // We rely on the `useRenderLoop` background clearing to create the trailing tail.
+                // Drawing a solid segment from prev to current ensures continuity.
+                const alpha = Math.min(1, scale * 1.2); 
+
+                ctx.lineWidth = Math.max(0.5, size);
+                ctx.strokeStyle = color;
+                ctx.globalAlpha = alpha;
+                
+                ctx.beginPath();
+                ctx.moveTo(p.prevX, p.prevY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        }
+
+        p.prevX = x;
+        p.prevY = y;
+    }
+    // Reset global alpha
+    ctx.globalAlpha = 1.0;
   }
 
-  private createParticle(w: number, h: number, z: number, px: number, py: number) {
+  private createParticle(w: number, h: number, z: number, colorCount: number) {
+      // Spawn in a tunnel distribution
       const angle = Math.random() * Math.PI * 2;
-      const radius = Math.random() * w * 0.1;
+      // Radius in world units
+      const spread = Math.max(w, h);
+      const radius = Math.random() * spread * 1.5 + spread * 0.1; 
+
       return { 
-          x: Math.cos(angle) * radius, 
-          y: Math.sin(angle) * radius, 
-          z: z, 
-          px: px,
-          py: py,
-          size: Math.random() * 1.5 + 0.5,
-          // Add sideways velocity for curved paths
-          vx: (Math.random() - 0.5) * 0.5,
-          vy: (Math.random() - 0.5) * 0.5,
+          angle,
+          radius, 
+          z, 
+          speedOffset: 0.5 + Math.random(), // Parallax speed variance
+          prevX: -9999, // Flag for "new particle, do not draw line to here"
+          prevY: -9999,
+          size: 0.5 + Math.random() * 1.5,
+          colorIdx: Math.floor(Math.random() * colorCount)
       };
   }
 }

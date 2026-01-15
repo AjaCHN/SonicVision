@@ -115,6 +115,19 @@ export const ko = {
     automation: '자동화',
     display: '디스플레이'
   },
+  audioPanel: {
+    info: '입력 감도와 부드러움을 조절하여 비주얼라이저가 오디오 다이내믹스에 반응하는 방식을 사용자 정의하세요. FFT 크기가 클수록 스펙트럼 디테일이 정밀해지지만 CPU 소모가 늘어납니다.'
+  },
+  systemPanel: {
+    interface: '인터페이스',
+    behavior: '동작',
+    maintenance: '유지 관리'
+  },
+  showFps: 'FPS 표시',
+  showTooltips: '도구 설명 표시',
+  doubleClickFullscreen: '더블 클릭 전체 화면',
+  autoHideUi: 'UI 자동 숨김',
+  mirrorDisplay: '디스플레이 미러링',
   presets: {
     title: '스마트 프리셋',
     hint: '전문가가 선별한 미적 조합을 원클릭으로 적용합니다.',
