@@ -1,3 +1,4 @@
+
 # OpenSpec: 渲染规范
 
 ## 1. 2D 策略模式渲染器
@@ -39,4 +40,4 @@
   3. 确保所有渲染逻辑引用合法的颜色索引。
 
 ---
-*Aura Vision Rendering - Version 0.5.4*
+*Aura Vision Rendering - Version 0.6.6*

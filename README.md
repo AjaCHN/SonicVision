@@ -1,6 +1,7 @@
+
 # Aura Vision 🎵👁️
 
-### AI-Powered 3D Music Visualizer & Identifier (v0.5.5)
+### AI-Powered 3D Music Visualizer & Identifier (v0.6.6)
 
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/)
 
@@ -20,12 +21,12 @@
 
 ---
 
-### ✨ What's New in v0.5.5: UI Polish & Layout Tuning
+### ✨ What's New in v0.6.6: Interface & Layout Polish
 
-*   **⚡ Integrated Toggles:** "Show Text" toggle is now merged into the header for quicker access.
-*   **📊 Optimized Audio Panel:** FFT Resolution and processing parameters are grouped together for better workflow.
-*   **📐 UI Symmetry:** Action buttons across all panels are now bottom-aligned for visual consistency.
-*   **🌏 Multi-region Sync:** Final polish on i18n strings across all 8 supported languages.
+*   **🔀 Optimized Navigation:** Reordered tabs to `Visual > Text > AI > Audio` for a more logical user flow.
+*   **🔠 Unified Typography:** Standardized font sizes across all control panels (12px) for a cleaner look.
+*   **📐 Enhanced Text Panel:** Redesigned "Custom Text" panel with a 3-column layout and new **Color Cycle Speed** control.
+*   **🎨 UI Alignment:** Improved header alignment in the System settings panel.
 
 ---
 

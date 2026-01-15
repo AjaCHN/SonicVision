@@ -1,3 +1,4 @@
+
 # Aura Vision - OpenSpec 规范主文档
 
 本项目严格遵循 **OpenSpec** 标准进行架构设计与文档编写。Aura Vision 是一项融合了高性能实时频谱分析与 Google Gemini 3 系列生成式 AI 的沉浸式视听交互实验。
@@ -15,11 +16,11 @@
 4.  **[04 AI 智能与语义规范](./04_ai_integration_spec.md)**
     *   Gemini 3 模型配置、搜索增强 (Search Grounding) 与结构化输出 Schema。
 5.  **[05 UI/UX 与交互规范](./05_interface_spec.md)**
-    *   状态转换逻辑、闲置隐藏策略（含平板触控深度支持）、快捷键映射表。
+    *   状态转换逻辑、面板布局系统、闲置隐藏策略、快捷键映射表。
 6.  **[06 持久化与国际化规范](./06_storage_and_i18n_spec.md)**
     *   LocalStorage Schema、多语言字典结构与区域偏好。
 7.  **[07 部署与环境规范](./07_deployment_guide.md)**
     *   API 配置、构建流程、多平台托管与生产安全。
 
 ---
-*Aura Vision Project Specification - Version 0.5.9*
+*Aura Vision Project Specification - Version 0.6.6*
