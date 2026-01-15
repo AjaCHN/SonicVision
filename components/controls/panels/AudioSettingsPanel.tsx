@@ -1,5 +1,5 @@
 import React from 'react';
-import { SteppedSlider } from '../ControlWidgets';
+import { SteppedSlider, CustomSelect } from '../ControlWidgets';
 import { useAppContext } from '../../AppContext';
 
 export const AudioSettingsPanel: React.FC = () => {
@@ -16,22 +16,21 @@ export const AudioSettingsPanel: React.FC = () => {
     { value: 4096, label: '4096' },
   ];
 
+  const deviceOptions = [
+    { value: '', label: t?.defaultMic || "Default Microphone" },
+    ...audioDevices.map(d => ({ value: d.deviceId, label: d.label }))
+  ];
+
   return (
     <>
       <div className="p-4 pt-6 h-full flex flex-col space-y-4 border-b lg:border-b-0 lg:border-r border-white/5">
-         <div className="space-y-1.5 relative transition-all duration-200 z-10">
-            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ml-1">{t?.audioInput || "Input Device"}</span>
-            <select
-                value={selectedDeviceId}
-                onChange={(e) => onDeviceChange(e.target.value)}
-                className="w-full bg-white/[0.04] border border-transparent hover:bg-white/[0.08] rounded-xl px-3 py-3 text-xs text-white/90 font-bold tracking-tight transition-all duration-300 appearance-none focus:outline-none focus:border-blue-500/50"
-            >
-                <option value="">{t?.defaultMic || "Default Microphone"}</option>
-                {audioDevices.map(d => (
-                    <option key={d.deviceId} value={d.deviceId}>{d.label}</option>
-                ))}
-            </select>
-        </div>
+         <CustomSelect 
+            label={t?.audioInput || "Input Device"}
+            value={selectedDeviceId}
+            options={deviceOptions}
+            onChange={onDeviceChange}
+            hintText={hints?.device}
+         />
         <button onClick={() => toggleMicrophone(selectedDeviceId)} className={`w-full py-4 rounded-xl font-bold text-xs uppercase tracking-[0.2em] transition-all duration-300 ${isListening ? 'bg-red-500/15 text-red-400 border border-red-500/30' : 'bg-blue-600 text-white hover:bg-blue-500'}`}>
           {isListening ? (t?.stopMic || "Stop") : (t?.startMic || "Start")}
         </button>

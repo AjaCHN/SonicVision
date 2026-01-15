@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { createPortal } from 'react-dom';
 import { Position } from '../../core/types';
 
@@ -10,7 +10,7 @@ interface TooltipProps {
   anchorRef: React.RefObject<HTMLElement>;
 }
 
-export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
+const FloatingTooltipInternal = ({ text, visible, anchorRef }: TooltipProps) => {
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
   const [isAutoHidden, setIsAutoHidden] = useState(false);
 
@@ -68,7 +68,9 @@ export const FloatingTooltip = ({ text, visible, anchorRef }: TooltipProps) => {
   );
 };
 
-export const TooltipArea = ({ children, text }: { children?: React.ReactNode, text: string | undefined | null }) => {
+export const FloatingTooltip = memo(FloatingTooltipInternal);
+
+export const TooltipArea = memo(({ children, text }: { children?: React.ReactNode, text: string | undefined | null }) => {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -78,11 +80,11 @@ export const TooltipArea = ({ children, text }: { children?: React.ReactNode, te
       {children}
     </div>
   );
-};
+});
 
 // --- Form Elements ---
 
-export const PositionSelector = ({ label, value, onChange, options, activeColor = 'blue' }: { 
+export const PositionSelector = memo(({ label, value, onChange, options, activeColor = 'blue' }: { 
   label: string; value: Position; onChange: (value: Position) => void; 
   options: { value: string; label: string }[]; activeColor?: 'blue' | 'green';
 }) => {
@@ -100,9 +102,9 @@ export const PositionSelector = ({ label, value, onChange, options, activeColor 
       </div>
     </div>
   );
-};
+});
 
-export const CustomSelect = ({ label, value, options, onChange, hintText }: { label: string, value: string, options: {value: string, label: string}[], onChange: (val: any) => void, hintText?: string }) => {
+export const CustomSelect = memo(({ label, value, options, onChange, hintText }: { label: string, value: string, options: {value: string, label: string}[], onChange: (val: any) => void, hintText?: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -138,9 +140,9 @@ export const CustomSelect = ({ label, value, options, onChange, hintText }: { la
       )}
     </div>
   );
-};
+});
 
-export const SettingsToggle = ({ label, statusText, value, onChange, hintText, children, activeColor = 'blue' }: { label: string, statusText?: string, value: boolean, onChange: () => void, hintText?: string, children?: React.ReactNode, activeColor?: 'blue' | 'red' | 'green' }) => {
+export const SettingsToggle = memo(({ label, statusText, value, onChange, hintText, children, activeColor = 'blue' }: { label: string, statusText?: string, value: boolean, onChange: () => void, hintText?: string, children?: React.ReactNode, activeColor?: 'blue' | 'red' | 'green' }) => {
   const [isHovered, setIsHovered] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   
@@ -163,9 +165,9 @@ export const SettingsToggle = ({ label, statusText, value, onChange, hintText, c
       {value && children && (<div className="animate-fade-in-up pt-3 border-t border-white/5">{children}</div>)}
     </div>
   );
-};
+});
 
-export const SteppedSlider = ({ label, options, value, onChange, hintText, min, max, step, unit="" }: {
+export const SteppedSlider = memo(({ label, options, value, onChange, hintText, min, max, step, unit="" }: {
     label: string; value: number; hintText?: string; unit?: string;
     options?: { value: number; label: string }[];
     min?: number; max?: number; step?: number;
@@ -217,13 +219,13 @@ export const SteppedSlider = ({ label, options, value, onChange, hintText, min, 
         </div>
       </div>
     );
-};
+});
 
 export const Slider = (props: any) => <SteppedSlider {...props} />;
 
 // --- Buttons ---
 
-export const ActionButton = ({ onClick, icon, hintText, className = "" }: { onClick: () => void, icon: React.ReactNode, hintText: string | undefined | null, className?: string }) => {
+export const ActionButton = memo(({ onClick, icon, hintText, className = "" }: { onClick: () => void, icon: React.ReactNode, hintText: string | undefined | null, className?: string }) => {
     const [isHovered, setIsHovered] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
     const ariaLabel = hintText?.replace(/\[.*\]$/, '').trim() || "Action Button";
@@ -235,9 +237,9 @@ export const ActionButton = ({ onClick, icon, hintText, className = "" }: { onCl
         </button>
       </div>
     );
-};
+});
 
-export const ControlPanelButton = ({ onClick, label, active, hintText }: { onClick: () => void, label: string, active: boolean, hintText?: string }) => {
+export const ControlPanelButton = memo(({ onClick, label, active, hintText }: { onClick: () => void, label: string, active: boolean, hintText?: string }) => {
     const [isHovered, setIsHovered] = useState(false);
     const buttonRef = useRef<HTMLDivElement>(null);
     return (
@@ -249,4 +251,4 @@ export const ControlPanelButton = ({ onClick, label, active, hintText }: { onCli
         </button>
       </div>
     );
-};
+});

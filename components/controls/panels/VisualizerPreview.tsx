@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { VisualizerMode } from '../../../core/types';
 
 interface VisualizerPreviewProps {
@@ -26,7 +26,7 @@ const styles: Record<VisualizerMode, React.CSSProperties> = {
 };
 
 
-export const VisualizerPreview: React.FC<VisualizerPreviewProps> = ({ mode, name, isActive, onClick }) => {
+export const VisualizerPreview: React.FC<VisualizerPreviewProps> = memo(({ mode, name, isActive, onClick }) => {
   return (
     <button
       onClick={onClick}
@@ -42,4 +42,4 @@ export const VisualizerPreview: React.FC<VisualizerPreviewProps> = ({ mode, name
       </div>
     </button>
   );
-};
+});
