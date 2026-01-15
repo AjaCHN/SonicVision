@@ -19,8 +19,13 @@ export class ParticlesRenderer implements IVisualizerRenderer {
   draw(ctx: CanvasRenderingContext2D, data: Uint8Array, w: number, h: number, colors: string[], settings: VisualizerSettings, rotation: number) {
     if (colors.length === 0) return;
     
-    const centerX = w / 2;
-    const centerY = h / 2;
+    // Dynamic Center Point (Drifting Origin)
+    // Instead of fixed center, the origin moves in a Lissajous-like pattern
+    const driftX = Math.sin(rotation * 0.5) * (w * 0.15);
+    const driftY = Math.cos(rotation * 0.3) * (h * 0.15);
+    const centerX = w / 2 + driftX;
+    const centerY = h / 2 + driftY;
+
     const bass = getAverage(data, 0, 10) / 255;
     const treble = getAverage(data, 100, 200) / 255;
     
@@ -35,10 +40,11 @@ export class ParticlesRenderer implements IVisualizerRenderer {
     }
 
     // Physics
-    const baseSpeed = settings.speed * 20;
-    // Non-linear reactivity: Bass punches speed, Treble adds jitter/energy
-    const speed = baseSpeed * (1 + bass * 3 + treble * 1); 
-    const rotSpeed = 0.001 * settings.speed * (1 + bass);
+    // Reduced base speed from 20 to 10 to make maximum speed more manageable
+    const baseSpeed = settings.speed * 10;
+    // Non-linear reactivity: Bass punches speed HARD, Treble adds jitter/energy
+    const speed = baseSpeed * (1 + bass * 6 + treble * 2); 
+    const rotSpeed = 0.001 * settings.speed * (1 + bass * 2);
 
     ctx.lineCap = 'round';
 
@@ -49,10 +55,13 @@ export class ParticlesRenderer implements IVisualizerRenderer {
         if (p.z <= 10) {
             // Respawn at back
             Object.assign(p, this.createParticle(w, h, 1000 + Math.random() * 200, colors.length));
+            // Reset prev coords to avoid cross-screen lines
+            p.prevX = -9999;
+            p.prevY = -9999;
             continue;
         }
 
-        // Perspective Projection
+        // Perspective Projection relative to the dynamic center
         const fov = 300;
         const scale = fov / p.z;
         const x = centerX + Math.cos(p.angle) * p.radius * scale;
@@ -66,15 +75,16 @@ export class ParticlesRenderer implements IVisualizerRenderer {
             const dist = Math.sqrt(dx*dx + dy*dy);
 
             // Avoid drawing cross-screen artifacts during reset or huge jumps
-            if (dist < w * 0.4) {
+            // Increased tolerance slightly as moving center creates larger relative jumps
+            if (dist < w * 0.5) {
                 const color = colors[p.colorIdx % colors.length];
                 // Dynamic size based on proximity (scale) and bass
-                const size = p.size * scale * (1 + bass * 1.5);
+                const size = p.size * scale * (1 + bass * 2.0);
                 
                 // Opacity logic: Fade in from distance, solid close up.
                 // We rely on the `useRenderLoop` background clearing to create the trailing tail.
                 // Drawing a solid segment from prev to current ensures continuity.
-                const alpha = Math.min(1, scale * 1.2); 
+                const alpha = Math.min(1, scale * 1.5); 
 
                 ctx.lineWidth = Math.max(0.5, size);
                 ctx.strokeStyle = color;
@@ -196,15 +206,17 @@ export class NebulaRenderer implements IVisualizerRenderer {
         
         // Cosmic Wind & Vortex: Particles are drawn towards a moving center point.
         const angleToCenter = Math.atan2(vortexCenterY - p.y, vortexCenterX - p.x);
-        const vortexStrength = 0.02 * p.depth;
+        
+        // Vortex suction increases heavily with bass
+        const vortexStrength = 0.02 * p.depth * (1 + bass * 3);
         const windX = Math.cos(angleToCenter) * vortexStrength;
         const windY = Math.sin(angleToCenter) * vortexStrength;
 
         p.vx = p.vx * 0.96 + windX * settings.speed;
         p.vy = p.vy * 0.96 + windY * settings.speed; 
         
-        p.x += p.vx * (1 + bass * 2); 
-        p.y += p.vy * (1 + bass * 2);
+        p.x += p.vx * (1 + bass * 3); 
+        p.y += p.vy * (1 + bass * 3);
         p.rotation += p.rotationSpeed * settings.speed;
 
         if (p.life > p.maxLife || p.x < -p.size || p.x > w + p.size || p.y < -p.size || p.y > h + p.size) { 
@@ -212,15 +224,15 @@ export class NebulaRenderer implements IVisualizerRenderer {
         }
 
         const fadeInOut = Math.sin((p.life / p.maxLife) * Math.PI); 
-        // Deeper particles are fainter
-        const dynamicAlpha = (0.1 + bass * 0.5) * fadeInOut * settings.sensitivity * p.depth;
+        // Deeper particles are fainter, flash on bass
+        const dynamicAlpha = (0.1 + bass * 0.8) * fadeInOut * settings.sensitivity * p.depth;
         
         if (dynamicAlpha < 0.005) continue;
 
         const sprite = this.getSprite(colors[p.colorIndex % colors.length] || '#fff'); 
-        const finalSize = p.size * (1 + bass * 0.5 * settings.sensitivity);
+        const finalSize = p.size * (1 + bass * 0.8 * settings.sensitivity);
         
-        ctx.globalAlpha = Math.min(0.5, dynamicAlpha); 
+        ctx.globalAlpha = Math.min(0.6, dynamicAlpha); 
         ctx.save(); 
         ctx.translate(p.x, p.y); 
         ctx.rotate(p.rotation); 

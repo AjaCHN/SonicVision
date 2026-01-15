@@ -1,3 +1,4 @@
+
 import React, { useRef, useMemo, Suspense } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Environment, Stars } from '@react-three/drei';
@@ -47,6 +48,8 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
     if (materialRef.current) {
         materialRef.current.color = c0;
         materialRef.current.emissive = c1;
+        // Pulse emissive with bass
+        materialRef.current.emissiveIntensity = 0.2 + reactivity * 0.8;
     }
     
     if (light1Ref.current) {
@@ -58,7 +61,7 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
         light2Ref.current.intensity = 10 + reactivity * 20;
     }
     if (rectLightRef.current) {
-        rectLightRef.current.intensity = 2 + vibration * 15;
+        rectLightRef.current.intensity = 2 + vibration * 20; // More reactive highlights
         rectLightRef.current.lookAt(0,0,0);
     }
     
@@ -76,21 +79,26 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
         const oy = originalPositions[i*3+1];
         const oz = originalPositions[i*3+2];
         
+        // Base liquid movement
         const noise1 = Math.sin(ox * 0.5 + time) * Math.cos(oy * 0.4 + time * 0.8) * Math.sin(oz * 0.5 + time * 1.2);
+        
+        // High frequency detail noise - sharpened
         let noise2 = 0;
         if (settings.quality !== 'low') {
             noise2 = Math.sin(ox * 2.5 + time * 1.5) * Math.cos(oy * 2.2 + time * 1.8) * 0.5;
         }
         
-        const d1 = noise1 * (0.3 + reactivity * 0.7);
-        const d2 = noise2 * (0.05 + vibration * 0.2);
+        // Reactivity Boost
+        const d1 = noise1 * (0.3 + reactivity * 1.2); // Increased bass influence
+        const d2 = noise2 * (0.05 + vibration * 0.6); // Increased treble influence (spikes)
+        
         const totalDisplacement = Math.max(0.1, 1.0 + d1 + d2);
         
         positions.setXYZ(i, ox * totalDisplacement, oy * totalDisplacement, oz * totalDisplacement);
     }
     positions.needsUpdate = true;
     meshRef.current.geometry.computeVertexNormals();
-    meshRef.current.rotation.y = time * 0.08;
+    meshRef.current.rotation.y = time * 0.08 + reactivity * 0.1; // Rotate faster on bass
     meshRef.current.rotation.x = time * 0.05;
   });
 

@@ -4,9 +4,29 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Aura Vision | AI-Powered 3D Music Visualizer</title>
-    <meta name="description" content="Transform live audio into stunning, real-time generative art powered by Gemini AI.">
+    
+    <!-- Primary Meta Tags -->
+    <title>Aura Vision | AI Music Visualizer & 3D Audio Reactor</title>
+    <meta name="title" content="Aura Vision | AI Music Visualizer & 3D Audio Reactor">
+    <meta name="description" content="Experience Aura Vision: A next-gen 3D music visualizer powered by Google Gemini AI. Transform microphone input into real-time, audio-reactive WebGL art. Features song recognition, dynamic lyrics, and 12+ immersive modes for VJs and streamers.">
+    <meta name="keywords" content="music visualizer, audio visualizer, AI music recognition, Google Gemini, WebGL, Three.js, React, generative art, real-time audio analysis, VJ tools, browser visualizer, spectrum analyzer, FFT, audio reactive, 3D motion graphics, digital art, Gemini 3.0, lyric visualizer, EDM visuals, streaming background">
+    <meta name="author" content="Aura Vision Team">
+    <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#000000">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://aura.tanox.net/">
+    <meta property="og:title" content="Aura Vision | AI Music Visualizer & 3D Audio Reactor">
+    <meta property="og:description" content="Transform live audio into stunning, real-time generative art powered by Google Gemini AI. Features 3D WebGL scenes and instant song recognition.">
+    <meta property="og:image" content="https://aura.tanox.net/assets/images/banner.jpg">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://aura.tanox.net/">
+    <meta property="twitter:title" content="Aura Vision | AI Music Visualizer & 3D Audio Reactor">
+    <meta property="twitter:description" content="Transform live audio into stunning, real-time generative art powered by Google Gemini AI. Features 3D WebGL scenes and instant song recognition.">
+    <meta property="twitter:image" content="https://aura.tanox.net/assets/images/banner.jpg">
 
     <!-- Browser Shim for process.env to prevent runtime crashes -->
     <script>
@@ -50,9 +70,9 @@
 {
   "imports": {
     "react": "https://esm.sh/react@18.3.1",
-    "react/": "https://esm.sh/react@18.3.1/",
+    "react/jsx-runtime": "https://esm.sh/react@18.3.1/jsx-runtime",
     "react-dom": "https://esm.sh/react-dom@18.3.1?deps=react@18.3.1",
-    "react-dom/": "https://esm.sh/react-dom@18.3.1/?deps=react@18.3.1",
+    "react-dom/client": "https://esm.sh/react-dom@18.3.1/client?deps=react@18.3.1",
     "three": "https://esm.sh/three@0.160.0",
     "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.17.10?external=react,react-dom,three",
     "@react-three/drei": "https://esm.sh/@react-three/drei@9.121.4?external=react,react-dom,three,@react-three/fiber",
@@ -60,7 +80,9 @@
     "@google/genai": "https://esm.sh/@google/genai@1.36.0",
     "uuid": "https://esm.sh/uuid@9.0.1",
     "vite": "https://esm.sh/vite@^7.3.1",
-    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2"
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/"
   }
 }
 </script>

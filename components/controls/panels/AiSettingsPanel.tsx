@@ -1,3 +1,4 @@
+
 import React, { useRef } from 'react';
 import { LyricsStyle, Region, Position } from '../../../core/types';
 import { REGION_NAMES, getPositionOptions, AVAILABLE_FONTS } from '../../../core/constants';
@@ -83,7 +84,6 @@ export const AiSettingsPanel: React.FC = () => {
                      placeholder="sk-..."
                      className="w-full bg-white/[0.04] border border-white/10 rounded-xl px-3 py-2 text-xs font-bold text-white tracking-widest focus:outline-none focus:border-blue-500/50 transition-all placeholder-white/20"
                    />
-                   <p className="text-[9px] text-white/30 ml-1 leading-tight">Key is stored locally in your browser.</p>
                  </div>
                )}
 

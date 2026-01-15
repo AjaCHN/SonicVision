@@ -62,6 +62,7 @@ export const zh = {
   rotateInterval: '切换间隔 (秒)',
   cycleColors: '自动循环配色',
   colorInterval: '切换间隔 (秒)',
+  cycleSpeed: '循环周期 (秒)',
   monitorAudio: '音频监听',
   audioInput: '输入源选择',
   lyrics: 'AI 曲目识别',
@@ -194,13 +195,13 @@ export const zh = {
   modes: {
     [VisualizerMode.PLASMA]: '流体等离子',
     [VisualizerMode.BARS]: '镜像频谱分析',
-    [VisualizerMode.PARTICLES]: '速激星空',
+    [VisualizerMode.PARTICLES]: '星际穿越', // Updated from '速激星空'
     [VisualizerMode.TUNNEL]: '几何时空隧道',
     [VisualizerMode.RINGS]: '霓虹共振环',
     [VisualizerMode.NEBULA]: '深空星云',
     [VisualizerMode.LASERS]: '舞台激光矩阵',
     [VisualizerMode.FLUID_CURVES]: '极光之舞',
-    [VisualizerMode.MACRO_BUBBLES]: '微观液泡',
+    [VisualizerMode.MACRO_BUBBLES]: '微观液泡 (景深)', // Added DoF hint
     [VisualizerMode.SILK]: '流光绸缎 (WebGL)',
     [VisualizerMode.LIQUID]: '液态星球 (WebGL)',
     [VisualizerMode.TERRAIN]: '低多边形山脈 (WebGL)'

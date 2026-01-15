@@ -1,7 +1,7 @@
 
 # Aura Vision 🎵👁️
 
-### AI-Powered 3D Music Visualizer & Identifier (v0.6.7)
+### AI-Powered 3D Music Visualizer & Identifier (v0.6.8)
 
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/)
 
@@ -21,16 +21,14 @@
 
 ---
 
+### ✨ v0.6.8 Patch: Visual Engine Polish
+
+*   **🌌 Starfield (Particles):** Implemented dynamic origin drift (Lissajous movement) and optimized maximum velocity by 50% for a smoother, "interstellar cruise" experience rather than a chaotic warp drive.
+*   **🫧 Macro Bubbles:** Added Depth of Field (DoF) simulation. Bubbles now feature dynamic sharpness, bokeh-style highlights, and rim lighting based on their virtual depth and size.
+
 ### ✨ v0.6.7 Patch: Deployment Fix
 
-*   **🔧 Build Configuration:** Aligned Vite build output directory (`dist` -> `build`) to match project documentation and common deployment platform configurations (Vercel/Netlify). This fixes the 404 errors encountered after deployment.
-
-### ✨ What's New in v0.6.6
-
-*   **🔀 Optimized Navigation:** Reordered tabs to `Visual > Text > AI > Audio` for a more logical user flow.
-*   **🔠 Unified Typography:** Standardized font sizes across all control panels (12px) for a cleaner look.
-*   **📐 Enhanced Text Panel:** Redesigned "Custom Text" panel with a 3-column layout and new **Color Cycle Speed** control.
-*   **🎨 UI Alignment:** Improved header alignment in the System settings panel.
+*   **🔧 Build Configuration:** Aligned Vite build output directory (`dist` -> `build`) to match project documentation and common deployment platform configurations (Vercel/Netlify).
 
 ---
 

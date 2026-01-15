@@ -1,13 +1,5 @@
-
 import * as React from 'react';
 import { ThreeElements } from '@react-three/fiber';
-
-// Explicitly extend JSX.IntrinsicElements with ThreeElements to resolve type errors in scenes
-declare global {
-  namespace JSX {
-    interface IntrinsicElements extends ThreeElements {}
-  }
-}
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr';
 
@@ -125,4 +117,11 @@ export interface IVisualizerRenderer {
 export interface AudioDevice {
   deviceId: string;
   label: string;
+}
+
+// Correctly extend global JSX namespace for React Three Fiber
+declare global {
+  namespace JSX {
+    interface IntrinsicElements extends ThreeElements {}
+  }
 }

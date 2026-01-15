@@ -14,11 +14,13 @@ export const CustomTextSettingsPanel: React.FC = () => {
     setSettings({ ...settings, customTextPosition: value });
   };
 
-  // Removed similar colors #ffd700 (Gold) and #a0aec0 (Cool Grey)
+  // Expanded color palette (18 original + 12 new = 30 total)
   const colorPresets = [
     '#ffffff', '#00e5ff', '#00ff41', '#ff007f', '#ffcc00', '#ff9500', '#af52de',
     '#c0c0c0', '#cd7f32', '#718096', '#4a5568', '#2d3748',
-    '#feb2b2', '#faf089', '#9ae6b4', '#81e6d9', '#90cdf4', '#a3bffa'
+    '#feb2b2', '#faf089', '#9ae6b4', '#81e6d9', '#90cdf4', '#a3bffa',
+    '#ef4444', '#f87171', '#ea580c', '#facc15', '#84cc16', '#14b8a6', 
+    '#3b82f6', '#6366f1', '#8b5cf6', '#d946ef', '#f43f5e', '#a1a1aa'
   ];
 
   return (
@@ -72,8 +74,8 @@ export const CustomTextSettingsPanel: React.FC = () => {
                             label={t?.cycleSpeed || "Cycle Speed (Time)"} 
                             value={settings.customTextCycleInterval || 5} 
                             min={1} 
-                            max={20} 
-                            step={0.5} 
+                            max={60} 
+                            step={1} 
                             unit="s"
                             onChange={(v) => setSettings({...settings, customTextCycleInterval: v})} 
                         />

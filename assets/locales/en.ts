@@ -1,4 +1,5 @@
 
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
@@ -61,6 +62,7 @@ export const en = {
   rotateInterval: 'Interval (s)',
   cycleColors: 'Auto-Cycle Colors',
   colorInterval: 'Interval (s)',
+  cycleSpeed: 'Cycle Duration (s)',
   monitorAudio: 'Monitor Audio',
   audioInput: 'Input Device',
   lyrics: 'Lyrics',
@@ -130,7 +132,7 @@ export const en = {
   showFps: 'Show FPS',
   showTooltips: 'Show Tooltips',
   doubleClickFullscreen: 'Double-Click Fullscreen',
-  autoHideUi: 'Auto-Hide UI',
+  autoHideUi: 'Automatically hide the control panel after a period of inactivity.',
   mirrorDisplay: 'Mirror Display',
   presets: {
     title: 'Smart Presets',
