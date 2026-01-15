@@ -110,6 +110,11 @@ export const ja = {
     med: '中',
     high: '高'
   },
+  visualPanel: {
+    effects: 'エフェクト',
+    automation: '自動化',
+    display: '表示'
+  },
   presets: {
     title: 'スマートプリセット',
     hint: '専門家が厳選した美的組み合わせをワンクリックで適用します。',

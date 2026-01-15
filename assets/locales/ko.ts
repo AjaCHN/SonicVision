@@ -110,6 +110,11 @@ export const ko = {
     med: '중간',
     high: '높음'
   },
+  visualPanel: {
+    effects: '효과',
+    automation: '자동화',
+    display: '디스플레이'
+  },
   presets: {
     title: '스마트 프리셋',
     hint: '전문가가 선별한 미적 조합을 원클릭으로 적용합니다.',

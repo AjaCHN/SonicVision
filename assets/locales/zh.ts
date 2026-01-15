@@ -111,6 +111,11 @@ export const zh = {
     med: '中',
     high: '高'
   },
+  visualPanel: {
+    effects: '特效',
+    automation: '自动化',
+    display: '显示'
+  },
   presets: {
     title: '智能预设',
     hint: '一键应用由专家精心调校的视觉参数组合。',

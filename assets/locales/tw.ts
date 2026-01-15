@@ -111,6 +111,11 @@ export const tw = {
     med: '中',
     high: '高'
   },
+  visualPanel: {
+    effects: '特效',
+    automation: '自動化',
+    display: '顯示'
+  },
   presets: {
     title: '智慧預設',
     hint: '一鍵應用由專家精心調校的視覺參數組合。',

@@ -110,6 +110,11 @@ export const de = {
     med: 'Mittel',
     high: 'Hoch'
   },
+  visualPanel: {
+    effects: 'Effekte',
+    automation: 'Automatisierung',
+    display: 'Anzeige'
+  },
   presets: {
     title: 'Intelligente Presets',
     hint: 'Wenden Sie eine professionell kuratierte ästhetische Kombination mit einem Klick an.',

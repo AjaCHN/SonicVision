@@ -108,6 +108,11 @@ export const en = {
     med: 'Medium',
     high: 'High'
   },
+  visualPanel: {
+    effects: 'Effects',
+    automation: 'Automation',
+    display: 'Display'
+  },
   presets: {
     title: 'Smart Presets',
     hint: 'Apply a professionally curated aesthetic combination with one click.',
