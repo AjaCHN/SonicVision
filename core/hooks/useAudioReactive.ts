@@ -21,14 +21,24 @@ export const useAudioReactive = ({ analyser, colors, settings }: UseAudioReactiv
   useFrame(() => {
     // 1. Smooth Color Transition Logic
     const lerpSpeed = 0.05;
+    
+    // BUG FIX: Correctly handle theme color array size change to prevent visual jumps.
     if (smoothedColors.length !== colors.length) {
-        // Handle theme color array size change
-        const lastValid = smoothedColors[0] || targetColor.current.set(colors[0]);
-        const newArr = new Array(colors.length).fill(lastValid);
-        smoothedColors.forEach((c, i) => { if (i < newArr.length) newArr[i] = c; });
-        smoothedColors.length = 0;
-        Array.prototype.push.apply(smoothedColors, newArr);
+      const currentLength = smoothedColors.length;
+      const targetLength = colors.length;
+
+      if (currentLength < targetLength) {
+        // Array is growing: pad with clones of the last known color for a smooth transition.
+        const lastColor = smoothedColors[currentLength - 1] || new THREE.Color(colors[0] || '#ffffff');
+        for (let i = currentLength; i < targetLength; i++) {
+          smoothedColors.push(lastColor.clone());
+        }
+      } else {
+        // Array is shrinking: truncate it.
+        smoothedColors.length = targetLength;
+      }
     }
+
     smoothedColors.forEach((color, i) => {
       color.lerp(targetColor.current.set(colors[i] || colors[0] || '#ffffff'), lerpSpeed);
     });

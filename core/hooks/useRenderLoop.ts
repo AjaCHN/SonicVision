@@ -38,11 +38,19 @@ export const useRenderLoop = ({
       const targetColors = colors.length > 0 ? colors : ['#ffffff'];
       const targetColorsRgb = targetColors.map(hexToRgb);
       
+      // BUG FIX: Correctly handle color array resizing to prevent visual jumps.
       if (currentColorsRgbRef.current.length !== targetColorsRgb.length) {
-        const lastValid = currentColorsRgbRef.current[0] || targetColorsRgb[0];
-        const newArr = new Array(targetColorsRgb.length).fill(lastValid);
-        currentColorsRgbRef.current.forEach((c, i) => { if(i < newArr.length) newArr[i] = c; });
-        currentColorsRgbRef.current = newArr;
+        const currentLength = currentColorsRgbRef.current.length;
+        const targetLength = targetColorsRgb.length;
+        if (currentLength < targetLength) {
+          // Array is growing: pad with the last known color for a smooth transition.
+          const lastColor = currentColorsRgbRef.current[currentLength - 1] || targetColorsRgb[0];
+          const padding = new Array(targetLength - currentLength).fill(lastColor);
+          currentColorsRgbRef.current.push(...padding);
+        } else {
+          // Array is shrinking: truncate it.
+          currentColorsRgbRef.current.length = targetLength;
+        }
       }
 
       const smoothedColorsRgb = currentColorsRgbRef.current.map((currentRgb, i) => {
