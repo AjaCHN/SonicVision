@@ -42,3 +42,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 *   **🧠 Gemini Integration:** First stable release featuring Google Gemini 3.0 Flash for real-time song identification and lyric fetching.
 *   **🌊 WebGL Engines:** Added `SilkWaves`, `LiquidSphere`, and `LowPolyTerrain` 3D modes using `@react-three/fiber`.
 *   **🎤 Audio Engine:** Rewrote the FFT analysis engine with customizable smoothing and sensitivity.
+
+## [v0.6.0] - Interaction & Accessibility
+
+### Added
+*   **⌨️ Shortcuts:** Implemented global keyboard shortcut manager (`Space`, `F`, `H`, `R`, `L`).
+*   **❓ Help System:** Added the "Help & Info" modal with usage guides and keyboard maps.
+*   **💡 Tooltips:** Added floating tooltips for all UI controls to explain functionality.
+*   **📱 Mobile:** Added `useIdleTimer` to auto-hide UI controls on touch devices for a cleaner view.
+
+### Changed
+*   **🎨 UI:** Refactored control panel widgets (`Slider`, `Toggle`) into reusable components.
+
+## [v0.5.0] - The 3D Experiment
+
+### Added
+*   **🧊 Three.js:** Initial integration of `Three.js` and `@react-three/fiber` for experimental 3D rendering.
+*   **🌀 Modes:** Added `Tunnel` and `Rings` 2D canvas modes.
+*   **📊 Performance:** Added `FPSCounter` component for performance monitoring.
+
+### Fixed
+*   **🍎 Safari:** Fixed `AudioContext` suspension issues requiring user gesture activation.
+
+## [v0.4.0] - Persistence & Identity
+
+### Added
+*   **💾 Persistence:** Implemented `useLocalStorage` hook to save user settings (Sensitivity, Mode, Theme) between sessions.
+*   **✍️ Custom Text:** Added `CustomTextOverlay` allowing streamers to add their own branding on top of visuals.
+*   **🌐 i18n:** Added dual-language support foundation (English / Simplified Chinese).
+
+## [v0.3.0] - Core Audio Engine
+
+### Added
+*   **🎛️ Audio Controls:** Added UI controls for `FFT Size` (Resolution) and `Smoothing` (Damping).
+*   **🎨 Color Themes:** Introduced the first set of 6 selectable color palettes.
+*   **🖥️ Fullscreen:** Added Fullscreen toggle functionality.
+
+### Changed
+*   **⚡ Build:** Migrated from `create-react-app` to `Vite` for faster development and build performance.
+
+## [v0.2.0] - Visual Expansion
+
+### Added
+*   **✨ New Modes:** Added `Plasma` (gradients) and `Particles` (starfield) rendering strategies.
+*   **🌟 Effects:** Added basic "Glow" effect using Canvas `shadowBlur` (CPU intensive but pretty).
+*   **📉 Optimization:** Improved `Canvas` rendering loop using `requestAnimationFrame` best practices.
+
+## [v0.1.0] - Genesis
+
+### Added
+*   **🎤 Audio Input:** Basic microphone input handling via Web Audio API `createMediaStreamSource`.
+*   **📊 Analyzer:** Basic `AnalyserNode` setup for extracting frequency data.
+*   **📈 Visualizer:** Initial `Bars` frequency visualizer implementation using Canvas 2D API.
+*   **⚛️ Setup:** Initial project scaffolding with React and TypeScript.
