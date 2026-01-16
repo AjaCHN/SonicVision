@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const ar = {
@@ -41,7 +42,7 @@ export const ar = {
     help: 'عرض اختصارات لوحة المفاتيح والوثائق.',
     mic: 'تنشيط أو كتم إدخال الميكروفون.',
     device: 'اختر مصدر إدخال الصوت من الجهاز.',
-    monitor: 'توجيه الصوت إلى مكبرات الصوت (تحذير: قد يحدث صدى).',
+    monitor: 'توجيه الصوت إلى مكبرات الصوت (تحذير: قد يحدث ارتجاع صوتي).',
     wakeLock: 'منع الشاشة من الانطفاء أثناء نشاط المصور.',
     showFps: 'عرض عداد الإطارات في الثانية في الوقت الفعلي.',
     showTooltips: 'عرض تلميحات مفيدة عند تحويم الماوس فوق عناصر التحكم.',
@@ -49,7 +50,7 @@ export const ar = {
     autoHideUi: 'إخفاء لوحة التحكم تلقائيًا عند عدم الاستخدام.',
     mirrorDisplay: 'عكس العرض أفقيًا (مفيد للكاميرا الأمامية أو العروض الخلفية).'
   },
-  visualizerMode: 'وضع المصور',
+  visualizerMode: 'نمط العرض المرئي',
   styleTheme: 'السمة البصرية',
   settings: 'متقدم',
   sensitivity: 'حساسية الاستجابة',
@@ -68,8 +69,8 @@ export const ar = {
   displaySettings: 'إعدادات العرض',
   language: 'لغة النظام',
   region: 'السوق المستهدف',
-  startMic: 'بدء الالتقاط',
-  stopMic: 'إيقاف الالتقاط',
+  startMic: 'تفعيل الصوت',
+  stopMic: 'إيقاف الصوت',
   listening: 'جار الاستماع',
   identifying: 'الذكاء الاصطناعي يحلل المسار...',
   startExperience: 'بدء التجربة',

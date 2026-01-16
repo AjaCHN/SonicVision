@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const ru = {
@@ -117,7 +118,7 @@ export const ru = {
   visualPanel: {
     effects: 'Эффекты',
     automation: 'Автоматизация',
-    display: 'Дисплей'
+    display: 'Отображение'
   },
   audioPanel: {
     info: 'Настройте чувствительность и сглаживание для адаптации реакции на звук. Высокий FFT дает детали, но нагружает ЦП.'
@@ -141,7 +142,7 @@ export const ru = {
     ambient: 'Эмбиент',
     cyberpunk: 'Киберпанк',
     retrowave: 'Ретровейв',
-    vocal: 'Вокал'
+    vocal: 'Акцент на вокал'
   },
   recognitionSource: 'Источник ИИ',
   lyricsPosition: 'Позиция',

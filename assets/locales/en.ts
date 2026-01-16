@@ -1,3 +1,4 @@
+
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
@@ -31,7 +32,7 @@ export const en = {
     region: 'Bias the AI search engine towards music from this specific market.',
     autoRotate: 'Automatically cycle through different visual engines.',
     rotateInterval: 'Time in seconds before switching to the next visual engine.',
-    cycleColors: 'Transita automatically between color themes over time.',
+    cycleColors: 'Transitions automatically between color themes over time.',
     colorInterval: 'Time in seconds before smoothly blending to the next color palette.',
     reset: 'Restore all application settings to factory defaults.',
     confirmReset: 'Confirm Reset? This action cannot be undone.',
@@ -134,7 +135,7 @@ export const en = {
   mirrorDisplay: 'Mirror Display',
   presets: {
     title: 'Smart Presets',
-    hint: 'Apply a professionally curated aesthetic combination with one click.',
+    hint: 'Apply a curated aesthetic combination with one click.',
     select: 'Select a mood...',
     calm: 'Hypnotic & Calm',
     party: 'Energetic Party',
@@ -248,7 +249,7 @@ export const en = {
       fftSize: 'Sub-band count for spectral resolution.'
     },
     projectInfoTitle: 'Project Description',
-    aboutDescription: 'A next-generation synesthetic experience. Aura Vision fuses high-precision Web Audio spectral analysis with Google\'s Gemini 3 AI to transform sound into living, reactive light. Designed for VJs, Streamers, and immersive environments.',
+    aboutDescription: 'A next-generation synesthetic experience. Aura Vision fuses high-precision Web Audio spectral analysis with Google Gemini 3 to transform sound into living, reactive light. Designed for VJs, Streamers, and immersive environments.',
     privacyTitle: 'Privacy Policy',
     privacyText: 'Audio is analyzed locally. Temporary high-frequency snapshots are sent to Gemini solely for identification.',
     version: 'Release'
