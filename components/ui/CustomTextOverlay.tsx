@@ -1,6 +1,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import { VisualizerSettings } from '../../core/types';
+import { useAudioPulse } from '../../core/hooks/useAudioPulse';
 
 interface CustomTextOverlayProps {
   settings: VisualizerSettings;
@@ -9,41 +10,71 @@ interface CustomTextOverlayProps {
 
 const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyser }) => {
   const textRef = useRef<HTMLDivElement>(null);
-  const requestRef = useRef<number>(0);
+  const hueRef = useRef(0);
+  const lastTimeRef = useRef(0);
   const sizeVw = settings.customTextSize || 12;
-  const sizePx = sizeVw * 13;
+  const sizePx = sizeVw * 13; // Approximate conversion for max size
 
+  useAudioPulse({
+    elementRef: textRef,
+    analyser,
+    settings,
+    isEnabled: settings.showCustomText && !!settings.customText && settings.textPulse,
+    baseOpacity: settings.customTextOpacity,
+  });
+  
+  // Effect to handle non-pulsing transformations (rotation and base opacity)
   useEffect(() => {
-    if (!settings.showCustomText || !settings.customText) {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      return;
-    }
-    const animate = () => {
-      const baseOpacity = settings.customTextOpacity !== undefined ? settings.customTextOpacity : 1.0;
-      if (textRef.current && analyser && settings.textPulse) {
-        const dataArray = new Uint8Array(analyser.frequencyBinCount);
-        analyser.getByteFrequencyData(dataArray);
-        let bass = 0;
-        for (let i = 0; i < 10; i++) bass += dataArray[i];
-        bass = (bass / 10) / 255;
-        const scale = 1 + (bass * 0.5 * settings.sensitivity);
-        const rotation = settings.customTextRotation || 0;
-        textRef.current.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-        textRef.current.style.opacity = `${(0.6 + bass * 0.4) * baseOpacity}`;
-      } else if (textRef.current) {
-        const rotation = settings.customTextRotation || 0;
-        textRef.current.style.transform = `rotate(${rotation}deg) scale(1)`;
-        textRef.current.style.opacity = `${0.9 * baseOpacity}`;
+    if (textRef.current && settings.showCustomText && settings.customText) {
+      const rotation = settings.customTextRotation || 0;
+      textRef.current.style.transform = `rotate(${rotation}deg)`;
+      if (!settings.textPulse) {
+         textRef.current.style.opacity = `${0.9 * (settings.customTextOpacity || 1.0)}`;
       }
-      requestRef.current = requestAnimationFrame(animate);
+    }
+  }, [settings.showCustomText, settings.customText, settings.customTextRotation, settings.customTextOpacity, settings.textPulse]);
+
+  // Effect to handle Color Cycling
+  useEffect(() => {
+    let rafId: number;
+    
+    const animateColor = (timestamp: number) => {
+      if (!lastTimeRef.current) lastTimeRef.current = timestamp;
+      const deltaTime = timestamp - lastTimeRef.current;
+      lastTimeRef.current = timestamp;
+
+      if (textRef.current && settings.customTextCycleColor) {
+        // Full 360 degrees rotation over `interval` seconds
+        // deltaHue = (deltaTime in ms / 1000) * (360 / interval)
+        const interval = settings.customTextCycleInterval || 5; 
+        const speed = 360 / Math.max(0.1, interval);
+        const delta = (deltaTime / 1000) * speed;
+        
+        hueRef.current = (hueRef.current + delta) % 360;
+        textRef.current.style.color = `hsl(${hueRef.current}, 100%, 65%)`;
+        
+        rafId = requestAnimationFrame(animateColor);
+      }
     };
-    requestRef.current = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [settings.showCustomText, settings.customText, settings.textPulse, settings.sensitivity, settings.customTextRotation, settings.customTextOpacity, analyser]);
+
+    if (settings.customTextCycleColor) {
+      rafId = requestAnimationFrame(animateColor);
+    } else if (textRef.current) {
+      // If cycling is disabled, revert to static color or remove override
+      // Setting explicit color ensures we don't get stuck on the last HSL value
+      textRef.current.style.color = settings.customTextColor || '#ffffff';
+      lastTimeRef.current = 0;
+    }
+
+    return () => {
+      if (rafId) cancelAnimationFrame(rafId);
+      lastTimeRef.current = 0;
+    };
+  }, [settings.customTextCycleColor, settings.customTextColor, settings.customTextCycleInterval]);
+
 
   if (!settings.showCustomText || !settings.customText) return null;
 
-  // Position mapping
   const getPositionClasses = () => {
       const pos = settings.customTextPosition || 'mc';
       const map: Record<string, string> = {
@@ -62,9 +93,9 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
 
   return (
     <div className={`pointer-events-none fixed z-[100] flex flex-col ${getPositionClasses()}`}>
-      <div ref={textRef} className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center"
+      <div ref={textRef} className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center break-words"
         style={{ 
-            color: settings.customTextColor || '#ffffff',
+            color: settings.customTextCycleColor ? undefined : (settings.customTextColor || '#ffffff'),
             fontSize: `min(${sizeVw}vw, ${sizePx}px)`, 
             whiteSpace: 'pre-wrap', lineHeight: 1.1,
             fontFamily: settings.customTextFont || 'Inter, sans-serif'

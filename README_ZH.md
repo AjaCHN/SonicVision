@@ -5,7 +5,7 @@
 [English](README.md) | [在线演示](https://aura.tanox.net/) | [更新日志](CHANGELOG.md)
 
 <p align="center">
-  <img src="/assets/images/aura-banner.jpg" alt="Aura Vision 横幅" width="100%" />
+  <img src="assets/images/aura-banner.jpg" alt="Aura Vision 横幅" width="100%" />
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 | 极光之舞 | 液态星球 (3D) | 液态等离子 |
 | :---: | :---: | :---: |
-| ![极光之舞](/assets/images/showcase-aurawave.jpg) | ![液态星球](/assets/images/showcase-liquid.jpg) | ![液态等离子](/assets/images/showcase-plasma.jpg) |
+| ![极光之舞](assets/images/showcase-aurawave.jpg) | ![液态星球](assets/images/showcase-liquid.jpg) | ![液态等离子](assets/images/showcase-plasma.jpg) |
 
 ---
 
