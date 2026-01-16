@@ -4,9 +4,8 @@
 
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/) | [Changelog](CHANGELOG.md)
 
-<p align="center">
- ![Banner](assets/images/aura-banner.jpg)
-</p>
+<!-- README.md -->
+![Banner](assets/images/aura-banner.jpg)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black" />
