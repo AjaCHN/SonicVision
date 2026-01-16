@@ -5,7 +5,7 @@
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/) | [Changelog](CHANGELOG.md)
 
 <p align="center">
-  <img src="./blob/main/assets/images/aura-banner.jpg" alt="Aura Vision Banner" width="100%" />
+  <img src="/assets/images/aura-banner.jpg" alt="Aura Vision Banner" width="100%" />
 </p>
 
 <p align="center">
@@ -24,7 +24,7 @@
 
 | Aura Wave | Liquid Sphere (3D) | Plasma Flow |
 | :---: | :---: | :---: |
-| ![Aura](./blob/main/assets/images/showcase-aurawave.jpg) | ![Liquid](./blob/main/assets/images/showcase-liquid.jpg) | ![Plasma](./blob/main/assets/images/showcase-plasma.jpg) |
+| ![Aura](/assets/images/showcase-aurawave.jpg) | ![Liquid](/assets/images/showcase-liquid.jpg) | ![Plasma](/assets/images/showcase-plasma.jpg) |
 
 ---
 
