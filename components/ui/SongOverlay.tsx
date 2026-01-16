@@ -1,13 +1,12 @@
-
-import React, { useEffect, useRef, useMemo } from 'react';
-import { SongInfo, LyricsStyle, Language } from '../../core/types';
+import React, { useRef, useMemo } from 'react';
+import { SongInfo, Language } from '../../core/types';
 import { TRANSLATIONS } from '../../core/i18n';
+import { useAudioPulse } from '../../core/hooks/useAudioPulse';
 
 interface SongOverlayProps {
   song: SongInfo | null;
-  lyricsStyle: LyricsStyle;
-  showLyrics: boolean;
   language: Language;
+  showLyrics: boolean;
   onRetry: () => void;
   onClose: () => void;
   analyser?: AnalyserNode | null;
@@ -45,53 +44,47 @@ const getMoodStyle = (mood: string | undefined | null) => {
 };
 
 const SongOverlay: React.FC<SongOverlayProps> = ({ song, showLyrics, language, onRetry, onClose, analyser, sensitivity = 1.0 }) => {
-  const titleRef = useRef<HTMLHeadingElement>(null);
-  const requestRef = useRef<number>(0);
+  const containerRef = useRef<HTMLDivElement>(null);
   const moodStyle = useMemo(() => song && song.mood ? getMoodStyle(song.mood) : getMoodStyle('default'), [song]);
+  
+  const isEnabled = showLyrics && !!song && song.identified && song.matchSource !== 'PREVIEW';
 
-  useEffect(() => {
-    if (!analyser || !song || !song.identified || !showLyrics) {
-      if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      return;
-    }
-    const dataArray = new Uint8Array(analyser.frequencyBinCount);
-    const pulseTitle = () => {
-      if (!titleRef.current) return;
-      analyser.getByteFrequencyData(dataArray);
-      let bass = 0;
-      for (let i = 0; i < 10; i++) bass += dataArray[i];
-      const intensity = (bass / 2550) * sensitivity;
-      titleRef.current.style.transform = `scale(${1 + intensity * 0.05})`;
-      requestRef.current = requestAnimationFrame(pulseTitle);
-    };
-    requestRef.current = requestAnimationFrame(pulseTitle);
-    return () => cancelAnimationFrame(requestRef.current);
-  }, [analyser, song, showLyrics, sensitivity]);
+  useAudioPulse({
+    elementRef: containerRef,
+    analyser,
+    settings: { sensitivity },
+    isEnabled: isEnabled,
+    pulseStrength: 0.1,
+  });
 
-  if (!showLyrics || !song || !song.identified) return null;
+  if (!isEnabled) return null;
   const t = TRANSLATIONS[language] || TRANSLATIONS['en'];
 
   return (
     <div className="pointer-events-none fixed inset-0 z-20 overflow-hidden">
-      <div className={`absolute top-8 left-8 bg-black/40 backdrop-blur-md border-l-4 ${moodStyle.borderColor} pl-4 py-3 pr-4 rounded-r-xl max-w-xs md:max-w-md transition-all duration-700 shadow-[0_4px_10px_rgba(0,0,0,0.5)] pointer-events-auto group`}>
+      <div 
+        ref={containerRef}
+        className={`absolute top-8 left-8 bg-black/40 backdrop-blur-md border-l-4 ${moodStyle.borderColor} pl-4 py-3 pr-4 rounded-r-xl max-w-xs md:max-w-md transition-all duration-700 shadow-[0_4px_10px_rgba(0,0,0,0.5)] pointer-events-auto group origin-top-left animate-fade-in-up`}
+        style={{ animationDuration: '0.8s' }}
+      >
         <div className={`absolute inset-0 bg-gradient-to-r ${moodStyle.gradient} opacity-20 pointer-events-none rounded-r-xl`} />
         <button onClick={onClose} className="absolute top-2 right-2 p-1 rounded-full bg-black/20 hover:bg-white/20 text-white/40 hover:text-white opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
           <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
         <div className="relative z-10">
-            <h2 ref={titleRef} className="text-white font-bold text-xl md:text-2xl truncate tracking-tight pr-6 origin-left transition-transform duration-75 ease-out">{song.title}</h2>
-            <p className="text-blue-300 text-sm md:text-base truncate font-medium pr-6">{song.artist}</p>
-            {song.mood && (
+            <h2 className="text-white font-bold text-xl md:text-2xl tracking-tight pr-6 break-words">{song!.title}</h2>
+            <p className="text-blue-300 text-sm md:text-base font-medium pr-6 break-words">{song!.artist}</p>
+            {song!.mood && (
               <div className="flex items-center gap-2 mt-2">
                 <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 bg-gradient-to-r ${moodStyle.badgeGradient} border border-white/10 rounded-full`}>
                    <span className={moodStyle.textColor}>{moodStyle.icon}</span>
-                   <span className={`text-[10px] font-bold uppercase tracking-wider ${moodStyle.textColor}`}>{song.mood}</span>
+                   <span className={`text-[10px] font-bold uppercase tracking-wider ${moodStyle.textColor}`}>{song!.mood}</span>
                 </div>
               </div>
             )}
             <div className="flex items-center gap-4 mt-3 pt-2 border-t border-white/10 opacity-60 group-hover:opacity-100 transition-opacity">
-                {song.searchUrl && (
-                    <a href={song.searchUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-white/70 hover:text-blue-300 transition-colors">
+                {song!.searchUrl && (
+                    <a href={song!.searchUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-[10px] text-white/70 hover:text-blue-300 transition-colors">
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
                       <span>Google</span>
                     </a>

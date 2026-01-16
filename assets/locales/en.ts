@@ -32,9 +32,10 @@ export const en = {
     region: 'Bias the AI search engine towards music from this specific market.',
     autoRotate: 'Automatically cycle through different visual engines.',
     rotateInterval: 'Time in seconds before switching to the next visual engine.',
-    cycleColors: 'Transita automatically between color themes over time.',
+    cycleColors: 'Transitions automatically between color themes over time.',
     colorInterval: 'Time in seconds before smoothly blending to the next color palette.',
     reset: 'Restore all application settings to factory defaults.',
+    confirmReset: 'Confirm Reset? This action cannot be undone.',
     resetVisual: 'Reset only aesthetics (Speed, Glow, Trails) to defaults.',
     randomize: 'Generate a serendipitous combination of visual mode and colors.',
     fullscreen: 'Toggle immersive full-screen mode.',
@@ -42,7 +43,12 @@ export const en = {
     mic: 'Activate or mute microphone input.',
     device: 'Select the hardware audio input source.',
     monitor: 'Route audio input to speakers (Caution: may cause feedback loop).',
-    wakeLock: 'Prevent the screen from turning off or dimming while the visualizer is active.'
+    wakeLock: 'Prevent the screen from turning off or dimming while the visualizer is active.',
+    showFps: 'Display a real-time frames-per-second counter.',
+    showTooltips: 'Enable helpful floating hints when hovering over controls.',
+    doubleClickFullscreen: 'Toggle fullscreen mode by double-clicking anywhere on the visualizer.',
+    autoHideUi: 'Automatically hide the control panel after a period of inactivity.',
+    mirrorDisplay: 'Flip the visualizer output horizontally (useful for rear projection or webcam).'
   },
   visualizerMode: 'Visualizer Mode',
   styleTheme: 'Visual Theme',
@@ -55,6 +61,7 @@ export const en = {
   rotateInterval: 'Interval (s)',
   cycleColors: 'Auto-Cycle Colors',
   colorInterval: 'Interval (s)',
+  cycleSpeed: 'Cycle Duration (s)',
   monitorAudio: 'Monitor Audio',
   audioInput: 'Input Device',
   lyrics: 'Lyrics',
@@ -67,10 +74,10 @@ export const en = {
   listening: 'Active',
   identifying: 'AI Analyzing...',
   startExperience: 'Launch Experience',
-  welcomeTitle: 'Aura Vision',
-  welcomeText: 'Translate audio into generative art. Experience real-time music identification and immersive visualization.',
-  unsupportedTitle: 'Browser Not Supported',
-  unsupportedText: 'Aura Vision requires modern features (like microphone access) not available in your browser. Please update to a recent version of Chrome, Firefox, or Safari.',
+  welcomeTitle: 'Aura Vision | The Sound of Light',
+  welcomeText: 'Transmute every vibration into generative masterpieces. Powered by Gemini AI for real-time recognition, experience the ultimate synesthetic journey.',
+  unsupportedTitle: 'Incompatible Browser',
+  unsupportedText: 'Aura Vision requires modern Web Audio and Media features. Please switch to a recent version of Chrome, Edge, or Safari to continue.',
   hideOptions: 'Collapse',
   showOptions: 'Expand Options',
   reset: 'Reset System',
@@ -108,8 +115,39 @@ export const en = {
     med: 'Medium',
     high: 'High'
   },
+  visualPanel: {
+    effects: 'Effects',
+    automation: 'Automation',
+    display: 'Display'
+  },
+  audioPanel: {
+    info: 'Adjust input sensitivity and smoothing to customize how the visualizer reacts to audio dynamics. Higher FFT sizes provide more spectral detail but consume more CPU.'
+  },
+  systemPanel: {
+    interface: 'Interface',
+    behavior: 'Behavior',
+    maintenance: 'Maintenance'
+  },
+  showFps: 'Show FPS',
+  showTooltips: 'Show Tooltips',
+  doubleClickFullscreen: 'Double-Click Fullscreen',
+  autoHideUi: 'Automatically hide the control panel after a period of inactivity.',
+  mirrorDisplay: 'Mirror Display',
+  presets: {
+    title: 'Smart Presets',
+    hint: 'Apply a curated aesthetic combination with one click.',
+    select: 'Select a mood...',
+    calm: 'Hypnotic & Calm',
+    party: 'Energetic Party',
+    ambient: 'Ambient Focus',
+    cyberpunk: 'Cyberpunk Rush',
+    retrowave: 'Retro Sunset',
+    vocal: 'Vocal Focus'
+  },
   recognitionSource: 'AI Provider',
   lyricsPosition: 'Lyrics Position',
+  lyricsFont: 'Font Family',
+  lyricsFontSize: 'Font Size',
   simulatedDemo: 'Simulated (Demo)',
   positions: {
       top: 'Top',
@@ -158,15 +196,13 @@ export const en = {
   modes: {
     [VisualizerMode.PLASMA]: 'Plasma Flow',
     [VisualizerMode.BARS]: 'Frequency Bars',
-    [VisualizerMode.PARTICLES]: 'Starfield',
+    [VisualizerMode.PARTICLES]: 'Starfield (Drift)',
     [VisualizerMode.TUNNEL]: 'Geometric Tunnel',
-    [VisualizerMode.SHAPES]: 'Abstract Shapes',
     [VisualizerMode.RINGS]: 'Neon Rings',
     [VisualizerMode.NEBULA]: 'Deep Nebula',
-    [VisualizerMode.KALEIDOSCOPE]: 'Kaleidoscope',
     [VisualizerMode.LASERS]: 'Concert Lasers',
     [VisualizerMode.FLUID_CURVES]: 'Aura Waves',
-    [VisualizerMode.MACRO_BUBBLES]: 'Macro Bubbles',
+    [VisualizerMode.MACRO_BUBBLES]: 'Macro Bubbles (DoF)',
     [VisualizerMode.SILK]: 'Silk Waves',
     [VisualizerMode.LIQUID]: 'Liquid Sphere',
     [VisualizerMode.TERRAIN]: 'Low-Poly Terrain'
@@ -178,6 +214,11 @@ export const en = {
   },
   helpModal: {
     title: 'Aura Vision Guide',
+    tabs: {
+        guide: 'Guide',
+        shortcuts: 'Shortcuts',
+        about: 'About'
+    },
     intro: 'Aura Vision transforms your microphone input into highly responsive, generative digital art using advanced spectral analysis.',
     shortcutsTitle: 'Keyboard Interaction',
     shortcutItems: {
@@ -191,54 +232,54 @@ export const en = {
       changeMode: 'Cycle Modes',
       changeTheme: 'Cycle Themes'
     },
-    howItWorksTitle: 'Getting Started',
+    howItWorksTitle: 'How to Use',
     howItWorksSteps: [
-      '1. Authorize microphone access to begin analysis.',
-      '2. Play high-fidelity audio near the sensor.',
-      '3. Visuals respond in real-time to specific frequencies.',
-      '4. Every 30s, AI snapshots audio to identify metadata.'
+      '1. Grant Permissions: Click "Start" and allow the browser to access your audio input.',
+      '2. Play Music: Play audio near your device. The visuals react to the microphone in real-time.',
+      '3. Explore Modes: Open the Options panel (or press H) to switch visual engines.',
+      '4. AI Recognition: Press L to identify the current song and its aesthetic mood.'
     ],
     settingsTitle: 'Parameter Guide',
     settingsDesc: {
       sensitivity: 'Gain control for audio-reactive elements.',
       speed: 'Temporal frequency of the generative patterns.',
-      glow: 'Intensidad del resplandor de post-procesamiento.',
+      glow: 'Bloom intensity for atmospheric depth.',
       trails: 'Temporal accumulation for fluid movement.',
       smoothing: 'Temporal damping of the frequency data.',
       fftSize: 'Sub-band count for spectral resolution.'
     },
     projectInfoTitle: 'Project Description',
-    projectInfoText: 'Powered by Google Gemini 3 Flash, React 19 and hardware-accelerated WebGL.',
+    aboutDescription: 'A next-generation synesthetic experience. Aura Vision fuses high-precision Web Audio spectral analysis with Google Gemini 3 to transform sound into living, reactive light. Designed for VJs, Streamers, and immersive environments.',
     privacyTitle: 'Privacy Policy',
     privacyText: 'Audio is analyzed locally. Temporary high-frequency snapshots are sent to Gemini solely for identification.',
     version: 'Release'
   },
   onboarding: {
     welcome: 'Welcome to Aura Vision',
-    subtitle: 'Next-Gen AI Music Visualization',
-    selectLanguage: 'Select Language',
-    next: 'Next',
-    back: 'Back',
+    subtitle: 'Next-Gen AI Synesthesia Engine',
+    selectLanguage: 'Choose your language',
+    next: 'Proceed',
+    back: 'Previous',
     skip: 'Skip',
-    finish: 'Get Started',
+    finish: 'Launch App',
     features: {
-      title: 'Core Features',
+      title: 'Experience Features',
       visuals: {
-        title: 'Immersive Visuals',
-        desc: '8+ Physics-based WebGL engines powered by Three.js.'
+        title: 'Generative Masterpieces',
+        desc: '12+ reactive engines powered by WebGL and math-driven procedural art.'
       },
       ai: {
         title: 'Gemini AI Intelligence',
-        desc: 'Real-time song identification and mood detection powered by Google Gemini 3.'
+        desc: 'Instant recognition of tracks and aesthetic mood through advanced AI grounding.'
       },
       privacy: {
-        title: 'Privacy First',
-        desc: 'Local spectral analysis. Audio is never stored on servers.'
+        title: 'Secure & Private',
+        desc: 'Processing stays local. We never record or store your private audio data.'
       }
     },
     shortcuts: {
-      title: 'Quick Controls',
-      desc: 'Master the experience with these keys.'
+      title: 'Dynamic Controls',
+      desc: 'Master your environment with these keys.'
     }
   }
 };

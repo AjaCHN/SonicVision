@@ -95,7 +95,7 @@ export class RingsRenderer implements IVisualizerRenderer {
  * Inspired by Image 1: Fluid, flowing gradients with smooth curves.
  */
 export class FluidCurvesRenderer implements IVisualizerRenderer {
-  private layerOffsets: { phase: number; freq1: number; freq2: number; vert: number; }[] = [];
+  private layerOffsets: { phase: number; freq1: number; freq2: number; vert: number; speedMult: number; }[] = [];
   
   init() {
     this.layerOffsets = [];
@@ -117,9 +117,14 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
       for (let i = 0; i < layerCount; i++) {
         this.layerOffsets.push({
           phase: Math.random() * Math.PI * 2,       // Random phase shift
-          freq1: 0.003 + Math.random() * 0.004, // Random frequency for base wave
-          freq2: 0.008 + Math.random() * 0.005, // Random frequency for audio bumps
-          vert: (Math.random() - 0.5) * 0.15   // Random vertical offset
+          // Reduced frequency to stretch waves horizontally (approx 50% wider)
+          // Was: 0.003 + rand * 0.004
+          freq1: 0.002 + Math.random() * 0.0025, // Base wave - wider
+          // Was: 0.008 + rand * 0.005
+          freq2: 0.005 + Math.random() * 0.0035, // Detail wave - wider
+          vert: (Math.random() - 0.5) * 0.15,   // Random vertical offset
+          // Drastically increased speed variance for stronger parallax effect (0.2x to 2.4x)
+          speedMult: 0.2 + Math.random() * 2.2
         });
       }
     }
@@ -127,6 +132,7 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
     for (let i = 0; i < layerCount; i++) {
       const color = colors[i % colors.length];
       const offsets = this.layerOffsets[i];
+      const layerTime = time * offsets.speedMult; // Each layer has its own speed
 
       ctx.fillStyle = color;
       ctx.globalAlpha = 0.2 + bass * 0.3;
@@ -138,8 +144,9 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
       for (let s = 0; s <= segments; s++) {
         const x = s * step;
         // Apply randomized properties to make each wave unique and less uniform
-        const offset = Math.sin(x * offsets.freq1 + time + offsets.phase) * (h * 0.15);
-        const audioBump = Math.cos(x * offsets.freq2 + time * 1.5 + offsets.phase) * (bass * 120);
+        const offset = Math.sin(x * offsets.freq1 + layerTime + offsets.phase) * (h * 0.15);
+        // Boosted audio bump multiplier from 120 to 180
+        const audioBump = Math.cos(x * offsets.freq2 + layerTime * 1.5 + offsets.phase) * (bass * 180);
         const y = h * (0.4 + i * 0.08 + offsets.vert) + offset + audioBump;
         points.push({ x, y });
       }
@@ -172,9 +179,13 @@ export class FluidCurvesRenderer implements IVisualizerRenderer {
 
 /**
  * Inspired by Image 2: Macro photography of liquid bubbles with highlights.
+ * Updated to simulate shallow Depth of Field (Bokeh).
  */
 export class MacroBubblesRenderer implements IVisualizerRenderer {
-  private bubbles: Array<{ x: number, y: number, r: number, vx: number, vy: number, colorIdx: number, noiseOffset: number }> = [];
+  private bubbles: Array<{ 
+    x: number, y: number, r: number, vx: number, vy: number, 
+    colorIdx: number, noiseOffset: number, sharpness: number 
+  }> = [];
   
   init() {
     this.bubbles = [];
@@ -187,26 +198,29 @@ export class MacroBubblesRenderer implements IVisualizerRenderer {
     const highs = getAverage(data, 120, 200) * settings.sensitivity / 255;
     const count = settings.quality === 'high' ? 30 : 15;
 
-    if (this.bubbles.length === 0) {
-      for (let i = 0; i < count; i++) {
+    // Maintain bubble count
+    if (this.bubbles.length !== count) {
+      // If shrinking, just slice
+      if (this.bubbles.length > count) {
+        this.bubbles = this.bubbles.slice(0, count);
+      } 
+      // If growing, add new bubbles
+      while (this.bubbles.length < count) {
+        const r = 30 + Math.random() * 100;
+        // Simulate Focus: Medium sized bubbles (approx r=80) are sharpest.
+        // Very small (background) or very large (foreground) bubbles are blurry.
+        const distFromFocus = Math.abs(r - 80) / 60; // Normalize deviation
+        const sharpness = Math.max(0.1, 1.0 - Math.pow(distFromFocus, 2)); // Bell curve sharpness
+
         this.bubbles.push({
           x: Math.random() * w,
           y: Math.random() * h,
-          r: 30 + Math.random() * 100,
+          r: r,
           vx: (Math.random() - 0.5) * 0.2,
           vy: (Math.random() - 0.5) * 0.2,
           colorIdx: Math.floor(Math.random() * colors.length),
-          noiseOffset: Math.random() * 1000
-        });
-      }
-    } else if (this.bubbles.length > count) {
-      this.bubbles = this.bubbles.slice(0, count);
-    } else if (this.bubbles.length < count) {
-      for (let i = this.bubbles.length; i < count; i++) {
-         this.bubbles.push({
-          x: Math.random() * w, y: Math.random() * h, r: 30 + Math.random() * 100,
-          vx: (Math.random() - 0.5) * 0.2, vy: (Math.random() - 0.5) * 0.2,
-          colorIdx: Math.floor(Math.random() * colors.length), noiseOffset: Math.random() * 1000
+          noiseOffset: Math.random() * 1000,
+          sharpness: sharpness
         });
       }
     }
@@ -232,34 +246,61 @@ export class MacroBubblesRenderer implements IVisualizerRenderer {
 
       const dynamicR = p.r * (1 + bass * 0.2);
       const color = colors[p.colorIdx % colors.length];
-      
-      // Volumetric body
+      const sharpness = p.sharpness;
+
+      // --- Volumetric Body Gradient with DOF Simulation ---
       const bodyGradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, dynamicR);
-      bodyGradient.addColorStop(0, `${color}10`);
-      bodyGradient.addColorStop(0.5, `${color}40`);
-      bodyGradient.addColorStop(0.9, `${color}88`);
-      bodyGradient.addColorStop(1, `${color}00`);
+      
+      // Calculate Rim Position & Softness based on Sharpness
+      // Sharp: Rim at ~90%, hard transition.
+      // Blur: Rim at ~60%, very soft transition.
+      const rimPos = 0.6 + (sharpness * 0.3); // 0.6 to 0.9
+      const rimAlpha = 0.2 + (sharpness * 0.6); // 0.2 to 0.8 intensity
+      const centerAlpha = 0.1 + (sharpness * 0.1); // Clearer center for sharp bubbles? Or darker? 
+      
+      // Convert colors to hex with alpha
+      const rimHex = `${color}${Math.floor(rimAlpha * 255).toString(16).padStart(2,'0')}`;
+      const centerHex = `${color}${Math.floor(centerAlpha * 255).toString(16).padStart(2,'0')}`;
+      const midHex = `${color}${Math.floor(centerAlpha * 1.5 * 255).toString(16).padStart(2,'0')}`;
+
+      bodyGradient.addColorStop(0, centerHex);
+      bodyGradient.addColorStop(rimPos * 0.7, midHex); 
+      bodyGradient.addColorStop(rimPos, rimHex); // Peak brightness
+      
+      // Fade out
+      // Sharp: Rapid falloff. Blur: Slow falloff.
+      const fadeEnd = Math.min(1, rimPos + (0.1 + (1-sharpness) * 0.2));
+      bodyGradient.addColorStop(fadeEnd, `${color}00`);
       
       ctx.fillStyle = bodyGradient;
       ctx.beginPath();
       ctx.arc(p.x, p.y, dynamicR, 0, Math.PI * 2);
       ctx.fill();
 
-      // Soft highlight, reactive to treble
+      // --- Highlights (Treble Reactive) ---
       const highlightStrength = Math.min(0.8, highs * 2.5);
       if (highlightStrength > 0.05) {
-          const highlightX = p.x - dynamicR * 0.3;
-          const highlightY = p.y - dynamicR * 0.3;
-          const highlightR = dynamicR * 0.5;
-          const highlightGradient = ctx.createRadialGradient(highlightX, highlightY, 0, highlightX, highlightY, highlightR);
-          highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${highlightStrength * 0.5})`);
-          highlightGradient.addColorStop(0.3, `rgba(255, 255, 255, ${highlightStrength * 0.2})`);
+          const highlightOffset = dynamicR * 0.35;
+          const hX = p.x - highlightOffset;
+          const hY = p.y - highlightOffset;
+          
+          // Blurred bubbles have larger, more diffuse highlights
+          const hSize = dynamicR * (0.3 + (1 - sharpness) * 0.3);
+          
+          const highlightGradient = ctx.createRadialGradient(hX, hY, 0, hX, hY, hSize);
+          
+          // Sharp highlight: bright center, sharp falloff
+          // Blurred highlight: dim center, smooth falloff
+          const hAlpha = highlightStrength * (0.4 + sharpness * 0.6);
+          
+          highlightGradient.addColorStop(0, `rgba(255, 255, 255, ${hAlpha})`);
+          // Focus stops determine how "point-like" the light source is
+          highlightGradient.addColorStop(0.2 * sharpness, `rgba(255, 255, 255, ${hAlpha * 0.8})`);
           highlightGradient.addColorStop(1, `rgba(255, 255, 255, 0)`);
           
           ctx.fillStyle = highlightGradient;
           ctx.beginPath();
-          // Use a clipping path to ensure the highlight stays within the bubble's bounds
-          ctx.arc(p.x, p.y, dynamicR, 0, Math.PI * 2);
+          ctx.arc(hX, hY, hSize, 0, Math.PI * 2);
           ctx.fill();
       }
     });

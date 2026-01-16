@@ -1,12 +1,11 @@
-
 # Aura Vision 🎵👁️
 
-### AI 驱动的 3D 音乐可视化与曲目识别系统 (v0.4.2)
+### AI 驱动的 3D 音乐可视化与曲目识别系统 (v0.7.5)
 
-[English](README.md) | [在线演示](https://aura.tanox.net/)
+[English](README.md) | [在线演示](https://aura.tanox.net/) | [更新日志](CHANGELOG.md)
 
 <p align="center">
-  <img src="./images/aura-banner.jpg" alt="Aura Vision 横幅" width="100%" />
+  <img src="/assets/images/aura-banner.jpg" alt="Aura Vision 横幅" width="100%" />
 </p>
 
 <p align="center">
@@ -23,35 +22,31 @@
 
 ## 📸 视觉展示
 
-| 流光绸缎 (WebGL) | 液态星球 (3D) | 低多边形山脉 (3D) |
+| 极光之舞 | 液态星球 (3D) | 液态等离子 |
 | :---: | :---: | :---: |
-| ![流光](./assets/images/showcase-silk.jpg) | ![星球](./assets/images/showcase-liquid.jpg) | ![地形](./assets/images/showcase-terrain.jpg) |
+| ![极光之舞](/assets/images/showcase-aurawave.jpg) | ![液态星球](/assets/images/showcase-liquid.jpg) | ![液态等离子](/assets/images/showcase-plasma.jpg) |
 
 ---
 
-## 🚀 核心应用场景
+## 🎮 使用指南
 
-Aura Vision 适配多种专业与个人场景：
+**🚀 快速开始:** 直接在电脑或手机浏览器中访问 **[在线演示](https://aura.tanox.net/)** 即可，即点即用。
 
-*   **📺 直播互动 (OBS/音乐主播):** 显著提升直播间的视觉档次。
-*   **🎭 现场 VJ 与 派对:** 为 DJ 现场或家庭聚会提供即插即用的视觉支持。
-*   **🌿 环境氛围装饰:** 投屏到智能电视，营造高端的数字化氛围。
-*   **🧘 冥想与放松:** 打造视觉上的疗愈与宁静空间。
-*   **💻 专注力助手:** 配合 Lo-fi 音乐，提供不干扰注意力的动态背景。
+1.  **授权权限:** 点击“开启体验”，允许浏览器访问麦克风。
+2.  **播放音乐:** 在设备附近播放音乐。视觉效果将根据实时采样跳动。
+3.  **探索模式:** 打开**设置面板** (按 `H`) 切换 12+ 种视觉引擎。
+4.  **AI 识别:** 按 `L` 键开启“AI 曲目识别”以分析当前歌曲。
 
-## ✨ 功能亮点
+### ⌨️ 快捷键列表
 
-*   **🧠 Gemini 3.0 深度集成:** 实时曲目识别、歌手信息抓取及情绪感知。
-*   **🎨 12+ 渲染引擎:** 从经典的频谱条到复杂的 WebGL 物理场景。
-*   **🔠 感官文字系统:** 支持自定义文字，可随节奏实时震动、缩放。
-*   **🌍 全球本地化:** 深度适配中、英、日、韩等多国市场语言。
-
-## 🛠️ 技术架构
-
-*   **图形引擎:** Three.js & React Three Fiber
-*   **人工智能:** Google Generative AI (Gemini 3 Flash)
-*   **前端框架:** React 18.3.1, Tailwind CSS
-*   **音频处理:** Web Audio API (实时 FFT)
+| 按键 | 功能 |
+| :--- | :--- |
+| **Space (空格)** | 开启/关闭 麦克风 |
+| **F** | 切换全屏模式 |
+| **R** | 随机切换视觉风格 |
+| **L** | 显示/隐藏 AI 识别信息 |
+| **H** | 展开/收起 控制面板 |
+| **G / T** | 开关 泛光 / 拖尾 |
 
 ---
 *Made with 💜 using React and Google Gemini API*

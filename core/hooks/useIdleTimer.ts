@@ -1,9 +1,8 @@
-
 import { useState, useEffect, useCallback, useRef } from 'react';
 
 const DEFAULT_IDLE_TIMEOUT = 3000;
 
-export const useIdleTimer = (isExpanded: boolean, timeout: number = DEFAULT_IDLE_TIMEOUT) => {
+export const useIdleTimer = (isExpanded: boolean, enabled: boolean = true, timeout: number = DEFAULT_IDLE_TIMEOUT) => {
   const [isIdle, setIsIdle] = useState(false);
   const idleTimerRef = useRef<number | null>(null);
 
@@ -14,18 +13,18 @@ export const useIdleTimer = (isExpanded: boolean, timeout: number = DEFAULT_IDLE
     
     setIsIdle(false);
 
-    if (!isExpanded) {
+    if (!isExpanded && enabled) {
       idleTimerRef.current = window.setTimeout(() => {
         setIsIdle(true);
       }, timeout);
     }
-  }, [isExpanded, timeout]);
+  }, [isExpanded, enabled, timeout]);
 
   useEffect(() => {
     const events = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'touchmove', 'scroll', 'wheel'];
     
     const handleActivity = () => resetIdleTimer();
-    const handleSleep = () => setIsIdle(true);
+    const handleSleep = () => { if(enabled) setIsIdle(true); };
 
     events.forEach(evt => window.addEventListener(evt, handleActivity, { passive: true }));
     window.addEventListener('blur', handleSleep);
@@ -39,7 +38,7 @@ export const useIdleTimer = (isExpanded: boolean, timeout: number = DEFAULT_IDLE
       window.removeEventListener('focus', handleActivity);
       if (idleTimerRef.current) window.clearTimeout(idleTimerRef.current);
     };
-  }, [resetIdleTimer]);
+  }, [resetIdleTimer, enabled]);
 
   return { isIdle, resetIdleTimer };
 };

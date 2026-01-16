@@ -1,9 +1,9 @@
 
 import React, { useRef, useMemo } from 'react';
-import { useFrame } from '@react-three/fiber';
-import { Stars } from '@react-three/drei';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 import { VisualizerSettings } from '../../../core/types';
+import { useAudioReactive } from '../../../core/hooks/useAudioReactive';
 
 interface SceneProps {
   analyser: AnalyserNode;
@@ -11,105 +11,201 @@ interface SceneProps {
   settings: VisualizerSettings;
 }
 
+// 自定义星空组件
+const DynamicStarfield = ({ treble, speed }: { treble: number; speed: number }) => {
+  const pointsRef = useRef<THREE.Points>(null);
+  
+  const count = 6000;
+  const [positions, seeds] = useMemo(() => {
+    const pos = new Float32Array(count * 3);
+    const s = new Float32Array(count);
+    for (let i = 0; i < count; i++) {
+      const r = 100 + Math.random() * 100;
+      const theta = Math.random() * Math.PI * 2;
+      const phi = Math.acos(2 * Math.random() - 1);
+      
+      pos[i * 3] = r * Math.sin(phi) * Math.cos(theta);
+      pos[i * 3 + 1] = r * Math.sin(phi) * Math.sin(theta);
+      pos[i * 3 + 2] = r * Math.cos(phi);
+      
+      s[i] = Math.random() * 1000;
+    }
+    return [pos, s];
+  }, []);
+
+  const uniforms = useMemo(() => ({
+    uTime: { value: 0 },
+    uTreble: { value: 0 },
+    uColor: { value: new THREE.Color('#ffffff') }
+  }), []);
+
+  useFrame((state) => {
+    const t = state.clock.getElapsedTime();
+    if (pointsRef.current) {
+      pointsRef.current.rotation.y = t * 0.02 * speed;
+      pointsRef.current.rotation.x = Math.sin(t * 0.1) * 0.05;
+      (pointsRef.current.material as THREE.ShaderMaterial).uniforms.uTime.value = t;
+      (pointsRef.current.material as THREE.ShaderMaterial).uniforms.uTreble.value = treble;
+    }
+  });
+
+  return (
+    <points ref={pointsRef}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" count={count} array={positions} itemSize={3} />
+        <bufferAttribute attach="attributes-seed" count={count} array={seeds} itemSize={1} />
+      </bufferGeometry>
+      <shaderMaterial
+        transparent
+        depthWrite={false}
+        blending={THREE.AdditiveBlending}
+        uniforms={uniforms}
+        vertexShader={`
+          attribute float seed;
+          varying float vTwinkle;
+          uniform float uTime;
+          uniform float uTreble;
+          void main() {
+            float twinkle = sin(uTime * (1.5 + uTreble * 5.0) + seed) * 0.5 + 0.5;
+            vTwinkle = twinkle;
+            vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_PointSize = (2.0 + vTwinkle * 2.0) * (300.0 / -mvPosition.z);
+            gl_Position = projectionMatrix * mvPosition;
+          }
+        `}
+        fragmentShader={`
+          varying float vTwinkle;
+          uniform vec3 uColor;
+          void main() {
+            float dist = distance(gl_PointCoord, vec2(0.5));
+            if (dist > 0.5) discard;
+            float alpha = smoothstep(0.5, 0.2, dist) * (0.3 + vTwinkle * 0.7);
+            gl_FragColor = vec4(uColor, alpha);
+          }
+        `}
+      />
+    </points>
+  );
+};
+
 export const LowPolyTerrainScene: React.FC<SceneProps> = ({ analyser, colors, settings }) => {
   const meshRef = useRef<THREE.Mesh>(null);
   const materialRef = useRef<THREE.MeshStandardMaterial>(null);
-  const sunRef = useRef<THREE.Mesh>(null);
   const fogRef = useRef<THREE.Fog>(null);
+  const dirLightRef = useRef<THREE.DirectionalLight>(null);
+  const ambientLightRef = useRef<THREE.AmbientLight>(null);
 
-  const dataArray = useMemo(() => new Uint8Array(analyser.frequencyBinCount), [analyser]);
+  const { bass, mids, treble, smoothedColors } = useAudioReactive({ analyser, colors, settings });
+  const [c0, c1, c2] = smoothedColors;
+
   const geometry = useMemo(() => {
-    const segments = settings.quality === 'high' ? 50 : settings.quality === 'med' ? 35 : 25;
-    return new THREE.PlaneGeometry(80, 80, segments, segments);
+    // Standard terrain segments
+    const segments = settings.quality === 'high' ? 60 : settings.quality === 'med' ? 40 : 30;
+    // Larger plane for infinite feel
+    return new THREE.PlaneGeometry(120, 120, segments, segments);
   }, [settings.quality]);
 
-  const c0 = useRef(new THREE.Color(colors[0])); // Sun/Moon
-  const c1 = useRef(new THREE.Color(colors[1] || colors[0])); // Terrain
-  const c2 = useRef(new THREE.Color(colors[2] || colors[0])); // Fog/Sky
-  const targetColor = useRef(new THREE.Color());
-
   useFrame(({ clock }) => {
-     const time = clock.getElapsedTime() * settings.speed * 0.2;
-     const lerpSpeed = 0.05;
-     c0.current.lerp(targetColor.current.set(colors[0] || '#ffffff'), lerpSpeed);
-     c1.current.lerp(targetColor.current.set(colors[1] || colors[0] || '#ffffff'), lerpSpeed);
-     c2.current.lerp(targetColor.current.set(colors[2] || '#1a1a2e'), lerpSpeed);
+     // Modulate speed with bass to give a "turbo boost" feeling on kicks
+     const time = clock.getElapsedTime() * settings.speed;
 
-     analyser.getByteFrequencyData(dataArray);
-     let bass = 0, mids = 0;
-     for(let i=0; i<20; i++) bass += dataArray[i];
-     bass = (bass/20) * settings.sensitivity / 255;
-     for(let i=20; i<80; i++) mids += dataArray[i];
-     mids = (mids/60) * settings.sensitivity / 255;
-
-     if (materialRef.current) materialRef.current.color = c1.current;
-     if (sunRef.current) {
-        (sunRef.current.material as THREE.MeshBasicMaterial).color = c0.current;
-        // Sun pulses and moves
-        const sunScale = 1.0 + bass * 0.5;
-        sunRef.current.scale.set(sunScale, sunScale, sunScale);
-        sunRef.current.position.y = 10 + Math.cos(time * 0.2) * 5;
-     }
+     if (materialRef.current) materialRef.current.color = c1;
+     
      if (fogRef.current) {
-        fogRef.current.color = c2.current;
-        // Fog density reacts to music
-        fogRef.current.near = 10 - bass * 5;
-        fogRef.current.far = 40 + mids * 15;
+        fogRef.current.color = c2;
+        // Fog breathes with the music
+        fogRef.current.near = 15 - bass * 5;
+        fogRef.current.far = 90;
+     }
+
+     // Reactive lighting
+     if (dirLightRef.current) {
+        dirLightRef.current.color = c0;
+        dirLightRef.current.intensity = 1.5 + bass * 2.0; // Flash on beat
+     }
+     if (ambientLightRef.current) {
+        ambientLightRef.current.color = c1;
+        ambientLightRef.current.intensity = 0.2 + mids * 0.5;
      }
 
      if (!meshRef.current) return;
      const positions = meshRef.current.geometry.attributes.position as THREE.BufferAttribute;
 
+     // Amplifiers
+     const bassAmp = bass * 12.0; 
+     const midAmp = mids * 4.0;
+     
+     // Global terrain pulse
+     const breathing = 1.0 + bass * 0.2;
+
      for(let i=0; i<positions.count; i++) {
          const x = positions.getX(i);
          const y = positions.getY(i);
 
-         // Fractal noise for more realistic terrain
-         const y_moved = y + time * 10;
-         const noise1 = Math.sin(x * 0.1 + y_moved * 0.05) * 2.0;
-         const noise2 = Math.sin(x * 0.3 + y_moved * 0.2) * 0.8;
-         const noise3 = settings.quality === 'high' ? Math.sin(x * 0.8 + y_moved * 0.6) * 0.3 : 0;
+         // Diversified movement logic:
+         // 1. Forward movement (Y-axis) - faster on beat
+         const flowY = y - (time * 10);
+         // 2. Lateral drift (X-axis) - simulates a meandering path
+         const driftX = Math.sin(time * 0.15) * 15;
+         const flowX = x + driftX;
+
+         // Mountain Noise Generation with diversified coordinates
+         const noise1 = Math.sin(flowX * 0.08 + flowY * 0.06);
+         const noise2 = Math.sin(flowX * 0.2 + flowY * 0.15) * 0.5;
          
-         const height = noise1 + noise2 + noise3;
-         const audioH = height * (1 + bass * 1.5);
-         positions.setZ(i, audioH);
+         // Audio ripple - originates from center
+         const dist = Math.sqrt(x*x + y*y);
+         const ripple = Math.sin(dist * 0.3 - time * 5) * treble * 1.5;
+
+         let h = (noise1 * 5 + noise2 * midAmp) * breathing + ripple;
+
+         // Safety Valley: Flatten geometry at X=0 (Camera path)
+         const distFromCenter = Math.abs(x);
+         const valleyWidth = 12;
+         let valleyFactor = (distFromCenter - 4) / valleyWidth;
+         valleyFactor = Math.max(0, Math.min(1, valleyFactor)); 
+         
+         h *= valleyFactor;
+         
+         // Ridge effect - Spikes grow with bass
+         const finalHeight = Math.abs(h) + (valleyFactor * bassAmp * 0.6 * Math.sin(x * 0.5));
+         
+         positions.setZ(i, finalHeight);
      }
      positions.needsUpdate = true;
      meshRef.current.geometry.computeVertexNormals();
   });
 
-  // Set initial camera to a more dramatic fly-over angle
-  const cameraProps = { position: [0, 2, 18], fov: 60 };
-
   return (
       <>
-        <color attach="background" args={[c2.current.getStyle()]} /> 
-        <fog ref={fogRef} attach="fog" args={[c2.current.getStyle(), 10, 40]} />
-        <Stars radius={150} depth={100} count={6000} factor={5} saturation={0} fade speed={1.5} />
+        <color attach="background" args={[c2.getStyle()]} /> 
+        <fog ref={fogRef} attach="fog" args={[c2.getStyle(), 20, 90]} />
+        <DynamicStarfield treble={treble} speed={settings.speed} />
         
-        {/* Sun/Moon */}
-        <mesh ref={sunRef} position={[0, 10, -30]}>
-            <circleGeometry args={[8, 32]} />
-            <meshBasicMaterial color={c0.current} toneMapped={false} />
-        </mesh>
-        
-        {/* Terrain Mesh */}
-        <mesh ref={meshRef} rotation={[-Math.PI/2.2, 0, 0]} position={[0, -5, 0]}>
+        {/* 
+           Standard Terrain Rotation: -90deg on X to lay flat. 
+           Position: Lowered Y (-6) to clear camera at Y=2. 
+           Pushed back Z (-20) to cover frustum.
+        */}
+        <mesh ref={meshRef} rotation={[-Math.PI/2, 0, 0]} position={[0, -6, -20]}>
             <primitive object={geometry} attach="geometry" />
             <meshStandardMaterial 
                 ref={materialRef}
                 flatShading={true} 
-                roughness={0.9}
-                metalness={0.1}
+                roughness={0.8}
+                metalness={0.2}
             />
         </mesh>
         
-        <ambientLight intensity={0.6} color={c1.current} />
+        <ambientLight ref={ambientLightRef} intensity={0.2} color={c1} />
         <directionalLight 
-            color={c0.current} 
-            intensity={2.5} 
-            position={[10, 20, -20]}
+            ref={dirLightRef}
+            color={c0} 
+            intensity={1.5} 
+            position={[0, 20, -10]}
         />
+        {/* Rim light from below/front */}
+        <pointLight position={[0, -5, 10]} intensity={1} color={c1} distance={60} />
       </>
   );
 };

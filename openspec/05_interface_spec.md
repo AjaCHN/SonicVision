@@ -1,12 +1,14 @@
-
 # OpenSpec: UI/UX 与交互规范
 
 ## 1. 视觉层级 (Z-Index)
 - **Z-0:** 核心渲染器 (Canvas/WebGL)。
-- **Z-20:** 歌曲信息与歌词徽章。
-- **Z-40:** 扩展设置面板 (Control Panel)。
-- **Z-100:** 自定义文字层 (Custom Text Overlay)。
-- **Z-130:** 引导页与帮助模态框。
+- **Z-10:** 歌词覆盖层 (`LyricsOverlay`)。
+- **Z-20:** 歌曲信息徽章 (`SongOverlay`)。
+- **Z-100:** 自定义文字层 (`CustomTextOverlay`)。
+- **Z-110:** 迷你控制条 (`MiniControls`)。
+- **Z-120:** 扩展设置面板 (`Controls Panel`)。
+- **Z-200:** 首次引导页 (`OnboardingOverlay`)。
+- **Z-210:** 帮助与信息模态框 (`HelpModal`)。
 
 ## 2. 交互状态与闲置检测
 - **Idle Timeout:** 3000ms。
@@ -14,29 +16,24 @@
 - **Mini Bar 转换:** 闲置时透明度降低至 `0.12`，并移除 `backdrop-blur` 以优化移动端性能。
 
 ## 3. 控制面板布局规范 (Panel Layouts)
-所有扩展设置面板在 `lg` 屏幕下遵循三列式网格布局 (`grid-cols-3`)。
+- **标签页顺序 (Tabs Order):** `Visual` (视觉), `Text` (文字), `AI` (识别), `Audio` (音频), `System` (系统)。
+- **排版统一:** 所有设置项标题字号统一为 `text-xs` (12px)，保持视觉一致性。
 
-### 3.1 自定义文字面板 (Custom Text Panel)
-1. **第一列 (Content):** 文字内容输入、字体选择、显示开关。
-2. **第二列 (Style):** 颜色选择器与预设色块。
-3. **第三列 (Layout):** 缩放、旋转、不透明度及位置九宫格。
+## 4. 帮助模态框内容规范 (Help Modal Content)
+- **Guide Tab (使用指南):** 必须包含以下四个标准步骤，确保与 README 一致：
+  1. **Grant Permissions (授权权限):** 引导用户点击“开始”并允许麦克风访问。
+  2. **Play Music (播放音乐):** 提示视觉效果将实时响应设备附近的音频。
+  3. **Explore Modes (探索模式):** 指引用户通过快捷键 [H] 切换不同的渲染引擎。
+  4. **AI Recognition (AI 识别):** 指引用户通过快捷键 [L] 识别曲目与情绪。
 
-### 3.2 AI 识别面板 (AI Panel)
-1. **第一列 (Core):** 识别开关、AI 供应商、区域选择。
-2. **第二列 (Style):** 歌词展示风格主题。
-3. **第三列 (Position):** 歌词位置九宫格及重置按钮。
-
-## 4. 键盘映射
+## 5. 键盘映射
 - `Space`: `toggleMicrophone`
-- `R`: `randomizeSettings` (随机美学组合)
+- `R`: `randomizeSettings`
 - `F`: `toggleFullscreen`
-- `L`: `setShowLyrics` (开启曲目识别)
-- `H`: `toggleExpanded` (隐藏/显示面板)
-- `G`: `toggleGlow` (光晕效果)
-
-## 5. 触控优化
-- 点击区域 (Hit Targets): 最小 `44x44px`。
-- 滑块 (Sliders): 支持连续拖拽且在移动端禁用页面回弹。
+- `L`: `setShowLyrics`
+- `H`: `toggleExpanded`
+- `G`: `toggleGlow`
+- `T`: `toggleTrails`
 
 ---
-*Aura Vision Interface - Version 0.4.2*
+*Aura Vision Interface - Version 0.7.5*

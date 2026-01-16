@@ -1,4 +1,12 @@
-import React, { Suspense } from 'react';
+
+/**
+ * File: components/visualizers/ThreeVisualizer.tsx
+ * Version: 0.7.2
+ * Author: Aura Vision Team
+ * Copyright (c) 2024 Aura Vision. All rights reserved.
+ */
+
+import React, { Suspense, useCallback } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { EffectComposer, Bloom, ChromaticAberration, TiltShift } from '@react-three/postprocessing';
 import * as THREE from 'three';
@@ -14,6 +22,16 @@ interface ThreeVisualizerProps {
 
 const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, settings, mode }) => {
   if (!analyser) return null;
+
+  const handleContextLost = useCallback((event: any) => {
+    event.preventDefault();
+    console.warn("[WebGL] Context lost! High GPU pressure detected.");
+    // The ErrorBoundary will catch any resulting render errors if they persist
+  }, []);
+
+  const handleContextRestored = useCallback(() => {
+    console.log("[WebGL] Context restored. Re-initializing engine...");
+  }, []);
 
   const renderScene = () => {
     switch (mode) {
@@ -34,12 +52,13 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
       return 1.5;
   };
 
-  const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.0 : Math.min(window.devicePixelRatio, 2);
+  const dpr = settings.quality === 'low' ? 0.8 : settings.quality === 'med' ? 1.2 : Math.min(window.devicePixelRatio, 2);
   const enableTiltShift = settings.quality === 'high' && (mode === VisualizerMode.LIQUID || mode === VisualizerMode.SILK);
   
   return (
-    <div className={`absolute inset-0 z-0 ${settings.hideCursor ? 'cursor-none' : ''}`}>
+    <div className="w-full h-full">
       <Canvas 
+        key={settings.quality}
         camera={{ position: [0, 2, 16], fov: 55 }} 
         dpr={dpr} 
         shadows={false}
@@ -53,6 +72,10 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
         }}
         onCreated={({ gl }) => {
           gl.setClearColor('#000000');
+          // Attach listeners to the underlying canvas element for robustness
+          const canvas = gl.domElement;
+          canvas.addEventListener('webglcontextlost', handleContextLost, false);
+          canvas.addEventListener('webglcontextrestored', handleContextRestored, false);
         }}
       >
         <Suspense fallback={null}>
@@ -62,7 +85,7 @@ const ThreeVisualizer: React.FC<ThreeVisualizerProps> = ({ analyser, colors, set
         {settings.glow && (
             <EffectComposer 
               multisampling={settings.quality === 'high' ? 8 : 0}
-              disableNormalPass={true}
+              enableNormalPass={false}
             >
                 <Bloom 
                     luminanceThreshold={0.4} 

@@ -1,23 +1,24 @@
-import { defineConfig, loadEnv } from 'vite'
+/**
+ * File: vite.config.ts
+ * Version: 0.7.5
+ * Author: Aura Vision Team
+ * Copyright (c) 2024 Aura Vision. All rights reserved.
+ */
+
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
-// https://vitejs.dev/config/
-export default defineConfig(({ mode }) => {
-  // Load env file based on `mode` in the current working directory.
-  // Set the third parameter to '' to load all env regardless of the `VITE_` prefix.
-  const env = loadEnv(mode, (process as any).cwd(), '');
-
-  return {
-    plugins: [react()],
-    base: './', // Ensure relative paths for assets
-    build: {
-      outDir: 'build', // Output to 'build' folder instead of 'dist' for compatibility
-      target: 'es2015', // Ensure compatibility with older devices like Android 5-10
-    },
-    define: {
-      // Safely inject API Key from the loaded environment variables
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
-      // Do NOT define 'process.env': {} as it breaks libraries relying on process.env.NODE_ENV
-    }
+export default defineConfig({
+  plugins: [react()],
+  base: './',
+  build: {
+    outDir: 'build', // Changed to 'build' to match documentation and standard deployment expectations
+    target: 'esnext',
+    minify: 'esbuild',
+    sourcemap: false
+  },
+  define: {
+    // 注入环境变量，如果 process.env.API_KEY 不存在则回退为空字符串
+    'process.env.API_KEY': JSON.stringify(process.env.API_KEY || '')
   }
 })

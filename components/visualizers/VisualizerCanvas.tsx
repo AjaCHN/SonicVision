@@ -6,8 +6,8 @@ import {
 } from '../../core/types';
 import { 
   BarsRenderer, RingsRenderer, ParticlesRenderer, TunnelRenderer, 
-  PlasmaRenderer, ShapesRenderer, NebulaRenderer, 
-  KaleidoscopeRenderer, LasersRenderer, FluidCurvesRenderer, MacroBubblesRenderer
+  PlasmaRenderer, NebulaRenderer, 
+  LasersRenderer, FluidCurvesRenderer, MacroBubblesRenderer
 } from '../../core/services/visualizerStrategies';
 import { lerpHex } from '../../core/services/colorUtils';
 
@@ -33,9 +33,7 @@ const VisualizerCanvas: React.FC<VisualizerCanvasProps> = ({
     [VisualizerMode.PARTICLES]: new ParticlesRenderer(),
     [VisualizerMode.TUNNEL]: new TunnelRenderer(),
     [VisualizerMode.PLASMA]: new PlasmaRenderer(),
-    [VisualizerMode.SHAPES]: new ShapesRenderer(),
     [VisualizerMode.NEBULA]: new NebulaRenderer(),
-    [VisualizerMode.KALEIDOSCOPE]: new KaleidoscopeRenderer(),
     [VisualizerMode.LASERS]: new LasersRenderer(),
     [VisualizerMode.FLUID_CURVES]: new FluidCurvesRenderer(),
     [VisualizerMode.MACRO_BUBBLES]: new MacroBubblesRenderer(),

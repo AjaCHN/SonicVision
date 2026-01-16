@@ -1,4 +1,3 @@
-
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const zh = {
@@ -35,6 +34,7 @@ export const zh = {
     cycleColors: '随时间推移自动平滑过渡色彩主题。',
     colorInterval: '平滑过渡到下一个色彩主题前的停留时间（秒）。',
     reset: '将所有应用配置、语言及音频选项恢复至出厂状态。',
+    confirmReset: '确认重置？此操作不可撤销。',
     resetVisual: '仅重置视觉参数（速度、光晕、拖尾）至默认值。',
     randomize: '随机生成一套意想不到的模式与配色组合。',
     fullscreen: '进入沉浸式全屏交互模式。',
@@ -43,7 +43,12 @@ export const zh = {
     device: '选择当前活动的音频输入硬件。',
     monitor: '通过扬声器监听输入信号（警告：可能产生啸叫）。',
     hideCursor: '自动隐藏鼠标指针以获得纯净视觉。',
-    wakeLock: '启用后，只要可视化处于活动状态，屏幕将保持常亮。'
+    wakeLock: '启用后，只要可视化处于活动状态，屏幕将保持常亮。',
+    showFps: '在屏幕左上角显示实时的帧率（FPS）计数器。',
+    showTooltips: '鼠标悬停在控件上时显示帮助提示。',
+    doubleClickFullscreen: '允许通过双击屏幕任意位置切换全屏模式。',
+    autoHideUi: '在无操作时自动隐藏底部控制面板。',
+    mirrorDisplay: '水平翻转画面（适用于背投或摄像头模式）。'
   },
   visualizerMode: '可视化模式',
   styleTheme: '视觉风格',
@@ -56,6 +61,7 @@ export const zh = {
   rotateInterval: '切换间隔 (秒)',
   cycleColors: '自动循环配色',
   colorInterval: '切换间隔 (秒)',
+  cycleSpeed: '循环周期 (秒)',
   monitorAudio: '音频监听',
   audioInput: '输入源选择',
   lyrics: 'AI 曲目识别',
@@ -68,13 +74,14 @@ export const zh = {
   listening: '监听中',
   identifying: 'AI 正在解析曲目...',
   startExperience: '开启视听盛宴',
-  welcomeTitle: 'Aura Vision',
-  welcomeText: '将声波转化为数字艺术。通过实时频域分析与 AI 语义识别，开启前所未有的视听交互体验。',
+  welcomeTitle: 'Aura Vision | 灵动视界',
+  welcomeText: '将旋律凝炼为极光，让节奏跃然屏上。融合 Gemini AI 实时曲目识别，为您开启感官交响的全新维度。',
   unsupportedTitle: '浏览器不受支持',
-  unsupportedText: 'Aura Vision 需要现代浏览器功能（例如麦克风访问权限）才能运行，您当前的浏览器不支持这些功能。请更新到最新版本的 Chrome、Firefox 或 Safari。',
+  unsupportedText: 'Aura Vision 需要现代浏览器功能（例如麦克风访问权限）才能运行。请更新到最新版本的 Chrome、Edge 或 Safari。',
   hideOptions: '收起',
   showOptions: '显示设置',
   reset: '重置全局设置',
+  confirmReset: '确认重置？',
   resetVisual: '重置视觉参数',
   resetText: '重置文字设置',
   resetAudio: '重置音频设置',
@@ -86,7 +93,7 @@ export const zh = {
   wrongSong: '识别有误？点击重试',
   hideCursor: '隐藏鼠标指针',
   customColor: '文字颜色',
-  randomizeTooltip: '随机视觉设置 (快捷鍵: R)',
+  randomizeTooltip: '随机视觉设置 (快捷键: R)',
   smoothing: '动态平滑度',
   fftSize: '频域分辨率 (FFT)',
   appInfo: '关于应用',
@@ -109,8 +116,39 @@ export const zh = {
     med: '中',
     high: '高'
   },
+  visualPanel: {
+    effects: '特效',
+    automation: '自动化',
+    display: '显示'
+  },
+  audioPanel: {
+    info: '调节“灵敏度”以改变视觉对声音的反应强度，“平滑度”控制动画的流畅性。更高的 FFT 分辨率能提供更精细的细节，但会增加 CPU 负载。'
+  },
+  systemPanel: {
+    interface: '界面交互',
+    behavior: '系统行为',
+    maintenance: '维护与信息'
+  },
+  showFps: '显示帧率',
+  showTooltips: '显示提示',
+  doubleClickFullscreen: '双击全屏',
+  autoHideUi: '自动隐藏 UI',
+  mirrorDisplay: '镜像翻转',
+  presets: {
+    title: '智能预设',
+    hint: '一键应用由专家精心调校的视觉参数组合。',
+    select: '选择一种心境...',
+    calm: '催眠舒缓',
+    party: '动感派对',
+    ambient: '静谧氛围',
+    cyberpunk: '赛博朋克',
+    retrowave: '复古夕阳',
+    vocal: '人声专注'
+  },
   recognitionSource: 'AI 识别源',
   lyricsPosition: '歌词显示位置',
+  lyricsFont: '字体样式',
+  lyricsFontSize: '字体大小',
   simulatedDemo: '模拟演示 (Demo)',
   positions: {
       top: '顶部',
@@ -159,15 +197,13 @@ export const zh = {
   modes: {
     [VisualizerMode.PLASMA]: '流体等离子',
     [VisualizerMode.BARS]: '镜像频谱分析',
-    [VisualizerMode.PARTICLES]: '速激星空',
+    [VisualizerMode.PARTICLES]: '星际穿越', 
     [VisualizerMode.TUNNEL]: '几何时空隧道',
-    [VisualizerMode.SHAPES]: '抽象几何演化',
     [VisualizerMode.RINGS]: '霓虹共振环',
     [VisualizerMode.NEBULA]: '深空星云',
-    [VisualizerMode.KALEIDOSCOPE]: '迷幻万花筒',
     [VisualizerMode.LASERS]: '舞台激光矩阵',
     [VisualizerMode.FLUID_CURVES]: '极光之舞',
-    [VisualizerMode.MACRO_BUBBLES]: '微观液泡',
+    [VisualizerMode.MACRO_BUBBLES]: '微观液泡 (景深)', 
     [VisualizerMode.SILK]: '流光绸缎 (WebGL)',
     [VisualizerMode.LIQUID]: '液态星球 (WebGL)',
     [VisualizerMode.TERRAIN]: '低多边形山脈 (WebGL)'
@@ -179,6 +215,11 @@ export const zh = {
   },
   helpModal: {
     title: 'Aura Vision 交互指南',
+    tabs: {
+        guide: '指南',
+        shortcuts: '快捷键',
+        about: '关于'
+    },
     intro: 'Aura Vision 是一款沉浸式的视听交互工具，它利用高精度麦克风采样，将音频信号实时转化为数学生成的数字艺术。',
     shortcutsTitle: '快捷操作键',
     shortcutItems: {
@@ -192,12 +233,12 @@ export const zh = {
       changeMode: '切换模式',
       changeTheme: '切换配色'
     },
-    howItWorksTitle: '使用说明',
+    howItWorksTitle: '使用指南',
     howItWorksSteps: [
-      '授权麦克风权限以开启实时频域分析。',
-      '在输入设备附近播放高保真音频。',
-      '视觉引擎将根据低音、中音和高频振幅做出即时物理反馈。',
-      'AI 识别功能每 30-45 秒会自动抓取音频特征码进行联网解析。'
+      '1. 授权权限：点击“开启体验”并允许浏览器访问麦克风。',
+      '2. 播放音乐：在设备附近播放音乐，视觉效果将根据实时采样跳动。',
+      '3. 探索模式：打开设置面板 (按 H) 切换 12+ 种视觉引擎。',
+      '4. AI 识别：按 L 键开启“AI 曲目识别”以分析当前歌曲及其情绪。'
     ],
     settingsTitle: '核心参数指南',
     settingsDesc: {
@@ -209,37 +250,37 @@ export const zh = {
       fftSize: '决定了频谱分析的颗粒度，即频段采样数量。'
     },
     projectInfoTitle: '项目简介',
-    projectInfoText: '由 Google Gemini 3 Flash 模型、React 19 以及硬件加速的 WebGL 技术栈强力驱动。',
+    aboutDescription: '下一代通感交互体验。Aura Vision 融合了高精度实时频谱分析与 Google Gemini 3 多模态人工智能，将无形的声波转化为有生命的动态光影艺术。适用于 VJ 演出、直播背景、专注陪伴及空间氛围装饰。',
     privacyTitle: '隐私与安全',
     privacyText: '音频分析完全在本地完成。仅在识别歌曲时，会将加密的频率特征临时发送至云端，绝不存储或上传任何原始录音数据。',
     version: '版本号'
   },
   onboarding: {
-    welcome: '欢迎使用 Aura Vision',
-    subtitle: '下一代 AI 音乐可视化引擎',
-    selectLanguage: '选择语言',
-    next: '下一步',
+    welcome: '欢迎体验 Aura Vision',
+    subtitle: '新一代 AI 音乐通感引擎',
+    selectLanguage: '选择您的语言',
+    next: '继续',
     back: '返回',
     skip: '跳过',
-    finish: '开始体验',
+    finish: '立即开启',
     features: {
       title: '核心特性',
       visuals: {
-        title: '沉浸式视觉',
-        desc: '8+ 种基于 Three.js 开发的 WebGL 物理渲染引擎。'
+        title: '生成式艺术杰作',
+        desc: '12+ 种基于 WebGL 的数学动力学引擎，将声波具象化。'
       },
       ai: {
-        title: 'Gemini AI 智能',
-        desc: '由 Google Gemini 3 驱动的实时曲目识别与情绪分析。'
+        title: 'Gemini AI 智能大脑',
+        desc: '实时识别曲目元数据与视觉情绪，由 Google Gemini 3 提供支持。'
       },
       privacy: {
-        title: '隐私优先',
-        desc: '本地频谱分析。音频数据绝不上传至任何服务器。'
+        title: '隐私安全保障',
+        desc: '音频分析完全在本地运行，我们绝不记录或存储您的私人声音数据。'
       }
     },
     shortcuts: {
-      title: '快捷操作',
-      desc: '使用以下按键快速掌控全局体验。'
+      title: '极速交互',
+      desc: '通过以下快捷键，像指挥家一样掌控全场。'
     }
   }
 };

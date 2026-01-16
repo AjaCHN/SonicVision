@@ -8,12 +8,16 @@ export class PlasmaRenderer implements IVisualizerRenderer {
     if (colors.length === 0) return;
     ctx.globalCompositeOperation = 'screen';
     for (let i = 0; i < 6; i++) {
+        // Boost sensitivity for plasma to make it pump
         const avg = i < 2 ? getAverage(data, 0, 10) : i < 4 ? getAverage(data, 10, 50) : getAverage(data, 50, 150);
-        const intensity = Math.pow(avg / 255, 1.5) * settings.sensitivity;
+        const intensity = Math.pow(avg / 255, 1.5) * settings.sensitivity * 1.5; // Increased multiplier
         const t = rotation * (0.2 + i * 0.1) * settings.speed + (i * Math.PI / 3);
         const x = w/2 + Math.sin(t) * (w * 0.3) * Math.cos(t * 0.5);
         const y = h/2 + Math.cos(t * 0.8) * (h * 0.3) * Math.sin(t * 0.3);
-        const radius = Math.max(w, h) * (0.15 + intensity * 0.4);
+        
+        // More dramatic radius expansion on beat
+        const radius = Math.max(w, h) * (0.15 + intensity * 0.6); 
+        
         const g = ctx.createRadialGradient(x, y, 0, x, y, radius);
         g.addColorStop(0, '#fff');
         g.addColorStop(0.2, colors[i % colors.length] || '#fff');
@@ -61,7 +65,8 @@ export class LasersRenderer implements IVisualizerRenderer {
         const finalAlpha = Math.min(Math.max(baseAlpha * (0.5 + bass * 2), 0.01), 1.0);
         if (finalAlpha < 0.02) continue;
 
-        const coreWidth = (1 + bass * 15 + mids * 3) * settings.sensitivity;
+        // Significantly thicker beams on beat
+        const coreWidth = (1 + bass * 25 + mids * 5) * settings.sensitivity;
         
         // Atmospheric Glow Effect: Draw a wide, faint line first
         if (settings.quality !== 'low') {
@@ -71,7 +76,7 @@ export class LasersRenderer implements IVisualizerRenderer {
             glowGradient.addColorStop(1, 'transparent');
             ctx.strokeStyle = glowGradient;
             ctx.lineWidth = glowWidth;
-            ctx.globalAlpha = finalAlpha * 0.2;
+            ctx.globalAlpha = finalAlpha * 0.3; // Increased glow opacity
             ctx.beginPath(); ctx.moveTo(origin.x, origin.y); ctx.lineTo(endX, endY); ctx.stroke();
         }
 
