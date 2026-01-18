@@ -1,6 +1,7 @@
 
 import React from 'react';
-import { SteppedSlider, CustomSelect } from '../ControlWidgets';
+import { SteppedSlider } from '../../ui/controls/SteppedSlider';
+import { CustomSelect } from '../../ui/controls/CustomSelect';
 import { useAppContext } from '../../AppContext';
 
 export const AudioSettingsPanel: React.FC = () => {
@@ -30,7 +31,7 @@ export const AudioSettingsPanel: React.FC = () => {
   return (
     <>
       {/* Col 1: Device Management */}
-      <div className="p-4 pt-6 h-full flex flex-col space-y-4 border-b lg:border-b-0 lg:border-r border-white/5">
+      <div className="p-4 pt-6 h-full flex flex-col space-y-4 border-b lg:border-b-0 lg:border-e border-white/5">
          <CustomSelect 
             label={t?.audioInput || "Input Device"}
             value={selectedDeviceId}
@@ -44,8 +45,8 @@ export const AudioSettingsPanel: React.FC = () => {
       </div>
 
       {/* Col 2: Core Processing Parameters */}
-      <div className="p-4 pt-6 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5">
-        <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pr-2">
+      <div className="p-4 pt-6 h-full flex flex-col border-b lg:border-b-0 lg:border-e border-white/5">
+        <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pe-2">
           <SteppedSlider label={t?.sensitivity || "Sensitivity"} hintText={hints?.sensitivity} options={[{value:settings.sensitivity, label:settings.sensitivity.toFixed(1)}]} value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v: number) => handleAudioSettingChange('sensitivity', v)} />
           <SteppedSlider label={t?.smoothing || "Smoothing"} hintText={hints?.smoothing} options={[{value:settings.smoothing, label:settings.smoothing.toFixed(2)}]} value={settings.smoothing} min={0} max={0.95} step={0.01} onChange={(v: number) => handleAudioSettingChange('smoothing', v)} />
           

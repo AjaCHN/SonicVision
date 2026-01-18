@@ -1,7 +1,11 @@
 
+
 import React from 'react';
 import { AVAILABLE_FONTS, getPositionOptions } from '../../../core/constants';
-import { SettingsToggle, Slider, CustomSelect, PositionSelector } from '../ControlWidgets';
+import { SettingsToggle } from '../../ui/controls/SettingsToggle';
+import { Slider } from '../../ui/controls/Slider';
+import { CustomSelect } from '../../ui/controls/CustomSelect';
+import { PositionSelector } from '../../ui/controls/PositionSelector';
 import { useAppContext } from '../../AppContext';
 import { Position } from '../../../core/types';
 

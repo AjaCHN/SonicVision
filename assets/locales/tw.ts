@@ -14,7 +14,7 @@ export const tw = {
     visual: '視覺',
     text: '文字',
     audio: '音訊',
-    ai: '曲目辨識',
+    ai: 'AI 曲目辨識',
     system: '系統'
   },
   hints: {

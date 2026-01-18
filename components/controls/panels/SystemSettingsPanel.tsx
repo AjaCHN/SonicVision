@@ -2,7 +2,8 @@
 import React, { useState } from 'react';
 import { Language } from '../../../core/types';
 import { APP_VERSION } from '../../../core/constants';
-import { CustomSelect, SettingsToggle } from '../ControlWidgets';
+import { CustomSelect } from '../../ui/controls/CustomSelect';
+import { SettingsToggle } from '../../ui/controls/SettingsToggle';
 import { useAppContext } from '../../AppContext';
 
 export const SystemSettingsPanel: React.FC = () => {
@@ -24,8 +25,8 @@ export const SystemSettingsPanel: React.FC = () => {
   return (
     <>
       {/* Col 1: Interface & Display */}
-      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pt-6 overflow-hidden">
-         <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pr-2">
+      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-e border-white/5 pt-6 overflow-hidden">
+         <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pe-2">
             <CustomSelect 
               label={t?.language || "Language"} 
               value={language} 
@@ -41,7 +42,7 @@ export const SystemSettingsPanel: React.FC = () => {
             />
             
             <div className="pt-4 border-t border-white/5">
-                <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2">{sys?.interface || "Interface"}</span>
+                <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ms-1 mb-2">{sys?.interface || "Interface"}</span>
                 <div className="space-y-1">
                    <SettingsToggle 
                       variant="clean"
@@ -71,9 +72,9 @@ export const SystemSettingsPanel: React.FC = () => {
       </div>
 
       {/* Col 2: Behavior & Interaction */}
-      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-r border-white/5 pt-6 overflow-hidden">
-         <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pr-2">
-             <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ml-1 mb-2">{sys?.behavior || "Behavior"}</span>
+      <div className="p-4 h-full flex flex-col border-b lg:border-b-0 lg:border-e border-white/5 pt-6 overflow-hidden">
+         <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pe-2">
+             <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ms-1 mb-2">{sys?.behavior || "Behavior"}</span>
              <div className="space-y-1">
                 <SettingsToggle 
                     variant="clean"
@@ -110,7 +111,7 @@ export const SystemSettingsPanel: React.FC = () => {
       {/* Col 3: Maintenance & Reset */}
       <div className="p-4 h-full flex flex-col pt-6">
         <div className="flex-grow">
-            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ml-1 mb-2">{sys?.maintenance || "Maintenance"}</span>
+            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.15em] block ms-1 mb-2">{sys?.maintenance || "Maintenance"}</span>
              <div className="px-1">
                 <div className="flex justify-between items-center mb-2">
                    <span className="text-xs font-bold text-white/70">Aura Vision</span>
@@ -121,9 +122,9 @@ export const SystemSettingsPanel: React.FC = () => {
                     {t?.appDescription || "Immersive audio visualization suite."}
                   </p>
                   <div className="pt-2 border-t border-white/5 space-y-1">
-                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>Engine</span><span>Three.js r160 + React 18</span></div>
-                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>Audio</span><span>Web Audio API (Real-time)</span></div>
-                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>AI</span><span>Gemini 3 Flash (1.5s Latency)</span></div>
+                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>{sys?.engine || 'Engine'}</span><span>Three.js r160 + React 19</span></div>
+                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>{sys?.audio || 'Audio'}</span><span>Web Audio API (Real-time)</span></div>
+                     <div className="flex justify-between text-[9px] font-mono uppercase text-white/20"><span>{sys?.ai || 'AI'}</span><span>Gemini 3 Flash (1.5s Latency)</span></div>
                   </div>
                 </div>
              </div>

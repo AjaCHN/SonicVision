@@ -1,8 +1,12 @@
 
+
 import React, { useRef } from 'react';
 import { LyricsStyle, Region, Position } from '../../../core/types';
 import { REGION_NAMES, getPositionOptions, AVAILABLE_FONTS } from '../../../core/constants';
-import { CustomSelect, SettingsToggle, Slider, PositionSelector } from '../ControlWidgets';
+import { CustomSelect } from '../../ui/controls/CustomSelect';
+import { SettingsToggle } from '../../ui/controls/SettingsToggle';
+import { Slider } from '../../ui/controls/Slider';
+import { PositionSelector } from '../../ui/controls/PositionSelector';
 import { useAppContext } from '../../AppContext';
 
 const BetaBadge = ({ label }: { label?: string }) => (

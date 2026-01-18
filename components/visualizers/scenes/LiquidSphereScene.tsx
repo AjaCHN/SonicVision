@@ -1,7 +1,7 @@
 
 /**
  * File: components/visualizers/scenes/LiquidSphereScene.tsx
- * Version: 0.7.1
+ * Version: 0.7.5
  * Author: Aura Vision Team
  * Copyright (c) 2024 Aura Vision. All rights reserved.
  */
@@ -12,6 +12,15 @@ import { Stars } from '@react-three/drei';
 import * as THREE from 'three';
 import { VisualizerSettings } from '../../../core/types';
 import { useAudioReactive } from '../../../core/hooks/useAudioReactive';
+
+// Fix for missing JSX types in R3F
+declare global {
+  namespace JSX {
+    interface IntrinsicElements {
+      [elemName: string]: any;
+    }
+  }
+}
 
 interface SceneProps {
   analyser: AnalyserNode;
@@ -28,7 +37,7 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
   const rectLightRef = useRef<THREE.RectAreaLight>(null);
   const starsRef = useRef<THREE.Group>(null);
 
-  const { bass: reactivity, treble: vibration, smoothedColors } = useAudioReactive({ analyser, colors, settings });
+  const { bass: reactivity, treble: vibration, smoothedColors, isBeat } = useAudioReactive({ analyser, colors, settings });
   const [c0, c1, c2] = smoothedColors;
 
   const geometry = useMemo(() => {
@@ -56,8 +65,13 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
     if (materialRef.current) {
         materialRef.current.color = c0;
         materialRef.current.emissive = c1;
-        // Pulse emissive with bass
-        materialRef.current.emissiveIntensity = 0.2 + reactivity * 0.8;
+        
+        // Pulse emissive strongly on true beat
+        const beatFlash = isBeat ? 1.5 : 0;
+        const currentEmissive = materialRef.current.emissiveIntensity;
+        // Smooth decay for the flash
+        const targetEmissive = 0.2 + reactivity * 0.8 + beatFlash;
+        materialRef.current.emissiveIntensity = THREE.MathUtils.lerp(currentEmissive, targetEmissive, 0.2);
     }
     
     // Position lights dynamically to simulate a moving environment
@@ -99,14 +113,14 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
         // Base liquid movement
         const noise1 = Math.sin(ox * 0.5 + time) * Math.cos(oy * 0.4 + time * 0.8) * Math.sin(oz * 0.5 + time * 1.2);
         
-        // High frequency detail noise
         let noise2 = 0;
         if (settings.quality !== 'low') {
             noise2 = Math.sin(ox * 2.5 + time * 1.5) * Math.cos(oy * 2.2 + time * 1.8) * 0.5;
         }
         
-        // Reactivity Boost
-        const d1 = noise1 * (0.3 + reactivity * 1.2); 
+        // Reactivity Boost + Beat Punch
+        const beatPunch = isBeat ? 0.5 : 0;
+        const d1 = noise1 * (0.3 + reactivity * 1.2 + beatPunch); 
         const d2 = noise2 * (0.05 + vibration * 0.6); 
         
         const totalDisplacement = Math.max(0.1, 1.0 + d1 + d2);
@@ -128,7 +142,6 @@ export const LiquidSphereScene: React.FC<SceneProps> = ({ analyser, colors, sett
         </group>
       </Suspense>
       
-      {/* 增强的灯光系统，替代丢失的环境贴图反射 */}
       <ambientLight intensity={0.4} />
       <pointLight ref={light1Ref} position={[20, 20, 20]} intensity={15} distance={100} />
       <pointLight ref={light2Ref} position={[-20, -20, 10]} intensity={10} distance={100} />

@@ -1,7 +1,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { VisualizerMode } from '../../core/types';
-import { ActionButton, TooltipArea } from './ControlWidgets';
+import { ActionButton } from '../ui/controls/ActionButton';
+import { TooltipArea } from '../ui/controls/Tooltip';
 
 import { VisualSettingsPanel } from './panels/VisualSettingsPanel';
 import { AudioSettingsPanel } from './panels/AudioSettingsPanel';
@@ -130,11 +131,11 @@ const Controls: React.FC = () => {
 };
 
 const MiniControls: React.FC<{isExpanded: boolean; isIdle: boolean; setIsExpanded: (e:boolean) => void; toggleFullscreen: () => void;}> = ({isExpanded, isIdle, setIsExpanded, toggleFullscreen}) => {
-    const { isListening, toggleMicrophone, selectedDeviceId, randomizeSettings, t, isIdentifying, showLyrics } = useAppContext();
+    const { isListening, toggleMicrophone, selectedDeviceId, randomizeSettings, t, isIdentifying } = useAppContext();
     if (isExpanded) return null;
     return (
         <>
-        {isIdentifying && showLyrics && (
+        {isIdentifying && (
             <div className="fixed top-8 left-8 z-[110] bg-black/60 backdrop-blur-2xl border border-blue-500/30 rounded-full px-6 py-3.5 flex items-center gap-4 animate-pulse">
                 <div className="w-2.5 h-2.5 bg-blue-400 rounded-full animate-ping" />
                 <span className="text-xs font-bold uppercase tracking-[0.25em] text-blue-100">{t?.identifying || "AI ANALYZING..."}</span>

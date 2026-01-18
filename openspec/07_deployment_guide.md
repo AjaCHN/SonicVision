@@ -1,59 +1,57 @@
 # OpenSpec: 部署与环境规范
 
-## 1. 运行环境要求
-- **Node.js**: 推荐版本 18.x 或 20.x (LTS)。
-- **包管理器**: 推荐使用 `npm` (v9+) 或 `pnpm`。
-- **浏览器权限**: 由于 Web Audio API 和 `getUserMedia` 的安全性限制，应用**必须**在 `localhost` 或带有 `HTTPS` 协议的域名下运行，否则无法访问麦克风。
-- **React 锁定**: 本项目锁定 React 18.3.1 以确保与现有 3D 渲染组件的兼容性。
+## 1. 先决条件
+- **Node.js**: 18.x 或更高版本 (LTS)。
+- **包管理器**: `npm` 或 `pnpm`。
+- **API 密钥**: 一个有效的 Google Gemini API 密钥。
 
-## 2. API 密钥配置 (Google Gemini)
-本项目核心功能（曲目识别、语义分析）依赖 Google Gemini API。
-1. 访问 [Google AI Studio](https://aistudio.google.com/app/apikey)。
-2. 创建一个新的 API Key。
-3. **本地开发**: 在项目根目录创建 `.env` 文件：
-   ```env
-   API_KEY=你的_GEMINI_API_KEY
-   ```
-4. **警告**: 切勿将包含真实密钥的 `.env` 文件提交至公共 Git 仓库。
+## 2. 本地开发
+1.  **克隆仓库**: `git clone <repository-url>`
+2.  **创建 `.env` 文件**: 在项目根目录创建一个名为 `.env` 的文件，并填入你的 API 密钥：
+    ```env
+    API_KEY=你的_GEMINI_API_KEY
+    ```
+    > **安全警告**: 绝不要将包含真实密钥的 `.env` 文件提交到公共 Git 仓库。
 
-## 3. 本地开发流程
+3.  **安装并运行**:
+    ```bash
+    # 安装依赖
+    npm install
+    # 启动开发服务器
+    npm run dev
+    ```
+4.  在浏览器中访问 `http://localhost:5173`。请注意，应用必须运行在 `localhost` 或 `https` 协议下才能访问麦克风。
+
+## 3. 生产环境部署
+部署的核心是将 `npm run build` 命令生成的静态文件托管到服务器上。
+
+### 构建步骤
+在部署之前，你必须先构建项目。此命令会将 `API_KEY` 嵌入到最终的静态文件中。
 ```bash
-# 1. 克隆仓库
-git clone <repository-url>
-
-# 2. 安装依赖
-npm install
-
-# 3. 启动开发服务器
-npm run dev
+# 确保在环境中设置了 API_KEY
+API_KEY=你的_GEMINI_API_KEY npm run build
 ```
+构建产物将位于 `build/` 目录中。
 
-## 4. 生产环境构建
-执行以下命令生成优化后的静态资源：
-```bash
-npm run build
-```
-- **输出目录**: `build/`。
-- **路径处理**: 已在 `vite.config.ts` 中配置 `base: './'`，支持部署到任何子路径或 IPFS。
+### 部署平台
 
-## 5. 云平台部署方案
+#### 方案 A: Vercel (推荐)
+1.  将你的 Git 仓库导入到 Vercel。
+2.  配置项目设置：
+    -   **框架预设 (Framework Preset):** `Vite`
+    -   **构建命令 (Build Command):** `npm run build`
+    -   **输出目录 (Output Directory):** `build`
+3.  在 Vercel 项目设置中，添加 `API_KEY` 作为一个环境变量。
+4.  部署。Vercel 将自动处理构建流程和 HTTPS 配置。
 
-### 5.1 Vercel (推荐)
-1. 导入 GitHub 仓库。
-2. 在 **Environment Variables** 中添加 `API_KEY`。
-3. 构建设置：
-   - Framework Preset: `Vite`
-   - Build Command: `npm run build`
-   - Output Directory: `build`
-
-### 5.2 Netlify
-1. 关联仓库并设置构建命令。
-2. 在 **Site settings > Build & deploy > Environment** 中注入密钥。
-3. 确保部署后开启 HTTPS。
-
-## 6. 移动端与平板适配建议
-- **PWA**: 建议部署为 PWA 以获得接近原生的全屏体验。
-- **休眠锁**: 应用已集成 `WakeLock API`，但需确保在部署环境的权限策略中未禁用该功能。
+#### 方案 B: 腾讯云 EdgeOne
+EdgeOne 适合需要在中国大陆地区实现低延迟访问的用户。
+1.  **本地构建**: 在你的本地计算机上运行 `API_KEY=你的_GEMINI_API_KEY npm run build`。
+2.  **访问 EdgeOne 控制台**: 登录腾讯云控制台，进入 EdgeOne 服务。
+3.  **创建站点**: 新建一个静态站点托管实例。
+4.  **上传文件**: 将本地 `build/` 目录下的所有文件上传到站点的文件管理器中。
+5.  **配置域名**: 绑定你的自定义域名，并确保开启 HTTPS 以支持麦克风功能。
+6.  **发布**: 发布站点。
 
 ---
-*Aura Vision Deployment Guide - Version 0.7.5*
+*Aura Vision Deployment Guide - Version 0.8.0*

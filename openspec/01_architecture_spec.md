@@ -2,43 +2,23 @@
 
 ## 1. 核心技术栈
 - **Build System:** Vite 5.2 (Rollup)
-- **Runtime:** React 18.3.1 (Strictly Locked)
+- **Runtime:** React 19.0.0 (生产环境由构建工具管理依赖，严禁使用浏览器级 importmap 干扰别名解析)
 - **Language:** TypeScript 5.4
-- **Styling:** 
-  - Tailwind CSS 3.4 (PostCSS)
-  - **Compatibility Fix:** 预览环境采用 HTML `<link>` 标签引入原生 CSS，并结合 Tailwind Play CDN 进行实时解析。
+- **Styling:** Tailwind CSS 3.4 (PostCSS)
 - **Engine:** 
-  - 2D: Canvas 2D API (策略模式封装)
-  - 3D: Three.js (r160) / @react-three/fiber / @react-three/postprocessing
+  - **2D (Optimized):** OffscreenCanvas API + Web Workers (ESM 模块化加载)
+  - **3D:** Three.js (r160) / @react-three/fiber v9
 - **Intelligence:** Google Gemini 3 (Flash Preview)
-- **Audio:** Web Audio API (实时分析)
+- **Audio:** Web Audio API (实时频域分析)
 
-## 2. 目录结构 (Directory Structure)
-```
-/
-├── assets/                # 静态资源 (Styles, Locales)
-├── components/            # UI 组件层
-│   ├── controls/          # UI 控制面板 (含三列式 Panel)
-│   ├── visualizers/       # 渲染容器 (2D/3D)
-│   └── ui/                # 信息覆盖层 (歌词, 文字, 提示)
-├── core/                  # 核心业务逻辑
-│   ├── hooks/             # 自定义 Hooks (Audio, ID, Idle)
-│   ├── services/          # 渲染策略、AI 服务、指纹算法
-│   └── types/             # 全局类型定义
-├── openspec/              # OpenSpec 系统规范文档
-└── index.tsx              # 应用挂载点
-```
+## 2. 模块解析与 Worker
+- **路径策略:** 内部引用强制使用标准相对路径 (`./` 或 `../`)。
+- **Worker 加载:** 采用 `new Worker(new URL(...), { type: 'module' })` 模式，确保与 Vite 别名逻辑兼容。
+- **离屏架构:** 渲染线程 (Worker) 独立处理 2D Canvas 绘图，主线程仅负责音频采样与状态管理。
 
-## 3. 应用生命周期
-1. **Bootstrap:** 检测浏览器权限，初始化 `AudioContext`。
-2. **Context Management:** 严格执行 React 18 运行时环境下的实例清理，防止内存泄漏。
-3. **Main Loop:** 
-   - 采样: 每帧通过 `getByteFrequencyData` 获取频域数据。
-   - 渲染: 数据注入当前活动的渲染策略 (2D) 或传参给 Three.js 组件 (3D)。
-
-## 4. 容错与稳定性 (v0.7.5 更新)
-- **Error Boundary:** 全局错误拦截器必须显式声明 `state` 和 `props` 成员属性，以确保在严格型 TypeScript 环境下对 `React.Component` 的继承行为符合预期。
-- **Auto-Recovery:** 捕获渲染引擎异常后，提供“出厂重置 (Factory Reset)”选项以清除可能导致崩溃的 LocalStorage 脏数据。
+## 3. 并发安全性
+- **React 19 Compatibility:** 采用 `createRoot` 并全面支持 React 19 的新生命周期。
+- **Initialization Locks:** 在 `VisualizerCanvas` 等关键组件中通过 `initializedRef` 防止双重挂载引起的 Worker 多实例冲突。
 
 ---
-*Aura Vision Architecture - Version 0.7.5*
+*Aura Vision Architecture - Version 1.2.0*

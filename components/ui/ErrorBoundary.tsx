@@ -1,11 +1,11 @@
 /**
  * File: components/ui/ErrorBoundary.tsx
- * Version: 0.7.3
+ * Version: 0.7.6
  * Author: Aura Vision Team
  * Copyright (c) 2024 Aura Vision. All rights reserved.
  */
 
-import React, { ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
 
 interface Props {
   children?: ReactNode;
@@ -16,15 +16,9 @@ interface State {
   error: Error | null;
 }
 
-// Fixed: Using React.Component explicitly to resolve TypeScript property identification issues for state and props.
-export class ErrorBoundary extends React.Component<Props, State> {
-  // Explicitly declare state and props to fix compiler identification issues on the inherited class
-  public state: State;
-  public props: Props;
-
+export class ErrorBoundary extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    // Initialize the explicitly declared state property
     this.state = {
       hasError: false,
       error: null,
@@ -47,7 +41,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   public render() {
-    // Accessed 'state' via the explicit class property declaration
     if (this.state.hasError) {
       return (
         <div className="min-h-screen bg-black flex items-center justify-center p-6 text-center text-white">
@@ -63,7 +56,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
                 The visual engine encountered an unexpected state.
               </p>
             </div>
-            {/* Accessing error property from the explicitly declared state object */}
             {this.state.error && (
               <div className="text-left bg-black/40 p-4 rounded-xl border border-white/5 overflow-auto max-h-32">
                 <code className="text-[10px] font-mono text-red-300/80 block whitespace-pre-wrap break-all">
@@ -90,7 +82,6 @@ export class ErrorBoundary extends React.Component<Props, State> {
       );
     }
 
-    // Accessed 'props' via the explicit class property declaration
     return this.props.children;
   }
 }

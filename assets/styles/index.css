@@ -1,10 +1,13 @@
-
 /*
  * File: assets/styles/index.css
- * Version: 0.7.0
+ * Version: 1.0.0
  * Author: Aura Vision Team
  * Copyright (c) 2024 Aura Vision. All rights reserved.
  */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 /* Custom UI Enhancements */
 body {

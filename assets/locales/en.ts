@@ -1,4 +1,3 @@
-
 import { VisualizerMode, LyricsStyle } from '../../core/types';
 
 export const en = {
@@ -15,7 +14,7 @@ export const en = {
     visual: 'Visual',
     text: 'Text',
     audio: 'Audio',
-    ai: 'AI Recognition',
+    ai: 'AI Identification',
     system: 'System'
   },
   hints: {
@@ -126,7 +125,10 @@ export const en = {
   systemPanel: {
     interface: 'Interface',
     behavior: 'Behavior',
-    maintenance: 'Maintenance'
+    maintenance: 'Maintenance',
+    engine: 'Engine',
+    audio: 'Audio',
+    ai: 'AI'
   },
   showFps: 'Show FPS',
   showTooltips: 'Show Tooltips',

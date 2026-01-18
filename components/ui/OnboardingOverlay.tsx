@@ -1,8 +1,11 @@
 
+
 import React, { useState } from 'react';
 import { Language } from '../../core/types';
 import { TRANSLATIONS } from '../../core/i18n';
 import { APP_VERSION } from '../../core/constants';
+import { FeatureCard } from './onboarding/FeatureCard';
+import { ShortcutRow } from './onboarding/ShortcutRow';
 
 interface OnboardingOverlayProps {
   language: Language;
@@ -77,14 +80,3 @@ export const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ language, 
     </div>
   );
 };
-
-const FeatureCard = ({ icon, title, desc }: { icon: React.ReactNode, title: string, desc: string }) => (
-  <div className="flex items-start gap-4 p-4 bg-white/[0.03] border border-white/5 rounded-2xl">
-     <div className="p-2 bg-white/5 rounded-lg shrink-0">{icon}</div>
-     <div><h3 className="text-white font-bold text-sm mb-1">{title}</h3><p className="text-white/50 text-xs leading-relaxed">{desc}</p></div>
-  </div>
-);
-
-const ShortcutRow = ({ k, label }: { k: string, label: string }) => (
-  <div className="flex items-center justify-between p-2 rounded-lg bg-white/[0.02]"><span className="text-white/60 text-xs truncate mr-2">{label}</span><kbd className="px-2 py-1 bg-white/10 rounded text-[10px] font-mono text-white border border-white/10 min-w-[24px] text-center">{k}</kbd></div>
-);

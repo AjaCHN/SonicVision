@@ -13,28 +13,17 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
   const hueRef = useRef(0);
   const lastTimeRef = useRef(0);
   const sizeVw = settings.customTextSize || 12;
-  const sizePx = sizeVw * 13; // Approximate conversion for max size
+  const sizePx = sizeVw * 13; 
 
+  // 使用 hook 更新 CSS 变量，并传递基础透明度
   useAudioPulse({
     elementRef: textRef,
     analyser,
     settings,
     isEnabled: settings.showCustomText && !!settings.customText && settings.textPulse,
-    baseOpacity: settings.customTextOpacity,
+    baseOpacity: settings.customTextOpacity, // FIX: Pass baseOpacity to the hook
   });
   
-  // Effect to handle non-pulsing transformations (rotation and base opacity)
-  useEffect(() => {
-    if (textRef.current && settings.showCustomText && settings.customText) {
-      const rotation = settings.customTextRotation || 0;
-      textRef.current.style.transform = `rotate(${rotation}deg)`;
-      if (!settings.textPulse) {
-         textRef.current.style.opacity = `${0.9 * (settings.customTextOpacity || 1.0)}`;
-      }
-    }
-  }, [settings.showCustomText, settings.customText, settings.customTextRotation, settings.customTextOpacity, settings.textPulse]);
-
-  // Effect to handle Color Cycling
   useEffect(() => {
     let rafId: number;
     
@@ -44,8 +33,6 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
       lastTimeRef.current = timestamp;
 
       if (textRef.current && settings.customTextCycleColor) {
-        // Full 360 degrees rotation over `interval` seconds
-        // deltaHue = (deltaTime in ms / 1000) * (360 / interval)
         const interval = settings.customTextCycleInterval || 5; 
         const speed = 360 / Math.max(0.1, interval);
         const delta = (deltaTime / 1000) * speed;
@@ -60,8 +47,7 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
     if (settings.customTextCycleColor) {
       rafId = requestAnimationFrame(animateColor);
     } else if (textRef.current) {
-      // If cycling is disabled, revert to static color or remove override
-      // Setting explicit color ensures we don't get stuck on the last HSL value
+      // FIX: Ensure color is correctly set when cycling is off
       textRef.current.style.color = settings.customTextColor || '#ffffff';
       lastTimeRef.current = 0;
     }
@@ -91,15 +77,23 @@ const CustomTextOverlay: React.FC<CustomTextOverlayProps> = ({ settings, analyse
       return map[pos] || map.mc;
   };
 
+  const rotation = settings.customTextRotation || 0;
+
   return (
     <div className={`pointer-events-none fixed z-[100] flex flex-col ${getPositionClasses()}`}>
-      <div ref={textRef} className="font-black tracking-widest uppercase transition-transform duration-75 ease-out select-none inline-block origin-center break-words"
+      <div 
+        ref={textRef} 
+        className="font-black tracking-widest uppercase select-none inline-block origin-center break-words transition-opacity duration-300"
         style={{ 
             color: settings.customTextCycleColor ? undefined : (settings.customTextColor || '#ffffff'),
             fontSize: `min(${sizeVw}vw, ${sizePx}px)`, 
-            whiteSpace: 'pre-wrap', lineHeight: 1.1,
-            fontFamily: settings.customTextFont || 'Inter, sans-serif'
-        }}
+            whiteSpace: 'pre-wrap', 
+            lineHeight: 1.1,
+            fontFamily: settings.customTextFont || 'Inter, sans-serif',
+            // FIX: Always rely on CSS variable for transform and opacity for consistency with useAudioPulse
+            transform: `rotate(${rotation}deg) scale(var(--pulse-scale, 1))`,
+            opacity: 'var(--pulse-opacity, 1)' // Ensure opacity is always controlled by the CSS variable
+        } as React.CSSProperties}
       >
         {settings.customText}
       </div>

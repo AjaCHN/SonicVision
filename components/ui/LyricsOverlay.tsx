@@ -1,4 +1,3 @@
-
 import React, { useRef } from 'react';
 import { VisualizerSettings, SongInfo, LyricsStyle } from '../../core/types';
 import { useAudioPulse } from '../../core/hooks/useAudioPulse';
@@ -14,7 +13,6 @@ interface LyricsOverlayProps {
 const LyricsOverlay: React.FC<LyricsOverlayProps> = ({ settings, song, showLyrics, lyricsStyle, analyser }) => {
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Force enabled if it's a layout preview
   const isPreview = song?.matchSource === 'PREVIEW';
   const isEnabled = isPreview || (showLyrics && !!song && (!!song.lyricsSnippet || song.identified));
   
@@ -57,10 +55,6 @@ const LyricsOverlay: React.FC<LyricsOverlayProps> = ({ settings, song, showLyric
   const getPositionClasses = () => {
       const pos = settings.lyricsPosition || 'mc';
       const map: Record<string, string> = {
-          // BUG FIX: Switched from absolute positioning (top/left) to Flexbox alignment (justify/items)
-          // to make the position selector work correctly with the parent flex container.
-          // Vertical alignment: justify-start (top), justify-center (middle), justify-end (bottom)
-          // Horizontal alignment (for flex-col): items-start (left), items-center (center), items-end (right)
           tl: 'justify-start items-start text-left',
           tc: 'justify-start items-center text-center',
           tr: 'justify-start items-end text-right',
@@ -76,7 +70,14 @@ const LyricsOverlay: React.FC<LyricsOverlayProps> = ({ settings, song, showLyric
 
   return (
     <div className={`pointer-events-none fixed inset-0 z-10 flex flex-col px-6 pt-24 pb-32 ${getPositionClasses()}`}>
-      <div ref={containerRef} className={`transition-transform duration-75 ease-out select-none max-w-4xl`}>
+      <div 
+        ref={containerRef} 
+        className="select-none max-w-4xl"
+        style={{
+            transform: 'scale(var(--pulse-scale, 1))',
+            opacity: 'var(--pulse-opacity, 1)'
+        }}
+      >
          {isPreview && <div className="text-[9px] font-mono text-white/40 mb-2 uppercase tracking-widest text-center w-full">Layout Preview</div>}
          {lines.map((line, i) => <p key={i} className={textClass} style={fontStyle}>{line}</p>)}
       </div>

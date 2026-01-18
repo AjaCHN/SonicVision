@@ -14,7 +14,7 @@ export const zh = {
     visual: '视觉',
     text: '文字',
     audio: '音频',
-    ai: '曲目识别',
+    ai: 'AI 曲目识别',
     system: '系统'
   },
   hints: {
@@ -127,7 +127,10 @@ export const zh = {
   systemPanel: {
     interface: '界面交互',
     behavior: '系统行为',
-    maintenance: '维护与信息'
+    maintenance: '维护与信息',
+    engine: '渲染引擎',
+    audio: '音频架构',
+    ai: '人工智能'
   },
   showFps: '显示帧率',
   showTooltips: '显示提示',
@@ -250,7 +253,7 @@ export const zh = {
       fftSize: '决定了频谱分析的颗粒度，即频段采样数量。'
     },
     projectInfoTitle: '项目简介',
-    aboutDescription: '下一代通感交互体验。Aura Vision 融合了高精度实时频谱分析与 Google Gemini 3 多模态人工智能，将无形的声波转化为有生命的动态光影艺术。适用于 VJ 演出、直播背景、专注陪伴及空间氛围装饰。',
+    aboutDescription: '一个基于实时频域分析与 Gemini AI 语义识别的沉浸式音乐可视化套件。',
     privacyTitle: '隐私与安全',
     privacyText: '音频分析完全在本地完成。仅在识别歌曲时，会将加密的频率特征临时发送至云端，绝不存储或上传任何原始录音数据。',
     version: '版本号'

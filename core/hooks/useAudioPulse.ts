@@ -1,9 +1,8 @@
-// FIX: Import React to provide the type for React.RefObject.
 import React, { useRef, useEffect } from 'react';
 import { VisualizerSettings } from '../types';
 
 interface UseAudioPulseProps {
-  elementRef: React.RefObject<HTMLElement>;
+  elementRef: React.RefObject<HTMLElement | null>;
   analyser: AnalyserNode | null;
   settings: Pick<VisualizerSettings, 'sensitivity'>;
   isEnabled: boolean;
@@ -12,6 +11,10 @@ interface UseAudioPulseProps {
   baseOpacity?: number;
 }
 
+/**
+ * 使用 CSS 变量应用音频响应式脉冲效果。
+ * 这种方式避免了直接覆盖 transform 属性，从而允许组件独立维护旋转等其他变换。
+ */
 export const useAudioPulse = ({
   elementRef,
   analyser,
@@ -26,13 +29,11 @@ export const useAudioPulse = ({
   useEffect(() => {
     const cleanup = () => {
       if (requestRef.current) cancelAnimationFrame(requestRef.current);
-      if (elementRef.current) {
-        // Remove pulse-related styles while preserving other transforms
-        const existingTransform = elementRef.current.style.transform;
-        const newTransform = existingTransform.replace(/scale\([^)]*\)/, '').trim();
-        elementRef.current.style.transform = newTransform;
-        elementRef.current.style.opacity = `${baseOpacity}`;
-        elementRef.current.style.willChange = 'auto';
+      const el = elementRef.current;
+      if (el) {
+        el.style.removeProperty('--pulse-scale');
+        el.style.removeProperty('--pulse-opacity');
+        el.style.willChange = 'auto';
       }
     };
 
@@ -41,9 +42,12 @@ export const useAudioPulse = ({
       return;
     }
 
-    if (elementRef.current) {
-      // Opt-in to GPU acceleration for the pulsing elements
-      elementRef.current.style.willChange = 'transform, opacity';
+    const el = elementRef.current;
+    if (el) {
+      el.style.willChange = 'transform, opacity';
+      // 初始化默认值
+      el.style.setProperty('--pulse-scale', '1');
+      el.style.setProperty('--pulse-opacity', baseOpacity.toString());
     }
 
     const animate = () => {
@@ -52,16 +56,15 @@ export const useAudioPulse = ({
         analyser.getByteFrequencyData(dataArray);
         
         let bass = 0;
-        for (let i = 0; i < 10; i++) bass += dataArray[i];
-        const bassNormalized = (bass / 10) / 255;
+        const bassBins = 10;
+        for (let i = 0; i < bassBins; i++) bass += dataArray[i];
+        const bassNormalized = (bass / bassBins) / 255;
 
         const scale = 1 + (bassNormalized * pulseStrength * settings.sensitivity);
         const opacity = Math.min(1, (1.0 - opacityStrength + bassNormalized * opacityStrength) * baseOpacity);
 
-        // Update transform precisely
-        const existingTransform = elementRef.current.style.transform.replace(/scale\([^)]*\)/, '').trim();
-        elementRef.current.style.transform = existingTransform ? `${existingTransform} scale(${scale})` : `scale(${scale})`;
-        elementRef.current.style.opacity = `${opacity}`;
+        elementRef.current.style.setProperty('--pulse-scale', scale.toFixed(3));
+        elementRef.current.style.setProperty('--pulse-opacity', opacity.toFixed(3));
       }
       requestRef.current = requestAnimationFrame(animate);
     };

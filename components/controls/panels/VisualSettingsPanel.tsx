@@ -2,7 +2,9 @@
 import React from 'react';
 import { VisualizerMode } from '../../../core/types';
 import { VISUALIZER_PRESETS, COLOR_THEMES, SMART_PRESETS } from '../../../core/constants';
-import { SettingsToggle, Slider, CustomSelect } from '../ControlWidgets';
+import { SettingsToggle } from '../../ui/controls/SettingsToggle';
+import { Slider } from '../../ui/controls/Slider';
+import { CustomSelect } from '../../ui/controls/CustomSelect';
 import { VisualizerPreview } from './VisualizerPreview';
 import { useAppContext } from '../../AppContext';
 
@@ -31,9 +33,9 @@ export const VisualSettingsPanel: React.FC = () => {
   return (
     <>
       {/* Col 1: Visual Modes Selection */}
-      <div className="flex flex-col p-4 h-full border-b lg:border-b-0 lg:border-r border-white/5 pt-6 overflow-hidden">
-        <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-3 flex-shrink-0">{t?.visualizerMode || "Visualizer Mode"}</span>
-        <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto custom-scrollbar p-1 pr-2 content-start">
+      <div className="flex flex-col p-4 h-full border-b lg:border-b-0 lg:border-e border-white/5 pt-6 overflow-hidden">
+        <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ms-1 mb-3 flex-shrink-0">{t?.visualizerMode || "Visualizer Mode"}</span>
+        <div className="grid grid-cols-2 gap-2 flex-grow overflow-y-auto custom-scrollbar p-1 pe-2 content-start">
            {Object.keys(VISUALIZER_PRESETS).map(m => (
              <VisualizerPreview
                 key={m}
@@ -47,8 +49,8 @@ export const VisualSettingsPanel: React.FC = () => {
       </div>
       
       {/* Col 2: Themes, Smart Presets & Quality */}
-      <div className="flex flex-col p-4 h-full border-b lg:border-b-0 lg:border-r border-white/5 pt-6 overflow-hidden">
-        <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pr-2">
+      <div className="flex flex-col p-4 h-full border-b lg:border-b-0 lg:border-e border-white/5 pt-6 overflow-hidden">
+        <div className="space-y-6 flex-grow overflow-y-auto custom-scrollbar pe-2">
             <div className="mb-2">
               <CustomSelect 
                 label={presets.title || 'Smart Presets'}
@@ -72,7 +74,7 @@ export const VisualSettingsPanel: React.FC = () => {
             </div>
 
             <div>
-                <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2 flex-shrink-0">{t?.styleTheme || "Visual Theme"}</span>
+                <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ms-1 mb-2 flex-shrink-0">{t?.styleTheme || "Visual Theme"}</span>
                 <div className="grid grid-cols-6 gap-2 p-1 content-start mb-2">
                   {COLOR_THEMES.map((theme, i) => (
                     <button key={i} onClick={() => setColorTheme(theme)} aria-label={`Theme ${i+1}`} className={`aspect-square rounded-full flex-shrink-0 transition-all duration-300 ${JSON.stringify(colorTheme) === JSON.stringify(theme) ? 'ring-2 ring-white/80 scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' : 'opacity-60 hover:opacity-100'}`} style={{background: `linear-gradient(135deg, ${theme[0]}, ${theme[1]})` }} />
@@ -97,20 +99,20 @@ export const VisualSettingsPanel: React.FC = () => {
       
       {/* Col 3: Tuning & Automation */}
       <div className="flex flex-col p-4 h-full pt-6 overflow-hidden">
-        <div className="space-y-4 flex-grow overflow-y-auto custom-scrollbar pr-2">
+        <div className="space-y-4 flex-grow overflow-y-auto custom-scrollbar pe-2">
           <div className="space-y-4">
             <Slider label={t?.speed || "Speed"} hintText={hints?.speed} value={settings.speed} min={0.1} max={3.0} step={0.1} onChange={(v: number) => handleVisualSettingChange('speed', v)} />
             <Slider label={t?.sensitivity || "Sensitivity"} hintText={hints?.sensitivity} value={settings.sensitivity} min={0.5} max={4.0} step={0.1} onChange={(v: number) => handleVisualSettingChange('sensitivity', v)} />
           </div>
           <div className="space-y-3 pt-3 border-t border-white/5">
-              <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2">{visualPanel.effects || "Effects"}</span>
+              <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ms-1 mb-2">{visualPanel.effects || "Effects"}</span>
               <div className="grid grid-cols-2 gap-2">
                   <SettingsToggle label={t?.glow || "Glow"} value={settings.glow} onChange={() => handleVisualSettingChange('glow', !settings.glow)} hintText={`${hints?.glow || "Glow"} [G]`} />
                   <SettingsToggle label={t?.trails || "Trails"} value={settings.trails} onChange={() => handleVisualSettingChange('trails', !settings.trails)} hintText={`${hints?.trails || "Trails"} [T]`} />
               </div>
           </div>
           <div className="space-y-2 pt-3 border-t border-white/5">
-            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ml-1 mb-2">{visualPanel.automation || "Automation"}</span>
+            <span className="text-xs font-bold uppercase text-white/50 tracking-[0.25em] block ms-1 mb-2">{visualPanel.automation || "Automation"}</span>
             <SettingsToggle label={t?.autoRotate || "Auto Rotate"} value={settings.autoRotate} onChange={() => handleVisualSettingChange('autoRotate', !settings.autoRotate)} hintText={hints?.autoRotate}>
                 <div className="pt-1">
                     <Slider label={t?.rotateInterval || "Interval"} value={settings.rotateInterval} min={10} max={120} step={5} unit="s" onChange={(v: number) => handleVisualSettingChange('rotateInterval', v)} />

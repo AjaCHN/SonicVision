@@ -27,14 +27,41 @@ export const useIdentification = ({ language, region, provider, showLyrics }: Us
     };
   }, []);
 
+  /**
+   * 核心修复：根据浏览器支持情况动态获取最佳音频 MIME 类型。
+   * 特别是针对 iOS Safari 需要回退到 audio/mp4。
+   */
+  const getSupportedMimeType = useCallback(() => {
+    const types = [
+      'audio/webm;codecs=opus',
+      'audio/webm',
+      'audio/ogg;codecs=opus',
+      'audio/mp4', // Fallback for iOS Safari
+      'audio/aac'  // Another common fallback
+    ];
+    for (const type of types) {
+      if (typeof MediaRecorder !== 'undefined' && MediaRecorder.isTypeSupported(type)) {
+        return type;
+      }
+    }
+    console.warn("[AI] No supported MediaRecorder MIME type found.");
+    return '';
+  }, []);
+
   const performIdentification = useCallback(async (stream: MediaStream) => {
     if (!showLyrics || isIdentifying || !stream.active) return;
     
     const requestId = ++latestRequestId.current;
+    const mimeType = getSupportedMimeType();
+    
+    if (!mimeType) {
+      console.error("[AI] 没有找到受支持的录音格式。");
+      return;
+    }
+
     setIsIdentifying(true);
     
     try {
-      const mimeType = 'audio/webm;codecs=opus';
       const recorder = new MediaRecorder(stream, { mimeType });
       recorderRef.current = recorder;
 
@@ -56,7 +83,13 @@ export const useIdentification = ({ language, region, provider, showLyrics }: Us
           reader.onloadend = async () => {
             if (!isMounted.current || requestId !== latestRequestId.current) return;
             
-            const base64Data = (reader.result as string).split(',')[1];
+            const resultStr = reader.result as string;
+            const base64Data = resultStr.includes(',') ? resultStr.split(',')[1] : '';
+            if (!base64Data) {
+               setIsIdentifying(false);
+               return;
+            }
+
             const info = await identifySongFromAudio(base64Data, mimeType, language, region, provider);
             
             if (isMounted.current && requestId === latestRequestId.current) {
@@ -68,23 +101,25 @@ export const useIdentification = ({ language, region, provider, showLyrics }: Us
           };
           reader.readAsDataURL(blob);
         } catch (e) {
-          console.error("[AI] Process Error:", e);
+          console.error("[AI] 处理错误:", e);
           setIsIdentifying(false);
         }
       };
 
       recorder.start();
       
-      // Auto-stop after 6 seconds to capture enough spectral data
+      // 录制 6 秒以获取足够的采样
       setTimeout(() => {
-        if (recorder.state === 'recording') recorder.stop();
+        if (recorderRef.current && recorderRef.current.state === 'recording') {
+          recorderRef.current.stop();
+        }
       }, 6000); 
 
     } catch (e) {
-      console.error("[AI] Recorder Error:", e);
+      console.error("[AI] 录制错误:", e);
       setIsIdentifying(false);
     }
-  }, [showLyrics, isIdentifying, language, region, provider]);
+  }, [showLyrics, isIdentifying, language, region, provider, getSupportedMimeType]);
 
   return { isIdentifying, currentSong, setCurrentSong, performIdentification };
 };

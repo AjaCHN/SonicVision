@@ -1,11 +1,9 @@
 /**
  * File: core/types/index.ts
- * Version: 0.7.5
+ * Version: 0.8.1
  * Author: Aura Vision Team
  * Copyright (c) 2024 Aura Vision. All rights reserved.
  */
-
-import * as React from 'react';
 
 export type Language = 'en' | 'zh' | 'tw' | 'ja' | 'es' | 'ko' | 'de' | 'fr' | 'ar' | 'ru';
 
@@ -106,16 +104,20 @@ export interface SmartPreset {
   };
 }
 
+// RenderContext uses any to avoid bringing in DOM types that might crash Workers
+export type RenderContext = any; 
+
 export interface IVisualizerRenderer {
-  init(canvas: HTMLCanvasElement): void;
+  init(canvas: any): void;
   draw(
-    ctx: CanvasRenderingContext2D, 
+    ctx: RenderContext, 
     data: Uint8Array, 
     width: number, 
     height: number, 
     colors: string[], 
     settings: VisualizerSettings,
-    rotation: number
+    rotation: number,
+    beat: boolean
   ): void;
   cleanup?(): void;
 }
@@ -124,3 +126,10 @@ export interface AudioDevice {
   deviceId: string;
   label: string;
 }
+
+// Worker Messages
+export type WorkerMessage = 
+  | { type: 'INIT'; canvas: OffscreenCanvas; width: number; height: number; devicePixelRatio: number }
+  | { type: 'RESIZE'; width: number; height: number }
+  | { type: 'FRAME'; data: Uint8Array }
+  | { type: 'CONFIG'; mode: VisualizerMode; settings: VisualizerSettings; colors: string[] };
