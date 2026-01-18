@@ -1,6 +1,7 @@
+
 <!--
   File: index.html
-  Version: 0.7.5
+  Version: 1.0.0
   Author: Aura Vision Team
   Copyright (c) 2024 Aura Vision. All rights reserved.
 -->
@@ -28,6 +29,11 @@
     <meta name="robots" content="index, follow">
     <meta name="theme-color" content="#000000">
 
+    <!-- SEO & Identity -->
+    <link rel="canonical" href="https://aura.tanox.net/" />
+    <link rel="icon" type="image/svg+xml" href="./assets/images/favicon.svg" />
+    <link rel="apple-touch-icon" href="./assets/images/favicon.svg" />
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://aura.tanox.net/">
@@ -41,6 +47,30 @@
     <meta property="twitter:title" content="Aura Vision | AI Music Visualizer & 3D Audio Reactor">
     <meta property="twitter:description" content="Transform live audio into stunning, real-time generative art powered by Google Gemini AI. Features 3D WebGL scenes and instant song recognition.">
     <meta property="twitter:image" content="https://aura.tanox.net/assets/images/banner.jpg">
+
+    <!-- Structured Data (JSON-LD) for Rich Snippets -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Aura Vision",
+      "url": "https://aura.tanox.net/",
+      "description": "Transform live audio into stunning, real-time generative art powered by Google Gemini AI. Features song recognition and 3D visuals.",
+      "applicationCategory": "MultimediaApplication",
+      "operatingSystem": "Web Browser",
+      "browserRequirements": "Requires WebGL and Web Audio API support (Chrome, Edge, Safari, Firefox)",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": "Real-time FFT Analysis, AI Song Recognition, 3D WebGL Visualization, Microphone Input, VJ Tools",
+      "author": {
+        "@type": "Organization",
+        "name": "Aura Vision Team"
+      }
+    }
+    </script>
 
     <!-- Browser Shim for process.env to prevent runtime crashes -->
     <script>

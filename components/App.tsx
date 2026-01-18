@@ -1,5 +1,4 @@
 
-
 /**
  * File: components/App.tsx
  * Version: 0.7.0
@@ -29,6 +28,12 @@ const AppContent: React.FC = () => {
     currentSong, showLyrics, lyricsStyle, mediaStream,
     performIdentification, setCurrentSong, toggleFullscreen
   } = useAppContext();
+
+  // Logic to split title into Brand and Slogan if separated by "|"
+  const titleRaw = t?.welcomeTitle || "Aura Vision";
+  const [titleMain, titleSub] = titleRaw.includes('|') 
+    ? titleRaw.split('|').map((s: string) => s.trim()) 
+    : [titleRaw, null];
 
   const handleDoubleClick = (e: React.MouseEvent) => {
     // Prevent fullscreen trigger if clicking on controls (though z-index usually handles this, safety check)
@@ -60,7 +65,16 @@ const AppContent: React.FC = () => {
     return (
       <div className="min-h-[100dvh] bg-black flex items-center justify-center p-6 text-center">
         <div className="max-w-md space-y-8 animate-fade-in-up">
-          <h1 className="text-5xl font-black bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 pb-4 text-transparent">{t?.welcomeTitle || "Aura Vision"}</h1>
+          <div className="flex flex-col items-center gap-1">
+            <h1 className="text-5xl md:text-7xl font-black bg-clip-text bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 text-transparent leading-tight pb-2 tracking-tight">
+              {titleMain}
+            </h1>
+            {titleSub && (
+              <span className="text-xl md:text-3xl font-bold text-white/90 tracking-[0.15em] uppercase">
+                {titleSub}
+              </span>
+            )}
+          </div>
           <p className="text-gray-400 text-sm">{t?.welcomeText || "Translate audio into generative art."}</p>
           <div className="flex flex-col gap-3">
              <button onClick={() => { setHasStarted(true); startMicrophone(selectedDeviceId); }} className="px-8 py-4 bg-white text-black font-bold rounded-2xl hover:scale-105 transition-all">{t?.startExperience || "Start"}</button>
