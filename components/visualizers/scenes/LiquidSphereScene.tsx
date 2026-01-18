@@ -13,15 +13,6 @@ import * as THREE from 'three';
 import { VisualizerSettings } from '../../../core/types';
 import { useAudioReactive } from '../../../core/hooks/useAudioReactive';
 
-// Fix for missing JSX types in R3F
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface SceneProps {
   analyser: AnalyserNode;
   colors: string[];

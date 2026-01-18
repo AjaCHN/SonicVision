@@ -3,15 +3,6 @@ import React, { useRef, useMemo } from 'react';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-// Fix for missing JSX types in R3F
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      [elemName: string]: any;
-    }
-  }
-}
-
 interface DynamicStarfieldProps { 
   treble: number; 
   speed: number;

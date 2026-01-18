@@ -6,7 +6,6 @@
 [中文文档](README_ZH.md) | [Live Demo](https://aura.tanox.net/) | [Changelog](CHANGELOG.md)
 
 <!-- README.md -->
-![Banner](assets/images/aura-banner.jpg)
 
 <p align="center">
   <img src="https://img.shields.io/badge/React-18.3.1-61DAFB?logo=react&logoColor=black" />
@@ -16,22 +15,6 @@
 </p>
 
 **Aura Vision** is a cutting-edge web application that transforms live audio into immersive 3D generative art. It delivers buttery smooth visuals while identifying music and adapting its mood in real-time using Google Gemini AI.
-
----
-
-## ⚡ v1.0.0 "Robustness and Alignment"
-
-*   **Global Localization:** Added support for Japanese, Spanish, Korean, German, French, Russian, and Arabic.
-*   **Audio Fingerprinting:** Enhanced local matching precision using high-fidelity offline processing.
-*   **Branding:** Established "AI Synesthesia Engine" identity.
-
----
-
-## 📸 Visual Showcase
-
-| Aura Wave | Liquid Sphere (3D) | Plasma Flow |
-| :---: | :---: | :---: |
-| ![Aura](assets/images/showcase-aurawave.jpg) | ![Liquid](assets/images/showcase-liquid.jpg) | ![Plasma](assets/images/showcase-plasma.jpg) |
 
 ---
 
